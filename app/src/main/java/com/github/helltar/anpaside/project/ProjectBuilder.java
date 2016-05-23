@@ -176,6 +176,10 @@ public class ProjectBuilder {
         return output.contains("Error!:");
     }
 
+    public String getJarFilename() {
+        return projPath + DIR_BIN + midletName + EXT_JAR;
+    }
+
     private String deleteCharacters(String output) {
         String[] lines = output.split("\n");
         String cleanOutput = "";

@@ -3,6 +3,7 @@ package com.github.helltar.anpaside;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
@@ -13,6 +14,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.webkit.MimeTypeMap;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -267,6 +269,22 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private void startActionViewIntent(String filename) {
+        File file = new File(filename);
+
+        String ext = MimeTypeMap.getFileExtensionFromUrl(file.getName());
+        String type = MimeTypeMap.getSingleton().getMimeTypeFromExtension(ext);
+
+        if (type == null) {
+            type = "*/*";
+        }
+
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        intent.setDataAndType(Uri.fromFile(file), type);
+
+        startActivity(intent);
+    }
+
     private class Install extends AsyncTask<Void, Void, Boolean> {
 
         @Override
@@ -302,7 +320,9 @@ public class MainActivity extends AppCompatActivity {
                                                  pman.getCurrentProjectPath(), 
                                                  pman.getMainModuleFilename()).create();
 
-            builder.build();
+            if (builder.build()) {
+                startActionViewIntent(builder.getJarFilename());
+            }
 
             return null;
         }
