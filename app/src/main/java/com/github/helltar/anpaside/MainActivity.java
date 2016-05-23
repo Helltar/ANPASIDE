@@ -16,6 +16,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.webkit.MimeTypeMap;
 import android.widget.EditText;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.github.helltar.anpaside.editor.CodeEditor;
@@ -42,14 +43,16 @@ public class MainActivity extends AppCompatActivity {
 
     private EditText edtCode;
     private static TextView tvLog;
+    private static ScrollView svLog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        tvLog = (TextView) findViewById(R.id.tvLog);
         edtCode = (EditText) findViewById(R.id.edtMain);
+        tvLog = (TextView) findViewById(R.id.tvLog);
+        svLog = (ScrollView) findViewById(R.id.svLog);
 
         editor = new CodeEditor(edtCode);
         editor.setEnabled(false);
@@ -80,6 +83,7 @@ public class MainActivity extends AppCompatActivity {
                 public void run() {
                     String currentTime = new SimpleDateFormat("[HH:mm:ss]: ").format(new Date());
                     tvLog.append(currentTime + msg + "\n");
+                    svLog.fullScroll(ScrollView.FOCUS_DOWN);
                 }
             });
     }
