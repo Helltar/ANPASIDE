@@ -19,6 +19,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.github.helltar.anpaside.editor.CodeEditor;
+import com.github.helltar.anpaside.editor.EditorConfig;
 import com.github.helltar.anpaside.ide.IdeConfig;
 import com.github.helltar.anpaside.ide.IdeInit;
 import com.github.helltar.anpaside.project.ProjectBuilder;
@@ -35,6 +36,7 @@ import static com.github.helltar.anpaside.Consts.*;
 public class MainActivity extends AppCompatActivity {
 
     private CodeEditor editor;
+    private EditorConfig editorConfig;
     private IdeConfig ideConfig;
     private ProjectManager pman;
 
@@ -53,11 +55,22 @@ public class MainActivity extends AppCompatActivity {
         editor.setEnabled(false);
 
         ideConfig = new IdeConfig(this);
+        editorConfig = new EditorConfig(this);
 
+        init();
+    }
+
+    private void init() {
         if (ideConfig.isAssetsInstall()) {
             Logger.addLog(getString(R.string.app_name) + " " + getAppVersionName());
         } else {
             new Install().execute();
+        }
+
+        String lastFilename = editorConfig.getLastFilename();
+
+        if (!lastFilename.isEmpty()) {
+            openFile(lastFilename);
         }
     }
 
@@ -106,6 +119,8 @@ public class MainActivity extends AppCompatActivity {
                 editor.setEnabled(true);
             }
         }
+
+        editorConfig.setLastFilename(filename);
     }
 
     private void showNewProjectDialog() {
