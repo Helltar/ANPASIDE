@@ -108,6 +108,12 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private void createModule(String filename) {
+        if (pman.createModule(filename)) {
+            openFile(filename);
+        }
+    }
+
     private void openProject(String filename) {
         if (pman.openProject(filename)) {
             openFile(pman.getMainModuleFilename());
@@ -187,18 +193,36 @@ public class MainActivity extends AppCompatActivity {
                 public void onClick(DialogInterface dialog, int whichButton) {
                     String moduleName = edtModuleName.getText().toString();
 
-                    if (moduleName.length() > 3) {
-                        String path = pman.getCurrentProjectPath() + DIR_SRC;
-                        String filename = path + moduleName + EXT_PAS;
-
-                        if (pman.createModule(filename)) {
-                            openFile(filename);
-                        }
-                    } else {
+                    if (moduleName.length() < 3) {
                         showAlertMsg("Неверное значение", 
                                      "Название модуля должно состоять минимум из 3-х символов");
+                        return;
+                    }
+
+                    // TODO: дублирование, (String) -> File
+                    final String filename = pman.getCurrentProjectPath() + DIR_SRC + moduleName + EXT_PAS;
+                    final File f = new File(filename);
+
+                    if (!f.exists()) {
+                        createModule(filename);
+                    } else {
+                        new AlertDialog.Builder(MainActivity.this)
+                            .setMessage("Модуль с таким именем уже существует")
+                            .setPositiveButton("Перезаписать",
+                            new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int whichButton) {
+                                    if (f.delete()) {
+                                        createModule(filename);
+                                    } else {
+                                        Logger.addLog("Ошибка при удалении старого модуль: " + filename);
+                                    }
+                                }
+                            })
+                            .setNegativeButton(R.string.dlg_btn_cancel, null)
+                            .show();
                     }
                 }
+
             })
             .setNegativeButton(R.string.dlg_btn_cancel, null)
             .show();
