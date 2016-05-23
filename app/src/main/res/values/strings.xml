@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">ANPASIDE</string>
+
+    <string name="about_text">
+        Android Pascal IDE\n\n\
+        Аuthor: Helltar\n\
+        License: MIT\n\
+        Github: /helltar/anpaside
+    </string>
+
+    <!-- log messages -->
+
+    <string name="log.ide.msg.install_start">Installation of the compiler, wait...</string>
+    <string name="log.ide.msg.install_ok">Installation completed</string>
+
+    <!-- menu -->
+
+    <string name="menu.create_project">Create project</string>
+    <string name="menu.create_module">New module</string>
+    <string name="menu.file_open">Open file</string>
+    <string name="menu.file_save">Save</string>
+    <string name="menu.about">About</string>
+    <string name="menu.exit">Exit</string>
+
+    <!-- dialogs -->
+
+    <string name="dlg.title.new_project">New project</string>
+    <string name="dlg.subtitle.new_project">Parent directory: /sdcard/AppProjects/</string> 
+    <string name="dlg.title.new_module">New unit</string>
+    <string name="dlg.btn.create">Create</string>
+    <string name="dlg.btn.cancel">Cancel</string>
+    <string name="dlg.hint.project_name">project name</string>
+    <string name="dlg.hint.module_name">module name</string>
+
+    <!-- templates -->
+
+<!-- форматирование не в ряд ибо если использовать \n вставляется идиотский пробел -->
+
+<string name="tpl.helloworld">
+"program %s;
+var
+    s: string;
+    x, y: integer;
+    
+begin
+    s := \'Hello, Android!\';
+    x := (GetWidth - GetStringWidth(s)) / 2;
+    y := (GetHeight - GetStringHeight(s)) / 2;
+
+    DrawText(s, x, y);
+    Repaint;
+
+    Delay(9000);
+end."
+</string>
+
+<string name="tpl.module">
+"unit %s;
+
+interface
+
+{ public declarations }
+
+implementation
+
+{ add unit functions &amp; procedures here }
+
+initialization
+
+{ add initialization code here }
+
+end."
+</string>
+
+<string name="tpl.manifest" formatted="false">
+"Manifest-Version: 1.0
+Created-By: ANPASIDE
+MIDlet-1: %s, /icon.png, FW
+MIDlet-Vendor: %s
+MIDlet-Name: %s
+MIDlet-Version: %s
+MicroEdition-Configuration: CLDC-1.%s
+MicroEdition-Profile: MIDP-%s.0"
+</string>
+
+<string name="tpl.gitignore">
+"bin/
+prebuild/"
+</string>
+
+</resources>
+

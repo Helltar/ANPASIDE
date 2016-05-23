@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_height="match_parent"
+	android:layout_width="match_parent"
+	android:orientation="vertical">
+
+	<ScrollView
+		android:layout_height="match_parent"
+		android:layout_width="match_parent"
+		android:layout_weight="0.4"
+		android:layout_margin="10dp"
+		android:fillViewport="true">
+
+		<EditText
+			android:layout_height="match_parent"
+			android:inputType="textMultiLine"
+			android:ems="10"
+			android:layout_width="match_parent"
+			android:id="@+id/edtMain"
+			android:gravity="top"
+			android:textColor="#E7E7E7"
+			android:textAppearance="?android:attr/textAppearanceSmall"
+			android:typeface="monospace"/>
+
+	</ScrollView>
+
+	<ScrollView
+		android:layout_height="match_parent"
+		android:layout_width="match_parent"
+		android:layout_weight="1"
+		android:layout_margin="10dp">
+
+		<TextView
+			android:layout_height="match_parent"
+			android:textAppearance="?android:attr/textAppearanceSmall"
+			android:layout_width="match_parent"
+			android:id="@+id/tvLog"
+			android:typeface="monospace"
+			android:textColor="#A2A2A2"/>
+
+	</ScrollView>
+
+</LinearLayout>
+

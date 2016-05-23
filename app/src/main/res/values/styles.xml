@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="AppTheme" parent="Theme.AppCompat">
+        <item name="dropDownListViewStyle">@style/PopupMenuListView</item>
+    </style>
+
+    <style name="PopupMenuListView" parent="@style/Widget.AppCompat.ListView.DropDown">
+        <item name="android:divider">#444444</item>
+        <item name="android:dividerHeight">1dp</item>
+    </style>
+
+</resources>
+

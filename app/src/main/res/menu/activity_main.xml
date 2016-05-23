@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/miRun"
+        android:icon="@drawable/ic_run"
+        app:showAsAction="always"/>
+
+    <item
+        android:id="@+id/miCreateProject"
+        android:title="@string/menu.create_project"/>
+
+    <item
+        android:id="@+id/miCreateModule"
+        android:title="@string/menu.create_module"/>
+
+    <item
+        android:id="@+id/miFileOpen"
+        android:title="@string/menu.file_open"/>
+
+    <item
+        android:id="@+id/miFileSave"
+        android:title="@string/menu.file_save"/>
+
+    <item
+        android:id="@+id/miAbout"
+        android:title="@string/menu.about"/>
+
+    <item
+        android:id="@+id/miExit"
+        android:title="@string/menu.exit"/>
+
+</menu>
+
