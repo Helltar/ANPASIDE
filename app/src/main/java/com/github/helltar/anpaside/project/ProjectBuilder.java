@@ -4,6 +4,8 @@ import com.github.helltar.anpaside.Logger;
 import com.github.helltar.anpaside.Utils;
 import java.io.File;
 import java.io.IOException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import net.lingala.zip4j.core.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
 import net.lingala.zip4j.model.ZipParameters;
@@ -156,24 +158,37 @@ public class ProjectBuilder {
     }
 
     public boolean compile(String filename) {
-        String[] args = {
-            mp3cc,
-            "-s", filename,
-            "-o", prebuildDir,
-            "-l", globLibsDir,
-            "-p", projPath + DIR_LIBS,
-            "-m", Integer.toString(mathType),
-            "c", Integer.toString(canvasType)
-        };
+        String args =
+            mp3cc
+            + " -s " + filename
+            + " -o " + prebuildDir
+            + " -l " + globLibsDir
+            + " -p " + projPath + DIR_LIBS
+            + " -m " + Integer.toString(mathType)
+            + " c " + Integer.toString(canvasType);
 
-        String output = deleteCharacters(Utils.runProc(args));
-        Logger.addLog(output);
+        String output = Utils.runProc(args + " -d"); // detect units
+
+        Pattern p = Pattern.compile("\\^0(.*?)\n");
+        Matcher m = p.matcher(output);
+
+        while (m.find()) {
+            String moduleName = m.group(1);
+            if (!new File(projPath + DIR_PREBUILD + moduleName + ".class").exists()) {
+                if (!compile(projPath + DIR_SRC + moduleName + EXT_PAS)) {
+                    return false;
+                }
+            }
+        }
+
+        output = Utils.runProc(args);
+        Logger.addLog(deleteCharacters(output));
 
         return !isErr(output);
     }
 
     private boolean isErr(String output) {
-        return output.contains("Error!:");
+        return output.contains("[Pascal Error]");
     }
 
     public String getJarFilename() {

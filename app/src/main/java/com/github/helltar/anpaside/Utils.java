@@ -1,9 +1,10 @@
 package com.github.helltar.anpaside;
 
 import com.github.helltar.anpaside.Logger;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
+import java.io.InputStreamReader;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 
@@ -39,20 +40,22 @@ public class Utils {
     }
 
     // TODO: bool
-    public static String runProc(String[] args) {
-        StringBuilder output = new StringBuilder();
+    public static String runProc(String args) {
+        StringBuffer output = new StringBuffer();
 
         try {
-            ProcessBuilder processBuilder = new ProcessBuilder(args);
-            Process process = processBuilder.start();
+            Process process = Runtime.getRuntime().exec(args);
+            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
 
-            InputStream inputStream = process.getInputStream();
-            int c;
+            String line = "";
 
-            while ((c = inputStream.read()) > 0) {
-                output.append((char) c);
+            while ((line = reader.readLine()) != null) {
+                output.append(line + "\n");
+                process.waitFor();
             }
 
+        } catch (InterruptedException ie) {
+            Logger.addLog(ie);
         } catch (IOException ioe) {
             Logger.addLog(ioe);
         }

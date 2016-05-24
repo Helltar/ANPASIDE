@@ -22,10 +22,7 @@ public class IdeInit {
             if (copyAssets(ASSET_DIR_STUBS)) {
                 if (copyAssets(ASSET_DIR_FILES)) {
                     // TODO: bool
-                    Utils.runProc(new String[] {
-                                      "chmod", "755",
-                                      DATA_PKG_PATH + ASSET_DIR_BIN + "/" + MP3CC
-                                  });
+                    Utils.runProc("chmod 755 " + DATA_PKG_PATH + ASSET_DIR_BIN + "/" + MP3CC);
                     return true;
                 }
             }

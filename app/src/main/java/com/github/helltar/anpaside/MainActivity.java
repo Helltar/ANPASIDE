@@ -214,7 +214,7 @@ public class MainActivity extends AppCompatActivity {
                                     if (f.delete()) {
                                         createModule(filename);
                                     } else {
-                                        Logger.addLog("Ошибка при удалении старого модуль: " + filename);
+                                        Logger.addLog("Ошибка при удалении старого модуля: " + filename);
                                     }
                                 }
                             })
