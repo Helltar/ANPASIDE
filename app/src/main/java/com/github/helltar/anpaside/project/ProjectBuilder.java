@@ -144,7 +144,7 @@ public class ProjectBuilder {
                         Logger.addLog(
                             "Сборка успешно завершена, " 
                             + DIR_BIN + midletName + EXT_JAR + ", "
-                            + getFileSize(jarFilename) + " KB");
+                            + getFileSize(jarFilename) + " KB", 1);
 
                         return true;
                     }
@@ -199,12 +199,19 @@ public class ProjectBuilder {
         }
 
         output = runProc(args);
-
         findAndCopyLib(output);
 
-        Logger.addLog(deleteCharacters(output));
+        boolean result = false;
+        String cleanOutput = deleteCharacters(output);
 
-        return !isErr(output);
+        if (!isErr(output)) {
+            Logger.addLog(cleanOutput);
+            result = true;
+        } else {
+            Logger.addLog(cleanOutput, 2);
+        }
+
+        return result;
     }
 
     private boolean isErr(String output) {
@@ -268,7 +275,7 @@ public class ProjectBuilder {
             new ZipFile(zipFilename).addFolder(dirPath, param);
             return true;
         } catch (ZipException ze) {
-            Logger.addLog("Не удалось создать архив: " + dirPath + " (" + ze.getMessage() + ")");
+            Logger.addLog("Не удалось создать архив: " + dirPath + " (" + ze.getMessage() + ")", 2);
         }
 
         return false;

@@ -14,7 +14,7 @@ public class Utils {
         if (new File(dirName).mkdirs()) {
             return true;
         } else {
-            Logger.addLog("Не удалось создать каталог: " + dirName);
+            Logger.addLog("Не удалось создать каталог: " + dirName, 2);
         }
 
         return false;
@@ -35,7 +35,7 @@ public class Utils {
         if (new File(filename).exists()) {
             return true;
         } else {
-            Logger.addLog("Файл не найден: " + filename);
+            Logger.addLog("Файл не найден: " + filename, 2);
         }
 
         return false;

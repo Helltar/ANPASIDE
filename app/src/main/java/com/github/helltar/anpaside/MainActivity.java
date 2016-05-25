@@ -11,6 +11,8 @@ import android.os.Handler;
 import android.os.Looper;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Html;
+import android.text.Spanned;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -77,12 +79,28 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public static void addGuiLog(final String msg) {
+    public static void addGuiLog(final String msg, final int msgType) {
         new Handler(Looper.getMainLooper()).post(new Runnable() {
+
                 @Override
                 public void run() {
+                    String fontColor = "#aaaaaa";
+
+                    switch (msgType) {
+                        case 1:
+                            fontColor = "#00aa00";
+                            break;
+                        case 2:
+                            fontColor = "#ee0000";
+                            break;
+                    }
+
                     String currentTime = new SimpleDateFormat("[HH:mm:ss]: ").format(new Date());
-                    tvLog.append(currentTime + msg + "\n");
+                    Spanned text = Html.fromHtml(currentTime
+                                                 + "<font color='" + fontColor + "'>"
+                                                 + msg.replace("\n", "<br>") + "</font><br>");
+
+                    tvLog.append(text);
                     svLog.fullScroll(ScrollView.FOCUS_DOWN);
                 }
             });

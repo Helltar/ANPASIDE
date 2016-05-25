@@ -6,12 +6,18 @@ public class Logger {
 
     private static boolean DEBUG = true;
 
-    private static void addGuiLog(String msg) {
-        MainActivity.addGuiLog(msg);
+    // msgType: 0 - text, 1 - ok, 2 - error
+
+    private static void addGuiLog(String msg, int msgType) {
+        MainActivity.addGuiLog(msg, msgType);
     }
 
     public static void addLog(String msg) {
-        addGuiLog(msg);
+        addGuiLog(msg, 0);
+    }
+
+    public static void addLog(String msg, int msgType) {
+        addGuiLog(msg, msgType);
     }
 
     public static void addLog(Exception e) {
@@ -19,7 +25,7 @@ public class Logger {
             Log.e("", e.getMessage());
         }
 
-        addLog(e.getMessage());
+        addLog(e.getMessage(), 2);
     }
 }
 
