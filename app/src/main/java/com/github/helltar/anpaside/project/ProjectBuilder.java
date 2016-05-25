@@ -1,7 +1,6 @@
 package com.github.helltar.anpaside.project;
 
 import com.github.helltar.anpaside.Logger;
-import com.github.helltar.anpaside.Utils;
 import java.io.File;
 import java.io.IOException;
 import java.util.regex.Matcher;
@@ -12,6 +11,7 @@ import net.lingala.zip4j.model.ZipParameters;
 import net.lingala.zip4j.util.Zip4jConstants;
 import org.apache.commons.io.FileUtils;
 
+import static com.github.helltar.anpaside.Utils.*;
 import static com.github.helltar.anpaside.Consts.*;
 
 public class ProjectBuilder {
@@ -31,6 +31,8 @@ public class ProjectBuilder {
     private final String midletVendor;
     private final String midletVersion;
     private final String midletIcon;
+
+    private final String jarFilename;
 
     public static class Builder {
 
@@ -110,6 +112,8 @@ public class ProjectBuilder {
         midletVendor = b.midletVendor;
         midletVersion = b.midletVersion;
         midletIcon = b.midletIcon;
+
+        jarFilename = projPath + DIR_BIN + midletName + EXT_JAR;
     }
 
     private boolean prebulid() {
@@ -121,14 +125,10 @@ public class ProjectBuilder {
 
         String manifestDir = prebuildDir + "META-INF";
 
-        if (Utils.mkdir(manifestDir)) {
+        if (mkdir(manifestDir)) {
             if (createManifest(manifestDir)) {
-                try {
-                    FileUtils.copyFileToDirectory(new File(stubsDir + "/" + FW_CLASS), 
-                                                  new File(prebuildDir));
+                if (copyFileToDir(stubsDir + "/" + FW_CLASS, prebuildDir)) {
                     return true;
-                } catch (IOException ioe) {
-                    Logger.addLog(ioe);
                 }
             }
         }
@@ -139,14 +139,12 @@ public class ProjectBuilder {
     public boolean build() {
         if (prebulid()) {
             if (compile(mainModule)) {
-                String jarFilename = projPath + DIR_BIN + midletName + EXT_JAR;
-
                 if (createZip(prebuildDir, jarFilename)) {
                     if (addResToZip(projPath + DIR_RES, jarFilename)) {
                         Logger.addLog(
                             "Сборка успешно завершена, " 
                             + DIR_BIN + midletName + EXT_JAR + ", "
-                            + Utils.getFileSize(jarFilename) + " KB");
+                            + getFileSize(jarFilename) + " KB");
 
                         return true;
                     }
@@ -155,6 +153,25 @@ public class ProjectBuilder {
         }
 
         return false;
+    }
+
+    private void findAndCopyLib(String output) {
+        Matcher m = Pattern.compile("\\^1(.*?)\n").matcher(output);
+
+        while (m.find()) {
+            String libName = "Lib_" + m.group(1) + EXT_CLASS;
+            String libFilename = projPath + DIR_LIBS + libName;
+
+            if (fileExists(libFilename)) {
+                copyFileToDir(libFilename, prebuildDir);
+            } else {
+                libFilename = globLibsDir + libName;
+
+                if (fileExists(libFilename)) {
+                    copyFileToDir(libFilename, prebuildDir);
+                }
+            }
+        }
     }
 
     public boolean compile(String filename) {
@@ -167,21 +184,24 @@ public class ProjectBuilder {
             + " -m " + Integer.toString(mathType)
             + " c " + Integer.toString(canvasType);
 
-        String output = Utils.runProc(args + " -d"); // detect units
+        String output = runProc(args + " -d"); // detect units
 
-        Pattern p = Pattern.compile("\\^0(.*?)\n");
-        Matcher m = p.matcher(output);
+        Matcher m = Pattern.compile("\\^0(.*?)\n").matcher(output);
 
         while (m.find()) {
             String moduleName = m.group(1);
-            if (!new File(projPath + DIR_PREBUILD + moduleName + ".class").exists()) {
+
+            if (!new File(projPath + DIR_PREBUILD + moduleName + EXT_CLASS).exists()) {
                 if (!compile(projPath + DIR_SRC + moduleName + EXT_PAS)) {
                     return false;
                 }
             }
         }
 
-        output = Utils.runProc(args);
+        output = runProc(args);
+
+        findAndCopyLib(output);
+
         Logger.addLog(deleteCharacters(output));
 
         return !isErr(output);
@@ -192,7 +212,7 @@ public class ProjectBuilder {
     }
 
     public String getJarFilename() {
-        return projPath + DIR_BIN + midletName + EXT_JAR;
+        return jarFilename;
     }
 
     private String deleteCharacters(String output) {
@@ -205,7 +225,12 @@ public class ProjectBuilder {
             }
         }
 
-        cleanOutput = cleanOutput.replace("[Pascal Error]", "Error!:").trim();
+        cleanOutput = cleanOutput
+            .replace("[Pascal Error]", "Error!:")
+            .replace("^1", "Lib: ")
+            .replace("^2", "")
+            .replace("^3", "")
+            .trim();
 
         return cleanOutput;
     }
@@ -214,10 +239,10 @@ public class ProjectBuilder {
         int midp = (canvasType < 1) ? 1 : 2;
         int cldc = (midp == 2) ? 1 : 0;
 
-        return Utils.createTextFile(path + "/MANIFEST.MF",
-                                    String.format(TPL_MANIFEST, 
-                                                  midletName, midletVendor, midletName, midletVersion,
-                                                  cldc, midp));
+        return createTextFile(path + "/MANIFEST.MF",
+                              String.format(TPL_MANIFEST,
+                                            midletName, midletVendor, midletName, midletVersion,
+                                            cldc, midp));
     }
 
     private boolean addResToZip(String resDir, String zipFilename) {

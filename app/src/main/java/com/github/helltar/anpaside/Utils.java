@@ -20,6 +20,27 @@ public class Utils {
         return false;
     }
 
+    public static boolean copyFileToDir(String srcFile, String destDir) {
+        try {
+            FileUtils.copyFileToDirectory(new File(srcFile), new File(destDir));
+            return true;
+        } catch (IOException ioe) {
+            Logger.addLog(ioe);
+        }
+
+        return false;
+    }
+
+    public static boolean fileExists(String filename) {
+        if (new File(filename).exists()) {
+            return true;
+        } else {
+            Logger.addLog("Файл не найден: " + filename);
+        }
+
+        return false;
+    }
+
     public static String getFileNameOnly(String filename) {
         return FilenameUtils.getBaseName(filename);
     }

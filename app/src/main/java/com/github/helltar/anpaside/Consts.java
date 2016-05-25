@@ -23,6 +23,7 @@ public class Consts {
     public static final String EXT_PROJ = ".aproj";
     public static final String EXT_PAS = ".pas";
     public static final String EXT_JAR = ".jar";
+    public static final String EXT_CLASS = ".class";
 
     public static final String TPL_HELLOWORLD = getString(R.string.tpl_helloworld);
     public static final String TPL_MODULE = getString(R.string.tpl_module);

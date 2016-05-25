@@ -1,9 +1,7 @@
 package com.github.helltar.anpaside.project;
 
 import com.github.helltar.anpaside.Logger;
-import java.io.File;
 import java.io.IOException;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 
 import static com.github.helltar.anpaside.Consts.*;
@@ -56,14 +54,8 @@ public class ProjectManager {
                         if (mkdir(projPath + DIR_PREBUILD)) {
                             if (mkdir(projPath + DIR_LIBS)) {
                                 if (mkdir(projPath + DIR_RES)) {
-                                    try {
-                                        FileUtils.copyFileToDirectory(
-                                            new File(DATA_PKG_PATH + ASSET_DIR_FILES + "/icon.png"), 
-                                            new File(projPath + DIR_RES));
-                                    } catch (IOException ioe) {
-                                        Logger.addLog(ioe);
-                                    }
-
+                                    copyFileToDir(DATA_PKG_PATH + ASSET_DIR_FILES + "/icon.png",
+                                                  projPath + DIR_RES);
                                     return true;
                                 }
                             }
