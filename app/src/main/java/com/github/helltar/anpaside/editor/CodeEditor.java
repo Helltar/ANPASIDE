@@ -1,57 +1,68 @@
 package com.github.helltar.anpaside.editor;
 
-import android.text.Editable;
-import android.text.TextWatcher;
+import android.view.View;
 import android.widget.EditText;
+import android.widget.TabHost;
 import com.github.helltar.anpaside.Logger;
+import com.github.helltar.anpaside.MainApp;
 import java.io.File;
 import java.io.IOException;
 import org.apache.commons.io.FileUtils;
+import android.widget.FrameLayout;
 
 public class CodeEditor {
 
-    private EditText edtText;
+    private TabHost tabHost;
+
     private String currentFilename = "";
     private boolean currentFileModified;
 
-    public CodeEditor(EditText editor) {
-        edtText = editor;
-
-        edtText.addTextChangedListener(new TextWatcher() {
-                @Override
-                public void beforeTextChanged(CharSequence p1, int p2, int p3, int p4) { }
-
-                @Override
-                public void onTextChanged(CharSequence p1, int p2, int p3, int p4) {
-                    currentFileModified = true;
-                }
-
-                @Override
-                public void afterTextChanged(Editable p1) { }
-            });
+    public CodeEditor(TabHost tabHost) {
+        this.tabHost = tabHost;
     }
 
     public boolean openFile(String filename) {
+        StringBuilder text;
+
         try {
-            edtText.setText(FileUtils.readFileToString(new File(filename)));
-            currentFilename = filename;
-            return true;
+            text = new StringBuilder(FileUtils.readFileToString(new File(filename)));
         } catch (IOException ioe) {
             Logger.addLog(ioe);
+            return false;
         }
 
-        return false;
+        currentFilename = filename;
+
+        final EditText edtText = new EditText(MainApp.getContext());
+        edtText.setText(text);
+
+        TabHost.TabContentFactory TabFactory = new TabHost.TabContentFactory() {
+            @Override
+            public View createTabContent(String tag) {
+                return edtText;
+            }
+        }; 
+
+        TabHost.TabSpec tabSpec;
+        tabSpec = tabHost.newTabSpec(filename);
+        tabSpec.setIndicator(new File(filename).getName());
+        tabSpec.setContent(TabFactory);
+
+        tabHost.addTab(tabSpec);
+        tabHost.setCurrentTabByTag(filename);
+
+        return true;
     }
 
     private boolean saveFile(String filename) {
         try {        
-            FileUtils.writeStringToFile(new File(filename), edtText.getText().toString());
+            FileUtils.writeStringToFile(new File(filename), getCurrentEditor().getText().toString());
             currentFileModified = false;
             return true;
         } catch (IOException ioe) {
             Logger.addLog(ioe);
         }
-        
+
         return false;
     }
 
@@ -59,12 +70,23 @@ public class CodeEditor {
         return saveFile(currentFilename);
     }
 
-    public boolean isCurrentFileModified() {
-        return currentFileModified;
+    private EditText getCurrentEditor() {
+        FrameLayout frameLayout = tabHost.getTabContentView();
+
+        for (int i = 0; i < frameLayout.getChildCount(); i++) {
+            View childView = frameLayout.getChildAt(i);
+
+            if (childView instanceof EditText) {
+                return (EditText) childView;
+            }
+        }
+
+        // TODO: !
+        return null;
     }
 
-    public void setEnabled(boolean enabled) {
-        edtText.setEnabled(enabled);
+    public boolean isCurrentFileModified() {
+        return currentFileModified;
     }
 }
 

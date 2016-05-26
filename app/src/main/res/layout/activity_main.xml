@@ -5,25 +5,33 @@
 	android:layout_width="match_parent"
 	android:orientation="vertical">
 
-	<ScrollView
-		android:layout_height="match_parent"
+	<TabHost
+		android:id="@android:id/tabhost"
 		android:layout_width="match_parent"
-		android:layout_weight="0.4"
-		android:layout_margin="10dp"
-		android:fillViewport="true">
+		android:layout_height="match_parent"
+		android:layout_weight="0.4">
 
-		<EditText
-			android:layout_height="match_parent"
-			android:inputType="textMultiLine"
-			android:ems="10"
+		<LinearLayout
 			android:layout_width="match_parent"
-			android:id="@+id/edtMain"
-			android:gravity="top"
-			android:textColor="#E7E7E7"
-			android:textAppearance="?android:attr/textAppearanceSmall"
-			android:typeface="monospace"/>
+			android:layout_height="match_parent"
+			android:orientation="vertical">
 
-	</ScrollView>
+			<TabWidget
+				android:id="@android:id/tabs"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content">
+
+			</TabWidget>
+
+			<FrameLayout
+				android:id="@android:id/tabcontent"
+				android:layout_width="match_parent"
+				android:layout_height="match_parent">
+			</FrameLayout>
+
+		</LinearLayout>
+
+	</TabHost>
 
 	<ScrollView
 		android:layout_height="match_parent"
