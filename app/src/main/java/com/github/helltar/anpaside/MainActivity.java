@@ -19,8 +19,10 @@ import android.view.MenuItem;
 import android.webkit.MimeTypeMap;
 import android.widget.EditText;
 import android.widget.ScrollView;
+import android.widget.TabHost;
 import android.widget.TextView;
 import android.widget.Toast;
+import com.github.helltar.anpaside.MainActivity;
 import com.github.helltar.anpaside.editor.CodeEditor;
 import com.github.helltar.anpaside.editor.EditorConfig;
 import com.github.helltar.anpaside.ide.IdeConfig;
@@ -43,7 +45,7 @@ public class MainActivity extends AppCompatActivity {
     private IdeConfig ideConfig;
     private ProjectManager pman;
 
-    private EditText edtCode;
+    private TabHost tabHost;
     private static TextView tvLog;
     private static ScrollView svLog;
 
@@ -52,12 +54,13 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        edtCode = (EditText) findViewById(R.id.edtMain);
+        tabHost = (TabHost) findViewById(android.R.id.tabhost);
+        tabHost.setup();
+
+        editor = new CodeEditor(tabHost);
+
         tvLog = (TextView) findViewById(R.id.tvLog);
         svLog = (ScrollView) findViewById(R.id.svLog);
-
-        editor = new CodeEditor(edtCode);
-        editor.setEnabled(false);
 
         ideConfig = new IdeConfig(this);
         editorConfig = new EditorConfig(this);
@@ -81,7 +84,6 @@ public class MainActivity extends AppCompatActivity {
 
     public static void addGuiLog(final String msg, final int msgType) {
         new Handler(Looper.getMainLooper()).post(new Runnable() {
-
                 @Override
                 public void run() {
                     String fontColor = "#aaaaaa";
@@ -143,9 +145,7 @@ public class MainActivity extends AppCompatActivity {
         if (FilenameUtils.getExtension(filename).equals(EXT_PROJ.substring(1, EXT_PROJ.length()))) {
             openProject(filename);
         } else {
-            if (editor.openFile(filename)) {
-                editor.setEnabled(true);
-            }
+            editor.openFile(filename);
         }
 
         editorConfig.setLastFilename(filename);
