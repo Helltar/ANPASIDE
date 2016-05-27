@@ -84,7 +84,6 @@ public class MainActivity extends AppCompatActivity {
 
     public static void addGuiLog(final String msg, final int msgType) {
         new Handler(Looper.getMainLooper()).post(new Runnable() {
-
                 @Override
                 public void run() {
                     String fontColor = "#aaaaaa";
