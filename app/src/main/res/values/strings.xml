@@ -4,10 +4,10 @@
     <string name="app_name">ANPASIDE</string>
 
     <string name="about_text">
-        Android Pascal IDE\n\n\
-        Аuthor: Helltar\n\
-        License: MIT\n\
-        Github: /helltar/anpaside
+        Android Pascal IDE
+        \n\nАuthor: Helltar
+        \nLicense: MIT
+        \nGithub: /helltar/anpaside
     </string>
 
     <!-- log messages -->
