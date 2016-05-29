@@ -4,7 +4,6 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 import android.text.Editable;
 import android.text.Spannable;
-import android.text.SpannableString;
 import android.text.TextWatcher;
 import android.text.style.ForegroundColorSpan;
 import android.view.Gravity;
@@ -19,10 +18,9 @@ import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import org.apache.commons.io.FileUtils;
-import android.text.Html;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.apache.commons.io.FileUtils;
 
 public class CodeEditor {
 
@@ -45,7 +43,17 @@ public class CodeEditor {
         }
     }
 
+    private void clearSpans(Editable s) {
+        ForegroundColorSpan spans[] = s.getSpans(0, s.length(), ForegroundColorSpan.class);
+
+        for (int i = 0; i < spans.length; i++) {
+            s.removeSpan(spans[i]);
+        }
+    }
+
     private void highlight(Editable s) {
+        clearSpans(s);
+
         setColorByRegex(s, "[0-9]", Color.rgb(255, 102, 51));
         setColorByRegex(s, "program|begin|end", Color.rgb(0, 204, 255));
     }
