@@ -3,7 +3,10 @@ package com.github.helltar.anpaside.editor;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.text.Editable;
+import android.text.Spannable;
+import android.text.SpannableString;
 import android.text.TextWatcher;
+import android.text.style.ForegroundColorSpan;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.EditText;
@@ -17,6 +20,9 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import org.apache.commons.io.FileUtils;
+import android.text.Html;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class CodeEditor {
 
@@ -28,6 +34,37 @@ public class CodeEditor {
     public CodeEditor(TabHost tabHost) {
         this.tabHost = tabHost;
     }
+
+    private void setColorByRegex(Editable s, String pattern, int rgb) {
+        Matcher m = Pattern.compile(pattern).matcher(s.toString());
+
+        while (m.find()) {
+            s.setSpan(new ForegroundColorSpan(rgb),
+                      m.start(), m.end(),
+                      Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        }
+    }
+
+    private void highlight(Editable s) {
+        setColorByRegex(s, "[0-9]", Color.rgb(255, 102, 51));
+        setColorByRegex(s, "program|begin|end", Color.rgb(0, 204, 255));
+    }
+
+    TextWatcher textWatcher = new TextWatcher() {
+
+        @Override
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
+
+        @Override
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+            setFileModifiedStatus(getCurrentFilename(), true);
+        }
+
+        @Override
+        public void afterTextChanged(Editable s) {
+            highlight(s);
+        }
+    };
 
     public boolean openFile(String filename) {
         String text = "";
@@ -46,20 +83,8 @@ public class CodeEditor {
         editText.setTextSize(14);
         editText.setGravity(Gravity.TOP);
 
+        editText.addTextChangedListener(textWatcher);
         editText.setText(text);
-
-        editText.addTextChangedListener(new TextWatcher() {
-                @Override
-                public void beforeTextChanged(CharSequence p1, int p2, int p3, int p4) { }
-
-                @Override
-                public void onTextChanged(CharSequence p1, int p2, int p3, int p4) {
-                    setFileModifiedStatus(getCurrentFilename(), true);
-                }
-
-                @Override
-                public void afterTextChanged(Editable p1) { }
-            });
 
         tabSpec = tabHost.newTabSpec(filename);
         tabSpec.setIndicator(new File(filename).getName());
