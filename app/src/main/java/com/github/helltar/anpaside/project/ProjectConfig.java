@@ -15,7 +15,7 @@ public class ProjectConfig {
     public ProjectConfig(String filename) throws IOException {
         File file = new File(filename);
 
-        if (!file.exists()) {
+        if (!(file.exists())) {
             file.createNewFile();
         }
 

@@ -191,8 +191,8 @@ public class ProjectBuilder {
         while (m.find()) {
             String moduleName = m.group(1);
 
-            if (!new File(projPath + DIR_PREBUILD + moduleName + EXT_CLASS).exists()) {
-                if (!compile(projPath + DIR_SRC + moduleName + EXT_PAS)) {
+            if (!(new File(projPath + DIR_PREBUILD + moduleName + EXT_CLASS).exists())) {
+                if (!(compile(projPath + DIR_SRC + moduleName + EXT_PAS))) {
                     return false;
                 }
             }
@@ -204,7 +204,7 @@ public class ProjectBuilder {
         boolean result = false;
         String cleanOutput = deleteCharacters(output);
 
-        if (!isErr(output)) {
+        if (!(isErr(output))) {
             Logger.addLog(cleanOutput);
             result = true;
         } else {
@@ -227,7 +227,7 @@ public class ProjectBuilder {
         String cleanOutput = "";
 
         for (int i = 0; i < lines.length; i++) {
-            if (!lines[i].contains("@")) {
+            if (!(lines[i].contains("@"))) {
                 cleanOutput += lines[i] + "\n";
             }
         }

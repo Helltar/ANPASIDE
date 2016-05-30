@@ -38,7 +38,7 @@ public class IdeInit {
             if (assets.length > 0) {
                 File dir = new File(DATA_PKG_PATH + assetDir);
 
-                if (!dir.exists()) {
+                if (!(dir.exists())) {
                     dir.mkdir();
                 }
 

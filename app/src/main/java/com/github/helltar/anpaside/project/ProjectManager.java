@@ -87,7 +87,7 @@ public class ProjectManager {
     }
 
     public static boolean isProjectOpen() {
-        return !currentProjectPath.isEmpty();
+        return !(currentProjectPath.isEmpty());
     }
 
     public static String getCurrentProjectPath() {
