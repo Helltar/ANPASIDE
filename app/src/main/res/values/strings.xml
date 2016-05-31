@@ -24,6 +24,10 @@
     <string name="menu.about">About</string>
     <string name="menu.exit">Exit</string>
 
+    <!-- editor popup menu -->
+
+    <string name="pmenu.tab.close">Close</string>
+
     <!-- dialogs -->
 
     <string name="dlg.title.new_project">New project</string>

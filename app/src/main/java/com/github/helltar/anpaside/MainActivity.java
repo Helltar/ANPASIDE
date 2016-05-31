@@ -45,7 +45,6 @@ public class MainActivity extends AppCompatActivity {
     private IdeConfig ideConfig;
     private ProjectManager pman;
 
-    private TabHost tabHost;
     private static TextView tvLog;
     private static ScrollView svLog;
 
@@ -54,10 +53,10 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        tabHost = (TabHost) findViewById(android.R.id.tabhost);
+        TabHost tabHost = (TabHost) findViewById(android.R.id.tabhost);
         tabHost.setup();
 
-        editor = new CodeEditor(tabHost);
+        editor = new CodeEditor(this, tabHost);
 
         tvLog = (TextView) findViewById(R.id.tvLog);
         svLog = (ScrollView) findViewById(R.id.svLog);
@@ -77,13 +76,14 @@ public class MainActivity extends AppCompatActivity {
 
         String lastFilename = editorConfig.getLastFilename();
 
-        if (!lastFilename.isEmpty()) {
+        if (!(lastFilename.isEmpty())) {
             openFile(lastFilename);
         }
     }
 
     public static void addGuiLog(final String msg, final int msgType) {
         new Handler(Looper.getMainLooper()).post(new Runnable() {
+
                 @Override
                 public void run() {
                     String fontColor = "#aaaaaa";
@@ -174,7 +174,7 @@ public class MainActivity extends AppCompatActivity {
                     final String path = sdcardPath + DIR_MAIN;
                     final File projPath = new File(path + projName);
 
-                    if (!projPath.exists()) {
+                    if (!(projPath.exists())) {
                         createProject(path, projName);
                     } else {
                         new AlertDialog.Builder(MainActivity.this)
@@ -221,7 +221,7 @@ public class MainActivity extends AppCompatActivity {
                     final String filename = pman.getCurrentProjectPath() + DIR_SRC + moduleName + EXT_PAS;
                     final File f = new File(filename);
 
-                    if (!f.exists()) {
+                    if (!(f.exists())) {
                         createModule(filename);
                     } else {
                         new AlertDialog.Builder(MainActivity.this)
