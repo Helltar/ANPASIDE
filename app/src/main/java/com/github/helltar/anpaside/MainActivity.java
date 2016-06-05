@@ -14,6 +14,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.text.Html;
 import android.text.Spanned;
 import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.webkit.MimeTypeMap;
@@ -270,6 +271,18 @@ public class MainActivity extends AppCompatActivity {
         } catch (PackageManager.NameNotFoundException e) {
             return "null";
         }
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        switch (keyCode) {
+            case KeyEvent.KEYCODE_TAB:
+                EditText e = editor.getCurrentEditor();
+                e.getText().insert(e.getSelectionStart(), "    ");
+                return true;
+        }
+
+        return super.onKeyDown(keyCode, event);
     }
 
     @Override

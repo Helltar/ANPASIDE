@@ -193,7 +193,7 @@ public class CodeEditor {
         return saveFile(getCurrentFilename());
     }
 
-    private EditText getCurrentEditor() {
+    public EditText getCurrentEditor() {
         return (EditText) tabHost.getCurrentView().findViewById(getEditorViewId(getCurrentFilename()));
     }
 
