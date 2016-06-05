@@ -40,14 +40,12 @@
 
     <!-- templates -->
 
-<!-- форматирование не в ряд ибо если использовать \n вставляется идиотский пробел -->
-
-<string name="tpl.helloworld">
+    <string name="tpl.helloworld">
 "program %s;
 var
     s: string;
     x, y: integer;
-    
+
 begin
     s := \'Hello, Android!\';
     x := (GetWidth - GetStringWidth(s)) / 2;
@@ -58,27 +56,27 @@ begin
 
     Delay(9000);
 end."
-</string>
+    </string>
 
-<string name="tpl.module">
+    <string name="tpl.module">
 "unit %s;
 
 interface
 
-{ public declarations }
+// public declarations
 
 implementation
 
-{ add unit functions &amp; procedures here }
+// add unit functions and procedures here
 
 initialization
 
-{ add initialization code here }
+// add initialization code here
 
 end."
-</string>
+    </string>
 
-<string name="tpl.manifest" formatted="false">
+    <string name="tpl.manifest" formatted="false">
 "Manifest-Version: 1.0
 Created-By: ANPASIDE
 MIDlet-1: %s, /icon.png, FW
@@ -87,12 +85,12 @@ MIDlet-Name: %s
 MIDlet-Version: %s
 MicroEdition-Configuration: CLDC-1.%s
 MicroEdition-Profile: MIDP-%s.0"
-</string>
+    </string>
 
-<string name="tpl.gitignore">
+    <string name="tpl.gitignore">
 "bin/
 prebuild/"
-</string>
+    </string>
 
 </resources>
 
