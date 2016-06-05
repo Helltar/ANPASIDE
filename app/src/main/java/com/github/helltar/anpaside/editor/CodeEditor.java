@@ -27,8 +27,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.apache.commons.io.FileUtils;
 
-/*--------------------------------------------- dev ---*/
-
 public class CodeEditor {
 
     private Context context;
@@ -64,44 +62,43 @@ public class CodeEditor {
         createTabs(filename, new File(filename).getName(), new TabContentFactory() {
                 @Override
                 public View createTabContent(String p1) {
-                    ScrollView scrollView = new ScrollView(context);
-                    scrollView.addView(edtText);
-                    return scrollView;
+                    ScrollView sv = new ScrollView(context);
+                    sv.addView(edtText);
+                    return sv;
                 }
             });
-
-        setFileModifiedStatus(filename, false);
 
         idCount++;
         setEditorViewId(filename, idCount);
-
         edtText.setId(idCount);
 
-        edtText.addTextChangedListener(new TextWatcher() {
-                @Override
-                public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
-
-                @Override
-                public void onTextChanged(CharSequence s, int start, int before, int count) {
-                    setFileModifiedStatus(getCurrentFilename(), true);
-                }
-
-                @Override
-                public void afterTextChanged(final Editable s) {
-                    highlight(s);
-                }
-            });
-
+        edtText.addTextChangedListener(inputTextWatcher);
         edtText.setText(text);
 
         return true;
     }
+
+    TextWatcher inputTextWatcher = new TextWatcher() {
+        @Override
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
+
+        @Override
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+            setFileModifiedStatus(getCurrentFilename(), true);
+        }
+
+        @Override
+        public void afterTextChanged(final Editable s) {
+            highlight(s);
+        }
+    };
 
     private EditText createEditText() {
         return
             new EditText(context) {{
                 setBackgroundColor(android.R.color.transparent);
                 setTextColor(Color.rgb(220, 220, 220));
+                setHorizontallyScrolling(true);
                 setTypeface(Typeface.MONOSPACE);
                 setTextSize(14);
                 setGravity(Gravity.TOP);
@@ -148,14 +145,12 @@ public class CodeEditor {
         return Color.rgb(red, green, blue);
     }
 
-    private void highlight(final Editable s) {
-        clearSpans(s);
+    private void clearSpans(Editable s) {
+        ForegroundColorSpan spans[] = s.getSpans(0, s.length(), ForegroundColorSpan.class);
 
-        setColorByRegex(s, "[0-9]", getColorFromRgb(255, 102, 51));
-        setColorByRegex(s, "program|begin|end|const|var|if|then|for|while|repeat|until", getColorFromRgb(0, 204, 255));
-        setColorByRegex(s, "\\W", getColorFromRgb(150, 150, 150));
-        setColorByRegex(s, "\'(.*?)\'", getColorFromRgb(236, 181, 52));
-        setColorByRegex(s, "//(.*?)\n", getColorFromRgb(10, 200, 0));
+        for (int i = 0; i < spans.length; i++) {
+            s.removeSpan(spans[i]);
+        }
     }
 
     private void setColorByRegex(Editable s, String pattern, int rgb) {
@@ -168,12 +163,14 @@ public class CodeEditor {
         }
     }
 
-    private void clearSpans(Editable s) {
-        ForegroundColorSpan spans[] = s.getSpans(0, s.length(), ForegroundColorSpan.class);
+    private void highlight(final Editable s) {
+        clearSpans(s);
 
-        for (int i = 0; i < spans.length; i++) {
-            s.removeSpan(spans[i]);
-        }
+        setColorByRegex(s, "[0-9]", getColorFromRgb(255, 102, 51));
+        setColorByRegex(s, "program|begin|end|const|var|function|procedure|if|then|for|while|repeat|until", getColorFromRgb(0, 204, 255));
+        setColorByRegex(s, "\\W", getColorFromRgb(150, 150, 150));
+        setColorByRegex(s, "\'(.*?)\'", getColorFromRgb(236, 181, 52));
+        setColorByRegex(s, "//(.*?)\n", getColorFromRgb(10, 200, 0));
     }
 
     private boolean saveFile(String filename) {
