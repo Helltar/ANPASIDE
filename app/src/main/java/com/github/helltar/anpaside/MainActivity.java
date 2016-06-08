@@ -80,6 +80,12 @@ public class MainActivity extends AppCompatActivity {
         if (!(lastFilename.isEmpty())) {
             openFile(lastFilename);
         }
+
+        String lastProject = editorConfig.getLastProject();
+
+        if (!(lastProject.isEmpty())) {
+            openProject(lastProject);
+        }
     }
 
     public static void addGuiLog(final String msg, final int msgType) {
@@ -138,6 +144,7 @@ public class MainActivity extends AppCompatActivity {
     private void openProject(String filename) {
         if (pman.openProject(filename)) {
             openFile(pman.getMainModuleFilename());
+            editorConfig.setLastProject(filename);
         }
     }
 

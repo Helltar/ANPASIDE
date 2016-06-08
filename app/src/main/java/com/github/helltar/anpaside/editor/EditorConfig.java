@@ -8,9 +8,10 @@ public class EditorConfig {
     private Context context;
 
     private final String PREF_NAME_LAST_FILENAME = "lastfilename";
+    private final String PREF_NAME_LAST_PROJECT = "last_project";
 
     public EditorConfig(Context context) {
-        this.context = context;    
+        this.context = context;
     }
 
     private SharedPreferences getSpMain() {
@@ -23,6 +24,14 @@ public class EditorConfig {
 
     public void setLastFilename(String filename) {
         getSpMain().edit().putString(PREF_NAME_LAST_FILENAME, filename).apply();
+    }
+
+    public String getLastProject() {
+        return getSpMain().getString(PREF_NAME_LAST_PROJECT, "");
+    }
+
+    public void setLastProject(String filename) {
+        getSpMain().edit().putString(PREF_NAME_LAST_PROJECT, filename).apply();
     }
 }
 

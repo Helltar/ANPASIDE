@@ -60,6 +60,8 @@ public class CodeEditor {
         final EditText edtText = createEditText();
 
         createTabs(filename, new File(filename).getName(), new TabContentFactory() {
+
+
                 @Override
                 public View createTabContent(String p1) {
                     ScrollView sv = new ScrollView(context);
@@ -105,6 +107,9 @@ public class CodeEditor {
             }};
     }
 
+    Map<String, TabSpec> list = new HashMap<>();
+    Map<String, View> vl = new HashMap<>();
+
     private void createTabs(String tag, String title, TabContentFactory tabContent) {
         TabSpec tabSpec = tabHost.newTabSpec(tag);
         tabSpec.setIndicator(title);
@@ -112,6 +117,9 @@ public class CodeEditor {
 
         tabHost.addTab(tabSpec);
         tabHost.setCurrentTabByTag(tag);
+
+        list.put(tag, tabSpec);
+
         tabHost.getCurrentTabView().setOnLongClickListener(new OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View v) {
@@ -119,6 +127,8 @@ public class CodeEditor {
                     return true;
                 }
             });
+
+        vl.put(tag, tabHost.getCurrentTabView());
     }
 
     private void showPopupMenu(View v) {
@@ -154,7 +164,9 @@ public class CodeEditor {
     }
 
     private void setColorByRegex(Editable s, String pattern, int rgb) {
-        Matcher m = Pattern.compile(pattern).matcher(s.toString());
+        StringBuffer sb = new StringBuffer(s);
+
+        Matcher m = Pattern.compile(pattern).matcher(sb);
 
         while (m.find()) {
             s.setSpan(new ForegroundColorSpan(rgb),
@@ -166,11 +178,11 @@ public class CodeEditor {
     private void highlight(final Editable s) {
         clearSpans(s);
 
-        setColorByRegex(s, "[0-9]", getColorFromRgb(255, 102, 51));
+        //setColorByRegex(s, "[0-9]", getColorFromRgb(255, 102, 51));
         setColorByRegex(s, "program|begin|end|const|var|function|procedure|if|then|for|while|repeat|until", getColorFromRgb(0, 204, 255));
-        setColorByRegex(s, "\\W", getColorFromRgb(150, 150, 150));
-        setColorByRegex(s, "\'(.*?)\'", getColorFromRgb(236, 181, 52));
-        setColorByRegex(s, "//(.*?)\n", getColorFromRgb(10, 200, 0));
+        //setColorByRegex(s, "\\W", getColorFromRgb(150, 150, 150));
+        //setColorByRegex(s, "\'(.*?)\'", getColorFromRgb(236, 181, 52));
+        //setColorByRegex(s, "//(.*?)\n", getColorFromRgb(10, 200, 0));
     }
 
     private boolean saveFile(String filename) {
@@ -210,8 +222,16 @@ public class CodeEditor {
     }
 
     private void closeFile(String filename) {
-        //fileModifiedStatusMap.remove(filename);
-        //editorIdMap.remove(filename);
+        if (list.containsKey(filename))
+            list.remove(filename);
+
+        tabHost.clearAllTabs(); 
+
+        for (TabSpec sp : list.values())
+            tabHost.addTab(sp);
+
+        fileModifiedStatusMap.remove(getCurrentFilename());
+        editorIdMap.remove(getCurrentFilename());
     }
 
     private void setEditorViewId(String tag, int id) {
