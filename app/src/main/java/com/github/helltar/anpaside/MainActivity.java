@@ -280,6 +280,14 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private void saveCurrentFile() {
+        if (editor.isCurrentFileModified()) {
+            if (editor.saveCurrentFile()) {
+                showToastMsg("Сохранено");
+            }
+        }
+    }
+
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         switch (keyCode) {
@@ -287,9 +295,16 @@ public class MainActivity extends AppCompatActivity {
                 EditText e = editor.getCurrentEditor();
                 e.getText().insert(e.getSelectionStart(), "    ");
                 return true;
-        }
 
-        return super.onKeyDown(keyCode, event);
+            case KeyEvent.KEYCODE_S:
+                if (event.isCtrlPressed()) {
+                    saveCurrentFile();
+                }
+                return true;
+
+            default:
+                return super.onKeyDown(keyCode, event);
+        }
     }
 
     @Override
@@ -332,9 +347,7 @@ public class MainActivity extends AppCompatActivity {
                 return true;
 
             case R.id.miFileSave:
-                if (editor.saveCurrentFile()) {
-                    showToastMsg("Сохранено");
-                }
+                saveCurrentFile();
                 return true;
 
             case R.id.miAbout:
