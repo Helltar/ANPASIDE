@@ -20,10 +20,10 @@ android {
 }
 
 dependencies {
-    //compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile fileTree(dir: 'libs', include: ['*.jar'])
     compile 'com.android.support:appcompat-v7:+'
-    compile 'commons-io:commons-io:2.4'
-    compile 'org.ini4j:ini4j:0.5.4'
-    compile 'net.lingala.zip4j:zip4j:1.3.2'
+    //compile 'commons-io:commons-io:2.4'
+    //compile 'org.ini4j:ini4j:0.5.4'
+    //compile 'net.lingala.zip4j:zip4j:1.3.2'
 }
 
