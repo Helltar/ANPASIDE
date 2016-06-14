@@ -21,6 +21,8 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import org.apache.commons.io.FileUtils;
+import android.view.View.OnKeyListener;
+import android.view.KeyEvent;
 
 public class CodeEditor {
 
@@ -64,7 +66,10 @@ public class CodeEditor {
 
         edtText.setTag(filename);
         edtText.setText(text);
-        edtText.addTextChangedListener(inputTextWatcher);
+
+        edtText.addTextChangedListener(textWatcher);
+        edtText.setOnKeyListener(keyListener);
+
         edtText.requestFocus();
 
         new Highlighter(edtText.getEditableText()).execute();
@@ -72,7 +77,7 @@ public class CodeEditor {
         return true;
     }
 
-    TextWatcher inputTextWatcher = new TextWatcher() {
+    private TextWatcher textWatcher = new TextWatcher() {
         @Override
         public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
 
@@ -86,6 +91,26 @@ public class CodeEditor {
             if (!(Highlighter.isRun)) {
                 new Highlighter(s).execute();
             }
+        }
+    };
+
+    private OnKeyListener keyListener = new OnKeyListener() {
+        @Override
+        public boolean onKey(View v, int keyCode, KeyEvent keyEvent) {
+            switch (keyCode) {
+                case KeyEvent.KEYCODE_TAB:
+                    EditText editor = (EditText) v;
+                    editor.getText().insert(editor.getSelectionStart(), "    ");
+                    return true;
+
+                case KeyEvent.KEYCODE_S:
+                    if (keyEvent.isCtrlPressed()) {
+                        saveCurrentFile();
+                    }
+                    return true;
+            }
+
+            return false;
         }
     };
 
@@ -165,8 +190,7 @@ public class CodeEditor {
     }
 
     public boolean isCurrentFileModified() {
-        return true;
-        // return fileModifiedStatusMap.get(getCurrentFilename());
+        return fileModifiedStatusMap.get(getCurrentFilename());
     }
 }
 

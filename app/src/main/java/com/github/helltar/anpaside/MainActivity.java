@@ -296,25 +296,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        switch (keyCode) {
-            case KeyEvent.KEYCODE_TAB:
-                EditText e = editor.getCurrentEditor();
-                e.getText().insert(e.getSelectionStart(), "    ");
-                return true;
-
-            case KeyEvent.KEYCODE_S:
-                if (event.isCtrlPressed()) {
-                    saveCurrentFile();
-                }
-                return true;
-
-            default:
-                return super.onKeyDown(keyCode, event);
-        }
-    }
-
-    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.activity_main, menu);
         return super.onCreateOptionsMenu(menu);
