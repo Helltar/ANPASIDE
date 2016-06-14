@@ -11,7 +11,9 @@ import org.apache.commons.io.FilenameUtils;
 public class Utils {
 
     public static boolean mkdir(String dirName) {
-        if (new File(dirName).mkdirs()) {
+        File file = new File(dirName);
+
+        if (file.mkdirs() | file.exists()) {
             return true;
         } else {
             Logger.addLog("Не удалось создать каталог: " + dirName, 2);

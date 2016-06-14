@@ -116,24 +116,73 @@ public class ProjectBuilder {
         jarFilename = projPath + DIR_BIN + midletName + EXT_JAR;
     }
 
-    private boolean prebulid() {
-        try {
-            FileUtils.cleanDirectory(new File(prebuildDir));
-        } catch (IOException ioe) {
-            Logger.addLog(ioe);
-        }
+    public boolean compile(String filename) {
+        String args =
+            mp3cc
+            + " -s " + filename
+            + " -o " + prebuildDir
+            + " -l " + globLibsDir
+            + " -p " + projPath + DIR_LIBS
+            + " -m " + Integer.toString(mathType)
+            + " c " + Integer.toString(canvasType);
 
-        String manifestDir = prebuildDir + "META-INF";
+        // detect units (в выводе получаем список модулей из uses)
+        String output = runProc(args + " -d");
 
-        if (mkdir(manifestDir)) {
-            if (createManifest(manifestDir)) {
-                if (copyFileToDir(stubsDir + "/" + FW_CLASS, prebuildDir)) {
-                    return true;
+        Matcher m = Pattern.compile("\\^0(.*?)\n").matcher(output); // берем имя
+
+        while (m.find()) {
+            String moduleName = m.group(1);
+            // если уже скомпилен пропускаем
+            if (!(new File(projPath + DIR_PREBUILD + moduleName + EXT_CLASS).exists())) {
+                if (!(compile(projPath + DIR_SRC + moduleName + EXT_PAS))) {
+                    return false;
                 }
             }
         }
 
-        return false;
+        // компиляция родителя
+        output = runProc(args);
+
+        // копирование используемых в проекте библиотек в prebuild каталог
+        findAndCopyLib(output);
+
+        boolean result = false;
+        String cleanOutput = deleteCharacters(output); // очистка ненужной информации
+
+        if (!(isErr(output))) {
+            Logger.addLog(cleanOutput);
+            result = true;
+        } else {
+            Logger.addLog(cleanOutput, 2);
+        }
+
+        return result;
+    }
+
+    private boolean isErr(String output) {
+        return output.contains("[Pascal Error]");
+    }
+
+    private void findAndCopyLib(String output) {
+        Matcher m = Pattern.compile("\\^1(.*?)\n").matcher(output);
+
+        while (m.find()) {
+            String libName = "Lib_" + m.group(1) + EXT_CLASS;
+            String libFilename = projPath + DIR_LIBS + libName;
+
+            // пробуем найти библиотеку в libs каталоге проекта
+            if (fileExists(libFilename)) {
+                copyFileToDir(libFilename, prebuildDir);
+            } else {
+                // если нет берем из глобального
+                libFilename = globLibsDir + libName;
+
+                if (fileExists(libFilename)) {
+                    copyFileToDir(libFilename, prebuildDir);
+                }
+            }
+        }
     }
 
     public boolean build() {
@@ -155,67 +204,40 @@ public class ProjectBuilder {
         return false;
     }
 
-    private void findAndCopyLib(String output) {
-        Matcher m = Pattern.compile("\\^1(.*?)\n").matcher(output);
-
-        while (m.find()) {
-            String libName = "Lib_" + m.group(1) + EXT_CLASS;
-            String libFilename = projPath + DIR_LIBS + libName;
-
-            if (fileExists(libFilename)) {
-                copyFileToDir(libFilename, prebuildDir);
-            } else {
-                libFilename = globLibsDir + libName;
-
-                if (fileExists(libFilename)) {
-                    copyFileToDir(libFilename, prebuildDir);
-                }
-            }
+    private boolean prebulid() {
+        if (!(ProjectManager.mkProjectDirs(projPath))) {
+            return false;
         }
-    }
 
-    public boolean compile(String filename) {
-        String args =
-            mp3cc
-            + " -s " + filename
-            + " -o " + prebuildDir
-            + " -l " + globLibsDir
-            + " -p " + projPath + DIR_LIBS
-            + " -m " + Integer.toString(mathType)
-            + " c " + Integer.toString(canvasType);
+        try {
+            FileUtils.cleanDirectory(new File(prebuildDir));
+        } catch (IOException ioe) {
+            Logger.addLog(ioe);
+        }
 
-        String output = runProc(args + " -d"); // detect units
+        String manifestDir = prebuildDir + "META-INF";
 
-        Matcher m = Pattern.compile("\\^0(.*?)\n").matcher(output);
-
-        while (m.find()) {
-            String moduleName = m.group(1);
-
-            if (!(new File(projPath + DIR_PREBUILD + moduleName + EXT_CLASS).exists())) {
-                if (!(compile(projPath + DIR_SRC + moduleName + EXT_PAS))) {
-                    return false;
+        if (mkdir(manifestDir)) {
+            if (createManifest(manifestDir)) {
+                if (copyFileToDir(stubsDir + "/" + FW_CLASS, prebuildDir)) {
+                    return true;
                 }
             }
         }
 
-        output = runProc(args);
-        findAndCopyLib(output);
-
-        boolean result = false;
-        String cleanOutput = deleteCharacters(output);
-
-        if (!(isErr(output))) {
-            Logger.addLog(cleanOutput);
-            result = true;
-        } else {
-            Logger.addLog(cleanOutput, 2);
-        }
-
-        return result;
+        return false;
     }
 
-    private boolean isErr(String output) {
-        return output.contains("[Pascal Error]");
+    private boolean isDirEmpty(String dirPath) {
+        File file = new File(dirPath);
+
+        if (file.isDirectory()) {
+            if (file.list().length <= 0) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public String getJarFilename() {
@@ -253,6 +275,10 @@ public class ProjectBuilder {
     }
 
     private boolean addResToZip(String resDir, String zipFilename) {
+        if (isDirEmpty(resDir)) {
+            return true;
+        }
+
         return createZip(resDir, zipFilename, true);
     }
 

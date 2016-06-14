@@ -46,24 +46,18 @@ public class ProjectManager {
     public static boolean createProject(String path, String name) {
         String projPath = path + name + "/";
 
-        if (mkdir(projPath + DIR_SRC)) {
-            if (createConfigFile(projPath + name + EXT_PROJ)) {
-                createGitIgnore(projPath);
-                if (createHW(projPath + DIR_SRC + name.toLowerCase() + EXT_PAS)) {
-                    if (mkdir(projPath + DIR_BIN)) {
-                        if (mkdir(projPath + DIR_PREBUILD)) {
-                            if (mkdir(projPath + DIR_LIBS)) {
-                                if (mkdir(projPath + DIR_RES)) {
-                                    copyFileToDir(DATA_PKG_PATH + ASSET_DIR_FILES + "/icon.png",
-                                                  projPath + DIR_RES);
-                                    return true;
-                                }
-                            }
-                        }
+     //   if (mkdir(projPath)) {
+            if (mkProjectDirs(projPath)) {
+                if (createConfigFile(projPath + name + EXT_PROJ)) {
+                    if (createHW(projPath + DIR_SRC + name.toLowerCase() + EXT_PAS)) {
+                        createGitIgnore(projPath);
+                        copyFileToDir(DATA_PKG_PATH + ASSET_DIR_FILES + "/icon.png",
+                                      projPath + DIR_RES);
+                        return true;
                     }
                 }
             }
-        }
+      //  }
 
         return false;
     }
@@ -81,6 +75,22 @@ public class ProjectManager {
 
         } catch (IOException ioe) {
             Logger.addLog(ioe);
+        }
+
+        return false;
+    }
+
+    public static boolean mkProjectDirs(String path) {
+        if (mkdir(path + DIR_BIN)) {
+            if (mkdir(path + DIR_SRC)) {
+                if (mkdir(path + DIR_PREBUILD)) {
+                    if (mkdir(path + DIR_RES)) {
+                        if (mkdir(path + DIR_LIBS)) {
+                            return true;
+                        }
+                    }
+                }
+            }
         }
 
         return false;
