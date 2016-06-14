@@ -5,7 +5,7 @@ import android.os.AsyncTask;
 import android.text.Editable;
 import android.text.Spannable;
 import android.text.style.ForegroundColorSpan;
-import com.github.helltar.anpaside.Logger;
+import com.github.helltar.anpaside.logging.Logger;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;

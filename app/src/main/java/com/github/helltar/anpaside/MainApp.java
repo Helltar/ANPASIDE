@@ -2,6 +2,7 @@ package com.github.helltar.anpaside;
 
 import android.app.Application;
 import android.content.Context;
+import com.github.helltar.anpaside.logging.RoboErrorReporter;
 
 public class MainApp extends Application {
 
@@ -11,6 +12,7 @@ public class MainApp extends Application {
     public void onCreate() {
         super.onCreate();
         context = this;
+        RoboErrorReporter.bindReporter(this);
     }
 
     public static Context getContext() {

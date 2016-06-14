@@ -1,6 +1,6 @@
 package com.github.helltar.anpaside.project;
 
-import com.github.helltar.anpaside.Logger;
+import com.github.helltar.anpaside.logging.Logger;
 import java.io.File;
 import java.io.IOException;
 import java.util.regex.Matcher;
@@ -11,6 +11,7 @@ import net.lingala.zip4j.model.ZipParameters;
 import net.lingala.zip4j.util.Zip4jConstants;
 import org.apache.commons.io.FileUtils;
 
+import static com.github.helltar.anpaside.logging.Logger.*;
 import static com.github.helltar.anpaside.Utils.*;
 import static com.github.helltar.anpaside.Consts.*;
 
@@ -154,7 +155,7 @@ public class ProjectBuilder {
             Logger.addLog(cleanOutput);
             result = true;
         } else {
-            Logger.addLog(cleanOutput, 2);
+            Logger.addLog(cleanOutput, LogMsgType.lmtError);
         }
 
         return result;
@@ -193,7 +194,7 @@ public class ProjectBuilder {
                         Logger.addLog(
                             "Сборка успешно завершена, " 
                             + DIR_BIN + midletName + EXT_JAR + ", "
-                            + getFileSize(jarFilename) + " KB", 1);
+                            + getFileSize(jarFilename) + " KB", LogMsgType.lmtOk);
 
                         return true;
                     }
@@ -301,7 +302,8 @@ public class ProjectBuilder {
             new ZipFile(zipFilename).addFolder(dirPath, param);
             return true;
         } catch (ZipException ze) {
-            Logger.addLog("Не удалось создать архив: " + dirPath + " (" + ze.getMessage() + ")", 2);
+            Logger.addLog("Не удалось создать архив: " + dirPath + " (" + ze.getMessage() + ")",
+                          LogMsgType.lmtError);
         }
 
         return false;

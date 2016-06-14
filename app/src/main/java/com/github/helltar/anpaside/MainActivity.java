@@ -24,10 +24,12 @@ import android.widget.TabHost;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.github.helltar.anpaside.MainActivity;
+import com.github.helltar.anpaside.R;
 import com.github.helltar.anpaside.editor.CodeEditor;
 import com.github.helltar.anpaside.editor.EditorConfig;
 import com.github.helltar.anpaside.ide.IdeConfig;
 import com.github.helltar.anpaside.ide.IdeInit;
+import com.github.helltar.anpaside.logging.Logger;
 import com.github.helltar.anpaside.project.ProjectBuilder;
 import com.github.helltar.anpaside.project.ProjectManager;
 import java.io.File;
@@ -38,6 +40,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 
 import static com.github.helltar.anpaside.Consts.*;
+import static com.github.helltar.anpaside.logging.Logger.*;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -88,7 +91,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public static void addGuiLog(final String msg, final int msgType) {
+    public static void addGuiLog(final String msg, final LogMsgType msgType) {
         new Handler(Looper.getMainLooper()).post(new Runnable() {
 
                 @Override
@@ -96,10 +99,10 @@ public class MainActivity extends AppCompatActivity {
                     String fontColor = "#aaaaaa";
 
                     switch (msgType) {
-                        case 1:
+                        case lmtText:
                             fontColor = "#00aa00";
                             break;
-                        case 2:
+                        case lmtError:
                             fontColor = "#ee0000";
                             break;
                     }
@@ -327,7 +330,22 @@ public class MainActivity extends AppCompatActivity {
             case R.id.miRun:
                 if (pman.isProjectOpen()) {
                     if (editor.saveCurrentFile()) {
-                        new BuildProj().execute();
+
+                        ProjectBuilder builder;
+
+                        builder = new ProjectBuilder.Builder(DATA_PKG_PATH + ASSET_DIR_BIN + "/" + MP3CC, 
+                                                             DATA_PKG_PATH + ASSET_DIR_STUBS,
+                                                             pman.getCurrentProjectPath() + DIR_LIBS,
+                                                             pman.getCurrentProjectPath(), 
+                                                             pman.getMainModuleFilename()).create();
+
+
+                        if (builder.build()) {
+                            startActionViewIntent(builder.getJarFilename());
+                        }
+
+
+
                     }
                 } else {
                     showToastMsg("Нет открытого проекта");
@@ -404,10 +422,11 @@ public class MainActivity extends AppCompatActivity {
 
     private class BuildProj extends AsyncTask<Void, Void, Void> {
 
+        private Exception error;
         private ProjectBuilder builder;
 
         @Override
-        protected Void doInBackground(Void... params) {
+        protected Void doInBackground(Void... params)  {
             builder = new ProjectBuilder.Builder(DATA_PKG_PATH + ASSET_DIR_BIN + "/" + MP3CC, 
                                                  DATA_PKG_PATH + ASSET_DIR_STUBS,
                                                  pman.getCurrentProjectPath() + DIR_LIBS,

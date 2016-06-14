@@ -1,12 +1,14 @@
 package com.github.helltar.anpaside;
 
-import com.github.helltar.anpaside.Logger;
+import com.github.helltar.anpaside.logging.Logger;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
+
+import static com.github.helltar.anpaside.logging.Logger.*;
 
 public class Utils {
 
@@ -16,7 +18,7 @@ public class Utils {
         if (file.mkdirs() | file.exists()) {
             return true;
         } else {
-            Logger.addLog("Не удалось создать каталог: " + dirName, 2);
+            Logger.addLog("Не удалось создать каталог: " + dirName, LogMsgType.lmtError);
         }
 
         return false;
@@ -37,7 +39,7 @@ public class Utils {
         if (new File(filename).exists()) {
             return true;
         } else {
-            Logger.addLog("Файл не найден: " + filename, 2);
+            Logger.addLog("Файл не найден: " + filename, LogMsgType.lmtError);
         }
 
         return false;

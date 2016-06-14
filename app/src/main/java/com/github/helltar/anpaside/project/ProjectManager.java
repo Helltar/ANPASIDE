@@ -1,6 +1,6 @@
 package com.github.helltar.anpaside.project;
 
-import com.github.helltar.anpaside.Logger;
+import com.github.helltar.anpaside.logging.Logger;
 import java.io.IOException;
 import org.apache.commons.io.FilenameUtils;
 
@@ -46,18 +46,16 @@ public class ProjectManager {
     public static boolean createProject(String path, String name) {
         String projPath = path + name + "/";
 
-     //   if (mkdir(projPath)) {
-            if (mkProjectDirs(projPath)) {
-                if (createConfigFile(projPath + name + EXT_PROJ)) {
-                    if (createHW(projPath + DIR_SRC + name.toLowerCase() + EXT_PAS)) {
-                        createGitIgnore(projPath);
-                        copyFileToDir(DATA_PKG_PATH + ASSET_DIR_FILES + "/icon.png",
-                                      projPath + DIR_RES);
-                        return true;
-                    }
+        if (mkProjectDirs(projPath)) {
+            if (createConfigFile(projPath + name + EXT_PROJ)) {
+                if (createHW(projPath + DIR_SRC + name.toLowerCase() + EXT_PAS)) {
+                    createGitIgnore(projPath);
+                    copyFileToDir(DATA_PKG_PATH + ASSET_DIR_FILES + "/icon.png",
+                                  projPath + DIR_RES);
+                    return true;
                 }
             }
-      //  }
+        }
 
         return false;
     }

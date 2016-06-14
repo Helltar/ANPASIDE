@@ -14,7 +14,7 @@ import android.widget.PopupMenu;
 import android.widget.ScrollView;
 import android.widget.TabHost;
 import android.widget.TabHost.TabContentFactory;
-import com.github.helltar.anpaside.Logger;
+import com.github.helltar.anpaside.logging.Logger;
 import com.github.helltar.anpaside.R;
 import java.io.File;
 import java.io.IOException;
@@ -66,7 +66,7 @@ public class CodeEditor {
         edtText.setText(text);
         edtText.addTextChangedListener(inputTextWatcher);
         edtText.requestFocus();
-        
+
         new Highlighter(edtText.getEditableText()).execute();
 
         return true;
@@ -165,7 +165,8 @@ public class CodeEditor {
     }
 
     public boolean isCurrentFileModified() {
-        return fileModifiedStatusMap.get(getCurrentFilename());
+        return true;
+        // return fileModifiedStatusMap.get(getCurrentFilename());
     }
 }
 
