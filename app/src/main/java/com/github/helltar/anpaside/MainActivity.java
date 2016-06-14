@@ -24,7 +24,6 @@ import android.widget.TabHost;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.github.helltar.anpaside.MainActivity;
-import com.github.helltar.anpaside.R;
 import com.github.helltar.anpaside.editor.CodeEditor;
 import com.github.helltar.anpaside.editor.EditorConfig;
 import com.github.helltar.anpaside.ide.IdeConfig;
@@ -330,22 +329,7 @@ public class MainActivity extends AppCompatActivity {
             case R.id.miRun:
                 if (pman.isProjectOpen()) {
                     if (editor.saveCurrentFile()) {
-
-                        ProjectBuilder builder;
-
-                        builder = new ProjectBuilder.Builder(DATA_PKG_PATH + ASSET_DIR_BIN + "/" + MP3CC, 
-                                                             DATA_PKG_PATH + ASSET_DIR_STUBS,
-                                                             pman.getCurrentProjectPath() + DIR_LIBS,
-                                                             pman.getCurrentProjectPath(), 
-                                                             pman.getMainModuleFilename()).create();
-
-
-                        if (builder.build()) {
-                            startActionViewIntent(builder.getJarFilename());
-                        }
-
-
-
+                        new BuildProj().execute();
                     }
                 } else {
                     showToastMsg("Нет открытого проекта");
@@ -422,7 +406,6 @@ public class MainActivity extends AppCompatActivity {
 
     private class BuildProj extends AsyncTask<Void, Void, Void> {
 
-        private Exception error;
         private ProjectBuilder builder;
 
         @Override
@@ -430,7 +413,7 @@ public class MainActivity extends AppCompatActivity {
             builder = new ProjectBuilder.Builder(DATA_PKG_PATH + ASSET_DIR_BIN + "/" + MP3CC, 
                                                  DATA_PKG_PATH + ASSET_DIR_STUBS,
                                                  pman.getCurrentProjectPath() + DIR_LIBS,
-                                                 pman.getCurrentProjectPath(), 
+                                                 pman.getCurrentProjectPath(),
                                                  pman.getMainModuleFilename()).create();
 
             if (builder.build()) {
