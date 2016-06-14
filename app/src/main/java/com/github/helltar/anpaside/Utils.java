@@ -36,10 +36,18 @@ public class Utils {
     }
 
     public static boolean fileExists(String filename) {
-        if (new File(filename).exists()) {
-            return true;
-        } else {
-            Logger.addLog("Файл не найден: " + filename, LogMsgType.lmtError);
+        return fileExists(filename, false);
+    }
+
+    public static boolean fileExists(String filename, boolean showErrMsg) {
+        if (!(filename.isEmpty())) {
+            if (new File(filename).exists()) {
+                return true;
+            } else {
+                if (showErrMsg) {
+                    Logger.addLog("Файл не найден: " + filename, LogMsgType.lmtError);
+                }
+            }
         }
 
         return false;

@@ -40,13 +40,13 @@ import org.apache.commons.io.FilenameUtils;
 
 import static com.github.helltar.anpaside.Consts.*;
 import static com.github.helltar.anpaside.logging.Logger.*;
+import static com.github.helltar.anpaside.Utils.*;
 
 public class MainActivity extends AppCompatActivity {
 
     private CodeEditor editor;
     private EditorConfig editorConfig;
     private IdeConfig ideConfig;
-    private ProjectManager pman;
 
     private static TextView tvLog;
     private static ScrollView svLog;
@@ -73,21 +73,11 @@ public class MainActivity extends AppCompatActivity {
     private void init() {
         if (ideConfig.isAssetsInstall()) {
             Logger.addLog(getString(R.string.app_name) + " " + getAppVersionName());
+            openFile(editorConfig.getLastFilename());
+            openProject(editorConfig.getLastProject());
         } else {
             new Install().execute();
-        }
-
-        String lastFilename = editorConfig.getLastFilename();
-
-        if (!(lastFilename.isEmpty())) {
-            openFile(lastFilename);
-        }
-
-        String lastProject = editorConfig.getLastProject();
-
-        if (!(lastProject.isEmpty())) {
-            openProject(lastProject);
-        }
+        }        
     }
 
     public static void addGuiLog(final String msg, final LogMsgType msgType) {
@@ -132,33 +122,36 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void createProject(String path, String name) {
-        if (pman.createProject(path, name)) {
+        if (ProjectManager.createProject(path, name)) {
             openProject(path + name + "/" + name + EXT_PROJ);
         }
     }
 
     private void createModule(String filename) {
-        if (pman.createModule(filename)) {
+        if (ProjectManager.createModule(filename)) {
             openFile(filename);
         }
     }
 
     private void openProject(String filename) {
-        if (pman.openProject(filename)) {
-            openFile(pman.getMainModuleFilename());
-            editorConfig.setLastProject(filename);
+        if (fileExists(filename)) {
+            if (ProjectManager.openProject(filename)) {
+                openFile(ProjectManager.getMainModuleFilename());
+                editorConfig.setLastProject(filename);
+            }
         }
     }
 
     private void openFile(String filename) {
-        // TODO: !
-        if (FilenameUtils.getExtension(filename).equals(EXT_PROJ.substring(1, EXT_PROJ.length()))) {
-            openProject(filename);
-        } else {
-            editor.openFile(filename);
-        }
+        if (fileExists(filename)) {
+            if (FilenameUtils.getExtension(filename).equals(EXT_PROJ.substring(1, EXT_PROJ.length()))) {
+                openProject(filename);
+            } else {
+                editor.openFile(filename);
+            }
 
-        editorConfig.setLastFilename(filename);
+            editorConfig.setLastFilename(filename);
+        }
     }
 
     private void showNewProjectDialog() {
@@ -181,11 +174,15 @@ public class MainActivity extends AppCompatActivity {
                     }
 
                     String sdcardPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/";
-                    final String path = sdcardPath + DIR_MAIN;
-                    final File projPath = new File(path + projName);
+                    final String projectsPath = sdcardPath + DIR_MAIN;
+                    final String projPath = projectsPath + projName;
 
-                    if (!(projPath.exists())) {
-                        createProject(path, projName);
+                    if (!(mkdir(projectsPath))) {
+                        return;
+                    }
+
+                    if (!(fileExists(projPath))) {
+                        createProject(projectsPath, projName);
                     } else {
                         new AlertDialog.Builder(MainActivity.this)
                             .setMessage("Проект уже существует")
@@ -193,8 +190,8 @@ public class MainActivity extends AppCompatActivity {
                             new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int whichButton) {
                                     try {
-                                        FileUtils.deleteDirectory(projPath);
-                                        createProject(path, projName);
+                                        FileUtils.deleteDirectory(new File(projPath));
+                                        createProject(projectsPath, projName);
                                     } catch (IOException ioe) {
                                         Logger.addLog(ioe);
                                     }
@@ -227,11 +224,9 @@ public class MainActivity extends AppCompatActivity {
                         return;
                     }
 
-                    // TODO: дублирование, (String) -> File
-                    final String filename = pman.getCurrentProjectPath() + DIR_SRC + moduleName + EXT_PAS;
-                    final File f = new File(filename);
+                    final String filename = ProjectManager.getCurrentProjectPath() + DIR_SRC + moduleName + EXT_PAS;
 
-                    if (!(f.exists())) {
+                    if (!(fileExists(filename))) {
                         createModule(filename);
                     } else {
                         new AlertDialog.Builder(MainActivity.this)
@@ -239,7 +234,7 @@ public class MainActivity extends AppCompatActivity {
                             .setPositiveButton("Перезаписать",
                             new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int whichButton) {
-                                    if (f.delete()) {
+                                    if (new File(filename).delete()) {
                                         createModule(filename);
                                     } else {
                                         Logger.addLog("Ошибка при удалении старого модуля: " + filename);
@@ -270,7 +265,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void showToastMsg(String msg) {
         Toast toast = Toast.makeText(this, msg, Toast.LENGTH_SHORT);
-        toast.setGravity(Gravity.CENTER, 0, 0);
+        toast.setGravity(Gravity.BOTTOM, 0, 0);
         toast.show();
     }
 
@@ -282,12 +277,22 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void saveCurrentFile() {
+    private boolean saveCurrentFile() {
+        return saveCurrentFile(true);
+    }
+
+    private boolean saveCurrentFile(boolean showOkMsg) {
         if (editor.isCurrentFileModified()) {
             if (editor.saveCurrentFile()) {
-                showToastMsg("Сохранено");
+                if (showOkMsg) {
+                    showToastMsg("Сохранено");
+                }
+
+                return true;
             }
         }
+
+        return false;
     }
 
     @Override
@@ -317,7 +322,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-        menu.findItem(R.id.miCreateModule).setEnabled(pman.isProjectOpen());
+        menu.findItem(R.id.miCreateModule).setEnabled(ProjectManager.isProjectOpen());
         menu.findItem(R.id.miFileSave).setEnabled(editor.isCurrentFileModified());
         return super.onPrepareOptionsMenu(menu);
     }
@@ -327,8 +332,8 @@ public class MainActivity extends AppCompatActivity {
         switch (item.getItemId()) {
 
             case R.id.miRun:
-                if (pman.isProjectOpen()) {
-                    if (editor.saveCurrentFile()) {
+                if (ProjectManager.isProjectOpen()) {
+                    if (saveCurrentFile(false)) { 
                         new BuildProj().execute();
                     }
                 } else {
@@ -412,9 +417,9 @@ public class MainActivity extends AppCompatActivity {
         protected Void doInBackground(Void... params)  {
             builder = new ProjectBuilder.Builder(DATA_PKG_PATH + ASSET_DIR_BIN + "/" + MP3CC, 
                                                  DATA_PKG_PATH + ASSET_DIR_STUBS,
-                                                 pman.getCurrentProjectPath() + DIR_LIBS,
-                                                 pman.getCurrentProjectPath(),
-                                                 pman.getMainModuleFilename()).create();
+                                                 ProjectManager.getCurrentProjectPath() + DIR_LIBS,
+                                                 ProjectManager.getCurrentProjectPath(),
+                                                 ProjectManager.getMainModuleFilename()).create();
 
             if (builder.build()) {
                 startActionViewIntent(builder.getJarFilename());
