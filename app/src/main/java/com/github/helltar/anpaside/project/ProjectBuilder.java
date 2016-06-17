@@ -155,7 +155,7 @@ public class ProjectBuilder {
             Logger.addLog(cleanOutput);
             result = true;
         } else {
-            Logger.addLog(cleanOutput, LogMsgType.lmtError);
+            Logger.addLog(cleanOutput, LMT_ERROR);
         }
 
         return result;
@@ -194,7 +194,7 @@ public class ProjectBuilder {
                         Logger.addLog(
                             "Сборка успешно завершена, " 
                             + DIR_BIN + midletName + EXT_JAR + ", "
-                            + getFileSize(jarFilename) + " KB", LogMsgType.lmtOk);
+                            + getFileSize(jarFilename) + " KB", LMT_INFO);
 
                         return true;
                     }
@@ -303,7 +303,7 @@ public class ProjectBuilder {
             return true;
         } catch (ZipException ze) {
             Logger.addLog("Не удалось создать архив: " + dirPath + " (" + ze.getMessage() + ")",
-                          LogMsgType.lmtError);
+                          LMT_ERROR);
         }
 
         return false;

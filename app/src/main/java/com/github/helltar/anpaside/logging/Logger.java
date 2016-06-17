@@ -5,24 +5,24 @@ import com.github.helltar.anpaside.MainApp;
 
 public class Logger {
 
-    public static final enum LogMsgType {
-        lmtText, lmtOk, lmtError;
-    }
+    public static final int LMT_TEXT = 0;
+    public static final int LMT_INFO = 1;
+    public static final int LMT_ERROR = 2;
 
-    private static void addGuiLog(String msg, LogMsgType msgType) {
+    private static void addGuiLog(String msg, int msgType) {
         MainActivity.addGuiLog(msg, msgType);
     }
 
     public static void addLog(String msg) {
-        addGuiLog(msg, LogMsgType.lmtText);
+        addGuiLog(msg, LMT_TEXT);
     }
 
-    public static void addLog(String msg, LogMsgType msgType) {
+    public static void addLog(String msg, int msgType) {
         addGuiLog(msg, msgType);
     }
 
     public static void addLog(Exception e) {
-        addLog(e.getMessage(), LogMsgType.lmtError);
+        addLog(e.getMessage(), LMT_ERROR);
         RoboErrorReporter.reportError(MainApp.getContext(), e);
     }
 }

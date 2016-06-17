@@ -14,7 +14,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.text.Html;
 import android.text.Spanned;
 import android.view.Gravity;
-import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.webkit.MimeTypeMap;
@@ -77,10 +76,10 @@ public class MainActivity extends AppCompatActivity {
             openProject(editorConfig.getLastProject());
         } else {
             new Install().execute();
-        }        
+        }
     }
 
-    public static void addGuiLog(final String msg, final LogMsgType msgType) {
+    public static void addGuiLog(final String msg, final int msgType) {
         new Handler(Looper.getMainLooper()).post(new Runnable() {
 
                 @Override
@@ -88,10 +87,10 @@ public class MainActivity extends AppCompatActivity {
                     String fontColor = "#aaaaaa";
 
                     switch (msgType) {
-                        case lmtText:
+                        case LMT_INFO:
                             fontColor = "#00aa00";
                             break;
-                        case lmtError:
+                        case LMT_ERROR:
                             fontColor = "#ee0000";
                             break;
                     }
@@ -133,25 +132,39 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void openProject(String filename) {
+    private boolean openProject(String filename) {
         if (fileExists(filename)) {
             if (ProjectManager.openProject(filename)) {
-                openFile(ProjectManager.getMainModuleFilename());
-                editorConfig.setLastProject(filename);
+                if (openFile(ProjectManager.getMainModuleFilename())) {
+                    editorConfig.setLastProject(filename);
+                    return true;
+                }
             }
         }
+
+        return false;
     }
 
-    private void openFile(String filename) {
+    private boolean openFile(String filename) {
+        boolean result = false;
+
         if (fileExists(filename)) {
             if (FilenameUtils.getExtension(filename).equals(EXT_PROJ.substring(1, EXT_PROJ.length()))) {
-                openProject(filename);
+                if (openProject(filename)) {
+                    result = true;
+                }
             } else {
-                editor.openFile(filename);
+                if (editor.openFile(filename)) {
+                    result = true;
+                }
             }
 
-            editorConfig.setLastFilename(filename);
+            if (result) {
+                editorConfig.setLastFilename(filename);
+            }
         }
+
+        return result;
     }
 
     private void showNewProjectDialog() {
@@ -265,7 +278,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void showToastMsg(String msg) {
         Toast toast = Toast.makeText(this, msg, Toast.LENGTH_SHORT);
-        toast.setGravity(Gravity.BOTTOM, 0, 0);
+        toast.setGravity(Gravity.BOTTOM, 0, 80);
         toast.show();
     }
 
@@ -385,7 +398,7 @@ public class MainActivity extends AppCompatActivity {
             super.onPostExecute(result);
             if (result) {
                 ideConfig.setInstState(true);
-                Logger.addLog(getString(R.string.log_ide_msg_install_ok));
+                Logger.addLog(getString(R.string.log_ide_msg_install_ok), LMT_INFO);
             }
         }
     }

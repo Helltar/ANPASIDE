@@ -18,7 +18,7 @@ public class Utils {
         if (file.mkdirs() | file.exists()) {
             return true;
         } else {
-            Logger.addLog("Не удалось создать каталог: " + dirName, LogMsgType.lmtError);
+            Logger.addLog("Не удалось создать каталог: " + dirName, LMT_ERROR);
         }
 
         return false;
@@ -45,7 +45,7 @@ public class Utils {
                 return true;
             } else {
                 if (showErrMsg) {
-                    Logger.addLog("Файл не найден: " + filename, LogMsgType.lmtError);
+                    Logger.addLog("Файл не найден: " + filename, LMT_ERROR);
                 }
             }
         }
