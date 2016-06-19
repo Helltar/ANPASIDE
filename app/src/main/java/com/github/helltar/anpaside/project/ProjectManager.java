@@ -46,15 +46,12 @@ public class ProjectManager {
     public static boolean createProject(String path, String name) {
         String projPath = path + name + "/";
 
-        if (mkProjectDirs(projPath)) {
-            if (createConfigFile(projPath + name + EXT_PROJ)) {
-                if (createHW(projPath + DIR_SRC + name.toLowerCase() + EXT_PAS)) {
-                    createGitIgnore(projPath);
-                    copyFileToDir(DATA_PKG_PATH + ASSET_DIR_FILES + "/icon.png",
-                                  projPath + DIR_RES);
-                    return true;
-                }
-            }
+        if (mkProjectDirs(projPath)
+            && createConfigFile(projPath + name + EXT_PROJ)
+            && createHW(projPath + DIR_SRC + name.toLowerCase() + EXT_PAS)) {
+            createGitIgnore(projPath);
+            copyFileToDir(DATA_PKG_PATH + ASSET_DIR_FILES + "/icon.png", projPath + DIR_RES);
+            return true;
         }
 
         return false;
@@ -79,23 +76,19 @@ public class ProjectManager {
     }
 
     public static boolean mkProjectDirs(String path) {
-        if (mkdir(path + DIR_BIN)) {
-            if (mkdir(path + DIR_SRC)) {
-                if (mkdir(path + DIR_PREBUILD)) {
-                    if (mkdir(path + DIR_RES)) {
-                        if (mkdir(path + DIR_LIBS)) {
-                            return true;
-                        }
-                    }
-                }
-            }
+        if (mkdir(path + DIR_BIN)
+            && mkdir(path + DIR_SRC)
+            && mkdir(path + DIR_PREBUILD)
+            && mkdir(path + DIR_RES)
+            && mkdir(path + DIR_LIBS)) {
+            return true;
         }
 
         return false;
     }
 
     public static boolean isProjectOpen() {
-        return !(currentProjectPath.isEmpty());
+        return !currentProjectPath.isEmpty();
     }
 
     public static String getCurrentProjectPath() {

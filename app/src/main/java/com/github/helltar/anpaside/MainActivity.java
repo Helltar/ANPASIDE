@@ -81,7 +81,6 @@ public class MainActivity extends AppCompatActivity {
 
     public static void addGuiLog(final String msg, final int msgType) {
         new Handler(Looper.getMainLooper()).post(new Runnable() {
-
                 @Override
                 public void run() {
                     String fontColor = "#aaaaaa";
@@ -133,13 +132,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private boolean openProject(String filename) {
-        if (fileExists(filename)) {
-            if (ProjectManager.openProject(filename)) {
-                if (openFile(ProjectManager.getMainModuleFilename())) {
-                    editorConfig.setLastProject(filename);
-                    return true;
-                }
-            }
+        if (fileExists(filename)
+            && ProjectManager.openProject(filename)
+            && openFile(ProjectManager.getMainModuleFilename())) {
+            editorConfig.setLastProject(filename);
+            return true;
         }
 
         return false;
@@ -148,20 +145,16 @@ public class MainActivity extends AppCompatActivity {
     private boolean openFile(String filename) {
         boolean result = false;
 
-        if (fileExists(filename)) {
-            if (FilenameUtils.getExtension(filename).equals(EXT_PROJ.substring(1, EXT_PROJ.length()))) {
-                if (openProject(filename)) {
-                    result = true;
-                }
-            } else {
-                if (editor.openFile(filename)) {
-                    result = true;
-                }
-            }
+        if (fileExists(filename)
+            && FilenameUtils.getExtension(filename).equals(EXT_PROJ.substring(1, EXT_PROJ.length()))
+            && openProject(filename)) {
+            result = true;
+        } else if (editor.openFile(filename)) {
+            result = true;
+        }
 
-            if (result) {
-                editorConfig.setLastFilename(filename);
-            }
+        if (result) {
+            editorConfig.setLastFilename(filename);
         }
 
         return result;
@@ -190,11 +183,11 @@ public class MainActivity extends AppCompatActivity {
                     final String projectsPath = sdcardPath + DIR_MAIN;
                     final String projPath = projectsPath + projName;
 
-                    if (!(mkdir(projectsPath))) {
+                    if (!mkdir(projectsPath)) {
                         return;
                     }
 
-                    if (!(fileExists(projPath))) {
+                    if (!fileExists(projPath)) {
                         createProject(projectsPath, projName);
                     } else {
                         new AlertDialog.Builder(MainActivity.this)
@@ -239,7 +232,7 @@ public class MainActivity extends AppCompatActivity {
 
                     final String filename = ProjectManager.getCurrentProjectPath() + DIR_SRC + moduleName + EXT_PAS;
 
-                    if (!(fileExists(filename))) {
+                    if (!fileExists(filename)) {
                         createModule(filename);
                     } else {
                         new AlertDialog.Builder(MainActivity.this)
@@ -295,14 +288,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private boolean saveCurrentFile(boolean showOkMsg) {
-        if (editor.isCurrentFileModified()) {
-            if (editor.saveCurrentFile()) {
-                if (showOkMsg) {
-                    showToastMsg("Сохранено");
-                }
-
-                return true;
+        if (editor.isCurrentFileModified() && editor.saveCurrentFile()) {
+            if (showOkMsg) {
+                showToastMsg("Сохранено");
             }
+
+            return true;
         }
 
         return false;

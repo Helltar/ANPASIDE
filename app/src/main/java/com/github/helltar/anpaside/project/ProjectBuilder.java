@@ -135,10 +135,9 @@ public class ProjectBuilder {
         while (m.find()) {
             String moduleName = m.group(1);
             // если уже скомпилен пропускаем
-            if (!(new File(projPath + DIR_PREBUILD + moduleName + EXT_CLASS).exists())) {
-                if (!(compile(projPath + DIR_SRC + moduleName + EXT_PAS))) {
-                    return false;
-                }
+            if (!fileExists(projPath + DIR_PREBUILD + moduleName + EXT_CLASS)
+                && !compile(projPath + DIR_SRC + moduleName + EXT_PAS)) {
+                return false;
             }
         }
 
@@ -148,17 +147,16 @@ public class ProjectBuilder {
         // копирование используемых в проекте библиотек в prebuild каталог
         findAndCopyLib(output);
 
-        boolean result = false;
         String cleanOutput = deleteCharacters(output); // очистка ненужной информации
 
-        if (!(isErr(output))) {
+        if (!isErr(output)) {
             Logger.addLog(cleanOutput);
-            result = true;
+            return true;
         } else {
             Logger.addLog(cleanOutput, LMT_ERROR);
         }
 
-        return result;
+        return false;
     }
 
     private boolean isErr(String output) {
@@ -187,26 +185,23 @@ public class ProjectBuilder {
     }
 
     public boolean build() {
-        if (prebulid()) {
-            if (compile(mainModule)) {
-                if (createZip(prebuildDir, jarFilename)) {
-                    if (addResToZip(projPath + DIR_RES, jarFilename)) {
-                        Logger.addLog(
-                            "Сборка успешно завершена, " 
-                            + DIR_BIN + midletName + EXT_JAR + ", "
-                            + getFileSize(jarFilename) + " KB", LMT_INFO);
+        if (prebulid()
+            && compile(mainModule)
+            && createZip(prebuildDir, jarFilename)
+            && addResToZip(projPath + DIR_RES, jarFilename)) {
+            Logger.addLog(
+                "Сборка успешно завершена, " 
+                + DIR_BIN + midletName + EXT_JAR + ", "
+                + getFileSize(jarFilename) + " KB", LMT_INFO);
 
-                        return true;
-                    }
-                }
-            }
+            return true;
         }
 
         return false;
     }
 
     private boolean prebulid() {
-        if (!(ProjectManager.mkProjectDirs(projPath))) {
+        if (!ProjectManager.mkProjectDirs(projPath)) {
             return false;
         }
 
@@ -218,12 +213,10 @@ public class ProjectBuilder {
 
         String manifestDir = prebuildDir + "META-INF";
 
-        if (mkdir(manifestDir)) {
-            if (createManifest(manifestDir)) {
-                if (copyFileToDir(stubsDir + "/" + FW_CLASS, prebuildDir)) {
-                    return true;
-                }
-            }
+        if (mkdir(manifestDir)
+            && createManifest(manifestDir)
+            && copyFileToDir(stubsDir + "/" + FW_CLASS, prebuildDir)) {
+            return true;
         }
 
         return false;
@@ -232,10 +225,8 @@ public class ProjectBuilder {
     private boolean isDirEmpty(String dirPath) {
         File file = new File(dirPath);
 
-        if (file.isDirectory()) {
-            if (file.list().length <= 0) {
-                return true;
-            }
+        if (file.isDirectory() && file.list().length <= 0) {
+            return true;
         }
 
         return false;
@@ -250,7 +241,7 @@ public class ProjectBuilder {
         String cleanOutput = "";
 
         for (int i = 0; i < lines.length; i++) {
-            if (!(lines[i].contains("@"))) {
+            if (!lines[i].startsWith("@")) {
                 cleanOutput += lines[i] + "\n";
             }
         }
@@ -266,8 +257,8 @@ public class ProjectBuilder {
     }
 
     private boolean createManifest(String path) {
-        int midp = (canvasType < 1) ? 1 : 2;
-        int cldc = (midp == 2) ? 1 : 0;
+        int midp = canvasType < 1 ? 1 : 2;
+        int cldc = midp == 2 ? 1 : 0;
 
         return createTextFile(path + "/MANIFEST.MF",
                               String.format(TPL_MANIFEST,

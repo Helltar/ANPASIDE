@@ -40,14 +40,10 @@ public class Utils {
     }
 
     public static boolean fileExists(String filename, boolean showErrMsg) {
-        if (!(filename.isEmpty())) {
-            if (new File(filename).exists()) {
-                return true;
-            } else {
-                if (showErrMsg) {
-                    Logger.addLog("Файл не найден: " + filename, LMT_ERROR);
-                }
-            }
+        if (!filename.isEmpty() && new File(filename).exists()) {
+            return true;
+        } else if (showErrMsg) {
+            Logger.addLog("Файл не найден: " + filename, LMT_ERROR);
         }
 
         return false;

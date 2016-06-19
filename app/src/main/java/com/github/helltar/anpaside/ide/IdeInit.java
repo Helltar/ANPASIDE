@@ -18,14 +18,11 @@ public class IdeInit {
     }
 
     public boolean install() {
-        if (copyAssets(ASSET_DIR_BIN)) {
-            if (copyAssets(ASSET_DIR_STUBS)) {
-                if (copyAssets(ASSET_DIR_FILES)) {
-                    // TODO: bool
-                    Utils.runProc("chmod 755 " + DATA_PKG_PATH + ASSET_DIR_BIN + "/" + MP3CC);
-                    return true;
-                }
-            }
+        if (copyAssets(ASSET_DIR_BIN)
+            && copyAssets(ASSET_DIR_STUBS)
+            && copyAssets(ASSET_DIR_FILES)) {
+            Utils.runProc("chmod 755 " + DATA_PKG_PATH + ASSET_DIR_BIN + "/" + MP3CC);
+            return true;
         }
 
         return false;
@@ -38,7 +35,7 @@ public class IdeInit {
             if (assets.length > 0) {
                 File dir = new File(DATA_PKG_PATH + assetDir);
 
-                if (!(dir.exists())) {
+                if (!dir.exists()) {
                     dir.mkdir();
                 }
 
