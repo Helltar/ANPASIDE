@@ -403,7 +403,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected Void doInBackground(Void... params)  {
             builder = new ProjectBuilder.Builder(DATA_PKG_PATH + ASSET_DIR_BIN + "/" + MP3CC, 
-                                                 DATA_PKG_PATH + ASSET_DIR_STUBS,
+                                                 DATA_PKG_PATH + ASSET_DIR_STUBS + "/",
                                                  ProjectManager.getCurrentProjectPath() + DIR_LIBS,
                                                  ProjectManager.getCurrentProjectPath(),
                                                  ProjectManager.getMainModuleFilename()).create();

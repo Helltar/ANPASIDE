@@ -144,7 +144,7 @@ public class ProjectBuilder {
         // компиляция родителя
         output = runProc(args);
 
-        // копирование используемых в проекте библиотек в prebuild каталог
+        findAndCopyStubs(output);
         findAndCopyLib(output);
 
         String cleanOutput = deleteCharacters(output); // очистка ненужной информации
@@ -180,6 +180,18 @@ public class ProjectBuilder {
                 if (fileExists(libFilename, true)) {
                     copyFileToDir(libFilename, prebuildDir);
                 }
+            }
+        }
+    }
+
+    private void findAndCopyStubs(String output) {
+        Matcher m = Pattern.compile("\\^2(.*?)\n").matcher(output);
+
+        while (m.find()) {
+            String stubFilename = stubsDir + m.group(1);
+
+            if (fileExists(stubFilename, true)) {
+                copyFileToDir(stubFilename, prebuildDir);
             }
         }
     }
