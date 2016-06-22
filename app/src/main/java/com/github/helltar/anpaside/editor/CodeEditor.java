@@ -6,8 +6,10 @@ import android.graphics.Typeface;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnKeyListener;
 import android.view.View.OnLongClickListener;
 import android.widget.EditText;
 import android.widget.PopupMenu;
@@ -15,14 +17,12 @@ import android.widget.ScrollView;
 import android.widget.TabHost;
 import android.widget.TabHost.TabContentFactory;
 import com.github.helltar.anpaside.logging.Logger;
-import com.github.helltar.anpaside.R;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Map;
 import org.apache.commons.io.FileUtils;
-import android.view.View.OnKeyListener;
-import android.view.KeyEvent;
 
 public class CodeEditor {
 
@@ -30,6 +30,15 @@ public class CodeEditor {
     private TabHost tabHost;
 
     private Map<String, Boolean> fileModifiedStatusMap = new HashMap<>();
+    private LinkedList<String> tabList = new LinkedList<>(); 
+
+    private int fontSize = 14;
+    private int fontColor = Color.rgb(220, 220, 220);
+    private Typeface typeface = Typeface.MONOSPACE;
+    private String tabIns = "    ";
+    private boolean hScrolling = true;
+    private String btnTabCloseName = "Close";
+    private boolean highlighterEnabled = true;
 
     public CodeEditor(Context context, TabHost tabHost) {
         this.context = context;
@@ -48,7 +57,6 @@ public class CodeEditor {
             text = FileUtils.readFileToString(new File(filename));
         } catch (IOException ioe) {
             Logger.addLog(ioe);
-            return false;
         }
 
         final EditText edtText = createEditText();
@@ -57,6 +65,7 @@ public class CodeEditor {
                 @Override
                 public View createTabContent(String p1) {
                     ScrollView sv = new ScrollView(context);
+                    sv.setFillViewport(true);
                     sv.addView(edtText);
                     return sv;
                 }
@@ -72,7 +81,7 @@ public class CodeEditor {
 
         edtText.requestFocus();
 
-        new Highlighter(edtText.getEditableText()).execute();
+        highlights(edtText.getEditableText());
 
         return true;
     }
@@ -88,49 +97,53 @@ public class CodeEditor {
 
         @Override
         public void afterTextChanged(final Editable s) {
-            if (!(Highlighter.isRun)) {
-                new Highlighter(s).execute();
-            }
+            highlights(s);
         }
     };
 
     private OnKeyListener keyListener = new OnKeyListener() {
         @Override
         public boolean onKey(View v, int keyCode, KeyEvent keyEvent) {
-            switch (keyCode) {
-                case KeyEvent.KEYCODE_TAB:
-                    EditText editor = (EditText) v;
-                    editor.getText().insert(editor.getSelectionStart(), "    ");
-                    return true;
+            if (keyEvent.getAction() == KeyEvent.ACTION_DOWN) {
+                switch (keyCode) {
+                    case KeyEvent.KEYCODE_TAB:
+                        EditText e = (EditText) v;
+                        e.getText().insert(e.getSelectionStart(), tabIns);
+                        return true;
 
-                case KeyEvent.KEYCODE_S:
-                    if (keyEvent.isCtrlPressed()) {
-                        saveCurrentFile();
-                    }
-                    return true;
+                    case KeyEvent.KEYCODE_S:
+                        if (keyEvent.isCtrlPressed()) {
+                            saveCurrentFile();
+                            return true;
+                        }
+                        return false;
+                }
             }
 
             return false;
         }
     };
 
-    private EditText createEditText() {
-        return
-            new EditText(context) {{
-                setBackgroundColor(android.R.color.transparent);
-                setTextColor(Color.rgb(220, 220, 220));
-                setHorizontallyScrolling(true);
-                setTypeface(Typeface.MONOSPACE);
-                setTextSize(14);
-                setGravity(Gravity.TOP);
-                setDrawingCacheEnabled(true);
-                setDrawingCacheQuality(DRAWING_CACHE_QUALITY_LOW);
-            }};
+    private void highlights(Editable s) {
+        if (highlighterEnabled && !Highlighter.isRun) {
+            Highlighter.highlights(s);
+        }
     }
+
+    private EditText createEditText() {
+        return new EditText(context) {{
+                setTextSize(fontSize);
+                setTextColor(fontColor);
+                setTypeface(typeface);
+                setGravity(Gravity.TOP);
+                setHorizontallyScrolling(hScrolling);
+                setBackgroundColor(android.R.color.transparent);
+            }};
+    }   
 
     private void createTabs(String tag, String title, TabContentFactory tabContent) {
         tabHost.addTab(tabHost.newTabSpec(tag).setIndicator(title).setContent(tabContent));
-        tabHost.setCurrentTabByTag(tag);
+        tabList.add(tag); 
 
         tabHost.getTabWidget().getChildAt(tabHost.getTabWidget().getChildCount() - 1)
             .setOnLongClickListener(new OnLongClickListener(){
@@ -140,11 +153,13 @@ public class CodeEditor {
                     return true;
                 }
             });
+
+        tabHost.setCurrentTabByTag(tag);
     }
 
     private void showPopupMenu(View v) {
         PopupMenu pm = new PopupMenu(context, v);
-        pm.getMenu().add(R.string.pmenu_tab_close);
+        pm.getMenu().add(btnTabCloseName);
 
         pm.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                 @Override
@@ -159,14 +174,14 @@ public class CodeEditor {
 
     public boolean saveCurrentFile() {
         try {
-            FileUtils.writeStringToFile(new File(getCurrentFilename()), getCurrentEditor().getText().toString());
+            FileUtils.writeStringToFile(new File(getCurrentFilename()),
+                                        getCurrentEditor().getText().toString());
             setFileModifiedStatus(getCurrentFilename(), false);
-            return true;
         } catch (IOException ioe) {
             Logger.addLog(ioe);
         }
 
-        return false;
+        return true;
     }
 
     public EditText getCurrentEditor() {
@@ -174,23 +189,67 @@ public class CodeEditor {
     }
 
     private void closeFile(String filename) {
-        //...
+        rmFileModifiedStatus(filename);
+        tabHost.getTabWidget().getChildTabViewAt(tabHost.getCurrentTab()).setVisibility(View.GONE);
+        tabHost.setCurrentTabByTag(tabList.getLast());
     }
 
     private String getCurrentFilename() {
         return tabHost.getCurrentTabTag();
     }
 
+    private boolean getFileModifiedStatus(String filename) {
+        if (isFileOpen(filename)) {
+            return fileModifiedStatusMap.get(filename);
+        }
+
+        return false;
+    }
+
     private void setFileModifiedStatus(String filename, boolean modifiedStatus) {
         fileModifiedStatusMap.put(filename, modifiedStatus);
     }
 
+    private void rmFileModifiedStatus(String filename) {
+        if (isFileOpen(filename)) {
+            fileModifiedStatusMap.remove(filename);
+        }
+    }
+
     private boolean isFileOpen(String filename) {
-        return (tabHost.findViewWithTag(filename) != null);
+        return fileModifiedStatusMap.containsKey(filename);
     }
 
     public boolean isCurrentFileModified() {
-        return fileModifiedStatusMap.get(getCurrentFilename());
+        return getFileModifiedStatus(getCurrentFilename());
+    }
+
+    public void setFontSize(int size) {
+        fontSize = size;
+    }
+
+    public void setFontColor(int color) {
+        fontColor = color;
+    }
+
+    public void setTypeface(Typeface tf) {
+        typeface = tf;
+    }
+
+    public void setTabIns(String symbol) {
+        tabIns = symbol;
+    }
+
+    public void setHScrolling(boolean enabled) {
+        hScrolling = enabled;
+    }
+
+    public void setBtnTabCloseName(String name) {
+        btnTabCloseName = name;
+    }
+
+    public void setHighlighterEnabled(boolean enabled) {
+        highlighterEnabled = enabled;
     }
 }
 

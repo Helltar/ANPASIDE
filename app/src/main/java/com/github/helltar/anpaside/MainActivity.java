@@ -59,6 +59,7 @@ public class MainActivity extends AppCompatActivity {
         tabHost.setup();
 
         editor = new CodeEditor(this, tabHost);
+        editor.setBtnTabCloseName(getString(R.string.pmenu_tab_close));
 
         tvLog = (TextView) findViewById(R.id.tvLog);
         svLog = (ScrollView) findViewById(R.id.svLog);
@@ -132,7 +133,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private boolean openProject(String filename) {
-        if (fileExists(filename)
+        if (fileExists(filename, true)
             && ProjectManager.openProject(filename)
             && openFile(ProjectManager.getMainModuleFilename())) {
             editorConfig.setLastProject(filename);
@@ -145,12 +146,13 @@ public class MainActivity extends AppCompatActivity {
     private boolean openFile(String filename) {
         boolean result = false;
 
-        if (fileExists(filename)
-            && FilenameUtils.getExtension(filename).equals(EXT_PROJ.substring(1, EXT_PROJ.length()))
-            && openProject(filename)) {
-            result = true;
-        } else if (editor.openFile(filename)) {
-            result = true;
+        if (fileExists(filename, true)) {
+            if  (FilenameUtils.getExtension(filename).equals(EXT_PROJ.substring(1, EXT_PROJ.length()))
+                 && openProject(filename)) {
+                result = true;
+            } else if (editor.openFile(filename)) {
+                result = true;
+            }
         }
 
         if (result) {
@@ -288,7 +290,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private boolean saveCurrentFile(boolean showOkMsg) {
-        if (editor.isCurrentFileModified() && editor.saveCurrentFile()) {
+        if (editor.saveCurrentFile()) {
             if (showOkMsg) {
                 showToastMsg("Сохранено");
             }

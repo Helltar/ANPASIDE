@@ -177,7 +177,7 @@ public class ProjectBuilder {
                 // если нет берем из глобального
                 libFilename = globLibsDir + libName;
 
-                if (fileExists(libFilename)) {
+                if (fileExists(libFilename, true)) {
                     copyFileToDir(libFilename, prebuildDir);
                 }
             }
