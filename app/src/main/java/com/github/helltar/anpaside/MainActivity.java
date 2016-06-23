@@ -81,25 +81,32 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public static void addGuiLog(final String msg, final int msgType) {
+        String fontColor = "#aaaaaa";
+
+        switch (msgType) {
+            case LMT_INFO:
+                fontColor = "#00aa00";
+                break;
+            case LMT_ERROR:
+                fontColor = "#ee0000";
+                break;
+        }
+
+        String[] msgLines = msg.split("\n");
+        String lines = "";
+
+        for (int i = 1; i < msgLines.length; i++) {
+            lines += "\t\t\t\t\t\t: " + msgLines[i] + "<br>";
+        }
+
+        final Spanned text = Html.fromHtml(new SimpleDateFormat("[HH:mm:ss]: ").format(new Date())
+                                           + "<font color='" + fontColor + "'>"
+                                           + msgLines[0].replace("\n", "<br>") + "</font><br>"
+                                           + lines);
+
         new Handler(Looper.getMainLooper()).post(new Runnable() {
                 @Override
                 public void run() {
-                    String fontColor = "#aaaaaa";
-
-                    switch (msgType) {
-                        case LMT_INFO:
-                            fontColor = "#00aa00";
-                            break;
-                        case LMT_ERROR:
-                            fontColor = "#ee0000";
-                            break;
-                    }
-
-                    String currentTime = new SimpleDateFormat("[HH:mm:ss]: ").format(new Date());
-                    Spanned text = Html.fromHtml(currentTime
-                                                 + "<font color='" + fontColor + "'>"
-                                                 + msg.replace("\n", "<br>") + "</font><br>");
-
                     tvLog.append(text);
                     svLog.fullScroll(ScrollView.FOCUS_DOWN);
                 }
@@ -134,9 +141,8 @@ public class MainActivity extends AppCompatActivity {
 
     private boolean openProject(String filename) {
         if (fileExists(filename, true)
-            && ProjectManager.openProject(filename)
-            && openFile(ProjectManager.getMainModuleFilename())) {
-            editorConfig.setLastProject(filename);
+            && ProjectManager.openProject(filename)) {
+            openFile(ProjectManager.getMainModuleFilename());
             return true;
         }
 
@@ -147,9 +153,9 @@ public class MainActivity extends AppCompatActivity {
         boolean result = false;
 
         if (fileExists(filename, true)) {
-            if  (FilenameUtils.getExtension(filename).equals(EXT_PROJ.substring(1, EXT_PROJ.length()))
-                 && openProject(filename)) {
+            if (isProjectFile(filename) && openProject(filename)) {
                 result = true;
+                editorConfig.setLastProject(filename);
             } else if (editor.openFile(filename)) {
                 result = true;
             }
@@ -160,6 +166,10 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return result;
+    }
+
+    private boolean isProjectFile(String filename) {
+        return FilenameUtils.getExtension(filename).equals(EXT_PROJ.substring(1, EXT_PROJ.length()));
     }
 
     private void showNewProjectDialog() {

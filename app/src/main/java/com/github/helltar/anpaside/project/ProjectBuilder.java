@@ -201,10 +201,9 @@ public class ProjectBuilder {
             && compile(mainModule)
             && createZip(prebuildDir, jarFilename)
             && addResToZip(projPath + DIR_RES, jarFilename)) {
-            Logger.addLog(
-                "Сборка успешно завершена, " 
-                + DIR_BIN + midletName + EXT_JAR + ", "
-                + getFileSize(jarFilename) + " KB", LMT_INFO);
+            Logger.addLog("Сборка успешно завершена\n" 
+                          + DIR_BIN + midletName + EXT_JAR + "\n"
+                          + getFileSize(jarFilename) + " KB", LMT_INFO);
 
             return true;
         }
@@ -259,7 +258,7 @@ public class ProjectBuilder {
         }
 
         cleanOutput = cleanOutput
-            .replace("[Pascal Error]", "Error!:")
+            .replace("[Pascal Error]", "Error!")
             .replace("^1", "Lib: ")
             .replace("^2", "")
             .replace("^3", "")
@@ -305,8 +304,7 @@ public class ProjectBuilder {
             new ZipFile(zipFilename).addFolder(dirPath, param);
             return true;
         } catch (ZipException ze) {
-            Logger.addLog("Не удалось создать архив: " + dirPath + " (" + ze.getMessage() + ")",
-                          LMT_ERROR);
+            Logger.addLog("Не удалось создать архив: " + dirPath + " (" + ze.getMessage() + ")", LMT_ERROR);
         }
 
         return false;
