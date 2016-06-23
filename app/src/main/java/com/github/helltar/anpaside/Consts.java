@@ -30,8 +30,12 @@ public class Consts {
     public static final String TPL_GITIGNORE = getString(R.string.tpl_gitignore);
     public static final String TPL_MANIFEST = getString(R.string.tpl_manifest);
 
+    // strings
+    public static final String LANG_MSG_BUILD_SUCCESSFULLY = getString(R.string.msg_build_successfully);
+    public static final String LANG_ERR_FAILED_CREATE_ARCHIVE = getString(R.string.err_failed_create_archive);
+
     private static String getString(int resId) {
-        return MainApp.getContext().getString(resId);
+        return MainApp.getString(resId);
     }
 }
 

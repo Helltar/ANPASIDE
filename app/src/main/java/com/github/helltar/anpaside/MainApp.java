@@ -18,5 +18,9 @@ public class MainApp extends Application {
     public static Context getContext() {
         return context;
     }
+
+    public static String getString(int resId) {
+        return context.getString(resId);
+    }
 }
 

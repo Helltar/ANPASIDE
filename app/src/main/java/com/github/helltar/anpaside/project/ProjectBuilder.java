@@ -201,7 +201,7 @@ public class ProjectBuilder {
             && compile(mainModule)
             && createZip(prebuildDir, jarFilename)
             && addResToZip(projPath + DIR_RES, jarFilename)) {
-            Logger.addLog("Сборка успешно завершена\n" 
+            Logger.addLog(LANG_MSG_BUILD_SUCCESSFULLY + "\n" 
                           + DIR_BIN + midletName + EXT_JAR + "\n"
                           + getFileSize(jarFilename) + " KB", LMT_INFO);
 
@@ -304,7 +304,8 @@ public class ProjectBuilder {
             new ZipFile(zipFilename).addFolder(dirPath, param);
             return true;
         } catch (ZipException ze) {
-            Logger.addLog("Не удалось создать архив: " + dirPath + " (" + ze.getMessage() + ")", LMT_ERROR);
+            Logger.addLog(LANG_ERR_FAILED_CREATE_ARCHIVE + ": " + dirPath + " (" + ze.getMessage() + ")",
+                          LMT_ERROR);
         }
 
         return false;

@@ -176,9 +176,12 @@ public class MainActivity extends AppCompatActivity {
         final EditText edtProjectName = new EditText(this);
         edtProjectName.setHint(R.string.dlg_hint_project_name);
 
+        String sdcardPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/";
+        final String projectsPath = sdcardPath + DIR_MAIN;
+
         new AlertDialog.Builder(this)
             .setTitle(R.string.dlg_title_new_project)
-            .setMessage(R.string.dlg_subtitle_new_project)
+            .setMessage(String.format(getString(R.string.dlg_subtitle_new_project), projectsPath))
             .setView(edtProjectName)
             .setPositiveButton(R.string.dlg_btn_create,
             new DialogInterface.OnClickListener() {
@@ -186,13 +189,11 @@ public class MainActivity extends AppCompatActivity {
                     final String projName = edtProjectName.getText().toString();
 
                     if (projName.length() < 3) {
-                        showAlertMsg("Неверное значение", 
-                                     "Название проекта должно состоять минимум из 3-х символов");
+                        showAlertMsg(R.string.dlg_title_invalid_value,
+                                     String.format(getString(R.string.err_project_name_least_chars), 3));
                         return;
                     }
 
-                    String sdcardPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/";
-                    final String projectsPath = sdcardPath + DIR_MAIN;
                     final String projPath = projectsPath + projName;
 
                     if (!mkdir(projectsPath)) {
@@ -203,8 +204,8 @@ public class MainActivity extends AppCompatActivity {
                         createProject(projectsPath, projName);
                     } else {
                         new AlertDialog.Builder(MainActivity.this)
-                            .setMessage("Проект уже существует")
-                            .setPositiveButton("Перезаписать",
+                            .setMessage(R.string.err_project_exists)
+                            .setPositiveButton(R.string.dlg_btn_rewrite,
                             new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int whichButton) {
                                     try {
@@ -237,8 +238,8 @@ public class MainActivity extends AppCompatActivity {
                     String moduleName = edtModuleName.getText().toString();
 
                     if (moduleName.length() < 3) {
-                        showAlertMsg("Неверное значение", 
-                                     "Название модуля должно состоять минимум из 3-х символов");
+                        showAlertMsg(R.string.dlg_title_invalid_value,
+                                     String.format(getString(R.string.err_module_name_least_chars), 3));
                         return;
                     }
 
@@ -248,14 +249,14 @@ public class MainActivity extends AppCompatActivity {
                         createModule(filename);
                     } else {
                         new AlertDialog.Builder(MainActivity.this)
-                            .setMessage("Модуль с таким именем уже существует")
-                            .setPositiveButton("Перезаписать",
+                            .setMessage(R.string.err_module_exists)
+                            .setPositiveButton(R.string.dlg_btn_rewrite,
                             new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int whichButton) {
                                     if (new File(filename).delete()) {
                                         createModule(filename);
                                     } else {
-                                        Logger.addLog("Ошибка при удалении старого модуля: " + filename);
+                                        Logger.addLog(getString(R.string.err_del_old_module) + ": " + filename);
                                     }
                                 }
                             })
@@ -269,8 +270,12 @@ public class MainActivity extends AppCompatActivity {
             .show();
     }
 
-    private void showAlertMsg(String msg) {
-        showAlertMsg("", msg);
+    private void showAlertMsg(int resId, String msg) {
+        showAlertMsg(getString(resId), msg);
+    }
+
+    private void showAlertMsg(int resId) {
+        showAlertMsg("", getString(resId));
     }
 
     private void showAlertMsg(String title, String msg) {
@@ -279,6 +284,10 @@ public class MainActivity extends AppCompatActivity {
             .setMessage(msg)
             .setNegativeButton("ОК", null)
             .show();
+    }
+
+    private void showToastMsg(int resId) {
+        showToastMsg(getString(resId));
     }
 
     private void showToastMsg(String msg) {
@@ -302,7 +311,7 @@ public class MainActivity extends AppCompatActivity {
     private boolean saveCurrentFile(boolean showOkMsg) {
         if (editor.saveCurrentFile()) {
             if (showOkMsg) {
-                showToastMsg("Сохранено");
+                showToastMsg(R.string.msg_saved);
             }
 
             return true;
@@ -334,7 +343,7 @@ public class MainActivity extends AppCompatActivity {
                         new BuildProj().execute();
                     }
                 } else {
-                    showToastMsg("Нет открытого проекта");
+                    showToastMsg(R.string.msg_no_open_project);
                 }
                 return true;
 
@@ -355,7 +364,7 @@ public class MainActivity extends AppCompatActivity {
                 return true;
 
             case R.id.miAbout:
-                showAlertMsg(getString(R.string.about_text));
+                showAlertMsg(R.string.about_text);
                 return true;
 
             case R.id.miExit:
@@ -388,7 +397,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            Logger.addLog(getString(R.string.log_ide_msg_install_start));
+            Logger.addLog(getString(R.string.msg_install_start));
         }
 
         @Override
@@ -401,7 +410,7 @@ public class MainActivity extends AppCompatActivity {
             super.onPostExecute(result);
             if (result) {
                 ideConfig.setInstState(true);
-                Logger.addLog(getString(R.string.log_ide_msg_install_ok), LMT_INFO);
+                Logger.addLog(getString(R.string.msg_install_ok), LMT_INFO);
             }
         }
     }

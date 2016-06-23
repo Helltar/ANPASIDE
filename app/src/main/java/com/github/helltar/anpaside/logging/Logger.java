@@ -17,6 +17,10 @@ public class Logger {
         addGuiLog(msg, LMT_TEXT);
     }
 
+    public static void addLog(int resId) {
+        addGuiLog(MainApp.getString(resId), LMT_TEXT);
+    }
+
     public static void addLog(String msg, int msgType) {
         addGuiLog(msg, msgType);
     }
