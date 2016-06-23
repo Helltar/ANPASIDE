@@ -1,5 +1,50 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <!-- messages -->
+
+    <string name="msg.install_start">Идет установка компилятора, подождите...</string>
+    <string name="msg.install_ok">Установка успешно завершена</string>
+    <string name="msg.saved">Сохранено</string>
+    <string name="msg.no_open_project">Нет открытого проекта</string>
+    <string name="msg.build_successfully">Сборка успешно завершена</string>
+
+    <!-- errors -->
+
+    <string name="err.project_name_least_chars">Название проекта должно состоять минимум из %d-х символов</string>
+    <string name="err.module_name_least_chars">Название модуля должно состоять минимум из %d-х символов</string>
+    <string name="err.project_exists">Проект уже существует</string>
+    <string name="err.module_exists">Модуль с таким именем уже существует</string>
+    <string name="err.del_old_module">Ошибка при удалении старого модуля</string>
+    <string name="err.failed_create_archive">Не удалось создать архив</string>
+
+    <!-- menu -->
+
+    <string name="menu.create_project">Создать проект</string>
+    <string name="menu.create_module">Новый модуль</string>
+    <string name="menu.file_open">Открыть файл</string>
+    <string name="menu.file_save">Сохранить</string>
+    <string name="menu.about">О программе</string>
+    <string name="menu.exit">Выход</string>
+
+    <!-- editor popup menu -->
+
+    <string name="pmenu.tab.close">Закрыть</string>
+
+    <!-- dialogs -->
+
+    <string name="dlg.title.new_project">Новый проект</string>
+    <string name="dlg.title.new_module">Новый модуль</string>
+    <string name="dlg.title.invalid_value">Недопустимое значение</string>
+    <string name="dlg.subtitle.new_project">Родительський каталог: %s</string>
+    <string name="dlg.hint.project_name">имя проекта</string>
+    <string name="dlg.hint.module_name">навание модуля</string>
+
+    <!-- buttons -->
+
+    <string name="dlg.btn.create">Создать</string>
+    <string name="dlg.btn.cancel">Отмена</string>
+    <string name="dlg.btn.rewrite">Перезаписать</string>
+
 </resources>
 
