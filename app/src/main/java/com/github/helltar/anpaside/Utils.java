@@ -8,6 +8,7 @@ import java.io.InputStreamReader;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 
+import static com.github.helltar.anpaside.Consts.*;
 import static com.github.helltar.anpaside.logging.Logger.*;
 
 public class Utils {
@@ -18,7 +19,7 @@ public class Utils {
         if (file.mkdirs() | file.exists()) {
             return true;
         } else {
-            Logger.addLog("Не удалось создать каталог: " + dirName, LMT_ERROR);
+            Logger.addLog(LANG_ERR_CREATE_DIR + ": " + dirName, LMT_ERROR);
         }
 
         return false;
@@ -43,7 +44,7 @@ public class Utils {
         if (!filename.isEmpty() && new File(filename).exists()) {
             return true;
         } else if (showErrMsg) {
-            Logger.addLog("Файл не найден: " + filename, LMT_ERROR);
+            Logger.addLog(LANG_ERR_FILE_NOT_FOUND + ": " + filename, LMT_ERROR);
         }
 
         return false;

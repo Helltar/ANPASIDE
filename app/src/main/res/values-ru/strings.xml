@@ -17,6 +17,8 @@
     <string name="err.module_exists">Модуль с таким именем уже существует</string>
     <string name="err.del_old_module">Ошибка при удалении старого модуля</string>
     <string name="err.failed_create_archive">Не удалось создать архив</string>
+    <string name="err.file_not_found">Файл не найден</string>
+    <string name="err.create_dir">Не удалось создать каталог</string>
 
     <!-- menu -->
 
@@ -37,8 +39,8 @@
     <string name="dlg.title.new_module">Новый модуль</string>
     <string name="dlg.title.invalid_value">Недопустимое значение</string>
     <string name="dlg.subtitle.new_project">Родительський каталог: %s</string>
-    <string name="dlg.hint.project_name">имя проекта</string>
-    <string name="dlg.hint.module_name">навание модуля</string>
+    <string name="dlg.hint.project_name">название</string>
+    <string name="dlg.hint.module_name">название</string>
 
     <!-- buttons -->
 

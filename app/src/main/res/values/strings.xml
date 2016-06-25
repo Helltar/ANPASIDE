@@ -19,6 +19,8 @@
     <string name="err.module_exists">Module already exists</string>
     <string name="err.del_old_module">Error deleting the old module</string>
     <string name="err.failed_create_archive">Failed to create an archive</string>
+    <string name="err.file_not_found">File not found</string>
+    <string name="err.create_dir">Unable to create directory</string>
 
     <!-- menu -->
 
