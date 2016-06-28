@@ -14,9 +14,7 @@ import static com.github.helltar.anpaside.logging.Logger.*;
 public class Utils {
 
     public static boolean mkdir(String dirName) {
-        File file = new File(dirName);
-
-        if (file.mkdirs() | file.exists()) {
+        if (new File(dirName).mkdirs() | fileExists(dirName)) {
             return true;
         } else {
             Logger.addLog(LANG_ERR_CREATE_DIR + ": " + dirName, LMT_ERROR);
@@ -41,7 +39,7 @@ public class Utils {
     }
 
     public static boolean fileExists(String filename, boolean showErrMsg) {
-        if (!filename.isEmpty() && new File(filename).exists()) {
+        if (new File(filename).exists()) {
             return true;
         } else if (showErrMsg) {
             Logger.addLog(LANG_ERR_FILE_NOT_FOUND + ": " + filename, LMT_ERROR);
