@@ -140,16 +140,22 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private boolean openProject(String filename) {
-        if (fileExists(filename, true)
-            && ProjectManager.openProject(filename)) {
-            openFile(ProjectManager.getMainModuleFilename());
-            return true;
+        if (!filename.isEmpty()) {
+            if (fileExists(filename, true)
+                && ProjectManager.openProject(filename)) {
+                openFile(ProjectManager.getMainModuleFilename());
+                return true;
+            }
         }
 
         return false;
     }
 
     private boolean openFile(String filename) {
+        if (filename.isEmpty()) {
+            return false;
+        }
+
         boolean result = false;
 
         if (fileExists(filename, true)) {
@@ -159,10 +165,10 @@ public class MainActivity extends AppCompatActivity {
             } else if (editor.openFile(filename)) {
                 result = true;
             }
-        }
 
-        if (result) {
-            editorConfig.setLastFilename(filename);
+            if (result) {
+                editorConfig.setLastFilename(filename);
+            }
         }
 
         return result;
