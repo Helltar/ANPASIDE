@@ -46,6 +46,7 @@ public class MainActivity extends AppCompatActivity {
     private CodeEditor editor;
     private EditorConfig editorConfig;
     private IdeConfig ideConfig;
+    private ProjectManager pman = new ProjectManager();
 
     private static TextView tvLog;
     private static ScrollView svLog;
@@ -55,14 +56,14 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        tvLog = (TextView) findViewById(R.id.tvLog);
+        svLog = (ScrollView) findViewById(R.id.svLog);
+        
         TabHost tabHost = (TabHost) findViewById(android.R.id.tabhost);
         tabHost.setup();
 
         editor = new CodeEditor(this, tabHost);
         editor.setBtnTabCloseName(getString(R.string.pmenu_tab_close));
-
-        tvLog = (TextView) findViewById(R.id.tvLog);
-        svLog = (ScrollView) findViewById(R.id.svLog);
 
         ideConfig = new IdeConfig(this);
         editorConfig = new EditorConfig(this);
@@ -74,7 +75,7 @@ public class MainActivity extends AppCompatActivity {
         if (ideConfig.isAssetsInstall()) {
             Logger.addLog(getString(R.string.app_name) + " " + getAppVersionName());
             openFile(editorConfig.getLastFilename());
-            openProject(editorConfig.getLastProject());
+            openFile(editorConfig.getLastProject());
         } else {
             new Install().execute();
         }
@@ -96,7 +97,7 @@ public class MainActivity extends AppCompatActivity {
         String lines = "";
 
         for (int i = 1; i < msgLines.length; i++) {
-            lines += "\t\t\t\t\t\t: " + msgLines[i] + "<br>";
+            lines += "\t\t\t\t\t\t- " + msgLines[i] + "<br>";
         }
 
         final Spanned text = Html.fromHtml(new SimpleDateFormat("[HH:mm:ss]: ").format(new Date())
@@ -128,27 +129,15 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void createProject(String path, String name) {
-        if (ProjectManager.createProject(path, name)) {
-            openProject(path + name + "/" + name + EXT_PROJ);
+        if (pman.createProject(path, name)) {
+            openFile(pman.getProjectConfigFilename());
         }
     }
 
     private void createModule(String filename) {
-        if (ProjectManager.createModule(filename)) {
+        if (pman.createModule(filename)) {
             openFile(filename);
         }
-    }
-
-    private boolean openProject(String filename) {
-        if (!filename.isEmpty()) {
-            if (fileExists(filename, true)
-                && ProjectManager.openProject(filename)) {
-                openFile(ProjectManager.getMainModuleFilename());
-                return true;
-            }
-        }
-
-        return false;
     }
 
     private boolean openFile(String filename) {
@@ -156,22 +145,19 @@ public class MainActivity extends AppCompatActivity {
             return false;
         }
 
-        boolean result = false;
-
         if (fileExists(filename, true)) {
-            if (isProjectFile(filename) && openProject(filename)) {
-                result = true;
+            if (isProjectFile(filename) && pman.openProject(filename)) {
                 editorConfig.setLastProject(filename);
-            } else if (editor.openFile(filename)) {
-                result = true;
+                filename = pman.getMainModuleFilename();
             }
 
-            if (result) {
+            if (editor.openFile(filename)) {
                 editorConfig.setLastFilename(filename);
+                return true;
             }
         }
 
-        return result;
+        return false;
     }
 
     private boolean isProjectFile(String filename) {
@@ -249,7 +235,7 @@ public class MainActivity extends AppCompatActivity {
                         return;
                     }
 
-                    final String filename = ProjectManager.getCurrentProjectPath() + DIR_SRC + moduleName + EXT_PAS;
+                    final String filename = pman.getMainModuleFilename();
 
                     if (!fileExists(filename)) {
                         createModule(filename);
@@ -262,7 +248,9 @@ public class MainActivity extends AppCompatActivity {
                                     if (new File(filename).delete()) {
                                         createModule(filename);
                                     } else {
-                                        Logger.addLog(getString(R.string.err_del_old_module) + ": " + filename);
+                                        Logger.addLog(
+                                            getString(R.string.err_del_old_module) + ": " + filename,
+                                            LMT_ERROR);
                                     }
                                 }
                             })
@@ -334,7 +322,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-        menu.findItem(R.id.miCreateModule).setEnabled(ProjectManager.isProjectOpen());
+        menu.findItem(R.id.miCreateModule).setEnabled(pman.isProjectOpen());
         menu.findItem(R.id.miFileSave).setEnabled(editor.isCurrentFileModified());
         return super.onPrepareOptionsMenu(menu);
     }
@@ -344,7 +332,7 @@ public class MainActivity extends AppCompatActivity {
         switch (item.getItemId()) {
 
             case R.id.miRun:
-                if (ProjectManager.isProjectOpen()) {
+                if (pman.isProjectOpen()) {
                     if (saveCurrentFile(false)) { 
                         new BuildProj().execute();
                     }
@@ -423,15 +411,12 @@ public class MainActivity extends AppCompatActivity {
 
     private class BuildProj extends AsyncTask<Void, Void, Void> {
 
-        private ProjectBuilder builder;
-
         @Override
         protected Void doInBackground(Void... params)  {
-            builder = new ProjectBuilder.Builder(DATA_PKG_PATH + ASSET_DIR_BIN + "/" + MP3CC, 
-                                                 DATA_PKG_PATH + ASSET_DIR_STUBS + "/",
-                                                 ProjectManager.getCurrentProjectPath() + DIR_LIBS,
-                                                 ProjectManager.getCurrentProjectPath(),
-                                                 ProjectManager.getMainModuleFilename()).create();
+            ProjectBuilder builder = new ProjectBuilder(pman.getProjectConfigFilename(),
+                                                        DATA_PKG_PATH + ASSET_DIR_BIN + "/" + MP3CC,
+                                                        DATA_PKG_PATH + ASSET_DIR_STUBS + "/",
+                                                        pman.getProjLibsDir());
 
             if (builder.build()) {
                 startActionViewIntent(builder.getJarFilename());

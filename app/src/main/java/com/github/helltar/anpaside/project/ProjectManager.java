@@ -7,32 +7,50 @@ import org.apache.commons.io.FilenameUtils;
 import static com.github.helltar.anpaside.Consts.*;
 import static com.github.helltar.anpaside.Utils.*;
 
-public class ProjectManager {
+public class ProjectManager extends ProjectConfig {
 
-    private static ProjectConfig projConfig;
+    private String projectPath = "";
+    private String projectConfigFilename = "";
+    private String mainModuleFilename = "";
+    private String projLibsDir = "";
 
-    private static String currentProjectPath = "";
-    private static String mainModuleFilename = "";
-
-    private static boolean createConfigFile(String filename) {
-        final String projName = getFileNameOnly(filename);
+    private boolean createConfigFile(String filename, String midletName) {
+        setMidletName(midletName);
+        setMainModuleName(midletName.toLowerCase());
 
         try {
-            new ProjectConfig(filename) {{
-                    setMainModuleName(projName.toLowerCase());
-                    setMathType(0);
-                    setCanvasType(1);
+            save(filename);
+            return true;
+        } catch (IOException ioe) {
+            Logger.addLog(ioe);
+        }
 
-                    setMidletName(projName);
-                    setMidletVendor("vendor");
-                    setMidletIcon("/icon.png");
+        return false;
+    }
 
-                    setVersMajor(1);
-                    setVersMinor(0);
-                    setVersBuild(0);
+    public boolean createProject(String path, String name) {
+        projectPath = path + name + "/";
+        projectConfigFilename = projectPath + name + EXT_PROJ;
 
-                    save();
-                }};
+        if (mkProjectDirs(projectPath)
+            && createConfigFile(projectConfigFilename, name)
+            && createHW(projectPath + DIR_SRC + name.toLowerCase() + EXT_PAS)) {
+            createGitIgnore(projectPath);
+            copyFileToDir(DATA_PKG_PATH + ASSET_DIR_FILES + "/icon.png", projectPath + DIR_RES);
+            return true;
+        }
+        
+        return false;
+    }
+
+    public boolean openProject(String filename) {
+        try {
+            open(filename);
+
+            projectPath = FilenameUtils.getFullPath(filename);
+            projectConfigFilename = filename;
+            mainModuleFilename = projectPath + DIR_SRC + getMainModuleName() + EXT_PAS;
+            projLibsDir = projectPath + DIR_LIBS;
 
             return true;
 
@@ -43,39 +61,7 @@ public class ProjectManager {
         return false;
     }
 
-    public static boolean createProject(String path, String name) {
-        String projPath = path + name + "/";
-
-        if (mkProjectDirs(projPath)
-            && createConfigFile(projPath + name + EXT_PROJ)
-            && createHW(projPath + DIR_SRC + name.toLowerCase() + EXT_PAS)) {
-            createGitIgnore(projPath);
-            copyFileToDir(DATA_PKG_PATH + ASSET_DIR_FILES + "/icon.png", projPath + DIR_RES);
-            return true;
-        }
-
-        return false;
-    }
-
-    public static boolean openProject(String filename) {
-        try {
-            projConfig = new ProjectConfig(filename);
-
-            String projPath = FilenameUtils.getFullPath(filename);
-
-            currentProjectPath = projPath;
-            mainModuleFilename = projPath + DIR_SRC + projConfig.getMainModuleName() + EXT_PAS;
-
-            return true;
-
-        } catch (IOException ioe) {
-            Logger.addLog(ioe);
-        }
-
-        return false;
-    }
-
-    public static boolean mkProjectDirs(String path) {
+    public boolean mkProjectDirs(String path) {
         if (mkdir(path + DIR_BIN)
             && mkdir(path + DIR_SRC)
             && mkdir(path + DIR_PREBUILD)
@@ -87,27 +73,39 @@ public class ProjectManager {
         return false;
     }
 
-    public static boolean isProjectOpen() {
-        return !currentProjectPath.isEmpty();
+    public boolean isProjectOpen() {
+        return !projectPath.isEmpty();
     }
 
-    public static String getCurrentProjectPath() {
-        return currentProjectPath;
+    public String getProjectConfigFilename() {
+        return projectConfigFilename;
     }
 
-    public static String getMainModuleFilename() {
+    public String getProjectPath() {
+        return projectPath;
+    }
+
+    public String getProjLibsDir() {
+        return projLibsDir;
+    }
+
+    public String getMainModuleFilename() {
         return mainModuleFilename;
     }
 
-    private static boolean createGitIgnore(String path) {
+    public String getMidletVersion() {
+        return getVersMajor() + "." + getVersMinor() + "." + getVersBuild();
+    }
+
+    private boolean createGitIgnore(String path) {
         return createTextFile(path + ".gitignore", TPL_GITIGNORE);
     }
 
-    private static boolean createHW(String filename) {
+    private boolean createHW(String filename) {
         return createTextFile(filename, String.format(TPL_HELLOWORLD, getFileNameOnly(filename)));
     }
 
-    public static boolean createModule(String filename) {
+    public boolean createModule(String filename) {
         return createTextFile(filename, String.format(TPL_MODULE, getFileNameOnly(filename)));
     }
 }
