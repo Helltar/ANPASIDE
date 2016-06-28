@@ -16,6 +16,7 @@ import android.widget.PopupMenu;
 import android.widget.ScrollView;
 import android.widget.TabHost;
 import android.widget.TabHost.TabContentFactory;
+import android.widget.TabHost.TabSpec;
 import com.github.helltar.anpaside.logging.Logger;
 import java.io.File;
 import java.io.IOException;
@@ -30,7 +31,7 @@ public class CodeEditor {
     private TabHost tabHost;
 
     private Map<String, Boolean> fileModifiedStatusMap = new HashMap<>();
-    private LinkedList<String> tabList = new LinkedList<>(); 
+    private LinkedList<String> filenameList = new LinkedList<>();
 
     private int fontSize = 14;
     private int fontColor = Color.rgb(220, 220, 220);
@@ -57,6 +58,7 @@ public class CodeEditor {
             text = FileUtils.readFileToString(new File(filename));
         } catch (IOException ioe) {
             Logger.addLog(ioe);
+            return false;
         }
 
         final EditText edtText = createEditText();
@@ -71,17 +73,16 @@ public class CodeEditor {
                 }
             });
 
-        setFileModifiedStatus(filename, false);
-
         edtText.setTag(filename);
         edtText.setText(text);
 
         edtText.addTextChangedListener(textWatcher);
         edtText.setOnKeyListener(keyListener);
 
-        edtText.requestFocus();
-
+        setFileModifiedStatus(filename, false);
         highlights(edtText.getEditableText());
+
+        edtText.requestFocus();
 
         return true;
     }
@@ -96,7 +97,7 @@ public class CodeEditor {
         }
 
         @Override
-        public void afterTextChanged(final Editable s) {
+        public void afterTextChanged(Editable s) {
             highlights(s);
         }
     };
@@ -142,33 +143,35 @@ public class CodeEditor {
     }   
 
     private void createTabs(String tag, String title, TabContentFactory tabContent) {
-        tabHost.addTab(tabHost.newTabSpec(tag).setIndicator(title).setContent(tabContent));
-        tabList.add(tag); 
+        final TabSpec tabSpec = tabHost.newTabSpec(tag);
+        tabSpec.setIndicator(title);
+        tabSpec.setContent(tabContent);
 
+        tabHost.addTab(tabSpec);
+        tabHost.setCurrentTabByTag(tag);
         tabHost.getTabWidget().getChildAt(tabHost.getTabWidget().getChildCount() - 1)
-            .setOnLongClickListener(new OnLongClickListener(){
+            .setOnLongClickListener(new OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View v) {
-                    showPopupMenu(v);
+                    tabHost.setCurrentTabByTag(tabSpec.getTag());
+                    showPopupMenu(v, tabSpec.getTag());
                     return true;
                 }
             });
 
-        tabHost.setCurrentTabByTag(tag);
+        filenameList.add(tag);
     }
 
-    private void showPopupMenu(View v) {
+    private void showPopupMenu(View v, final String tag) {
         PopupMenu pm = new PopupMenu(context, v);
         pm.getMenu().add(btnTabCloseName);
-
         pm.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                 @Override
                 public boolean onMenuItemClick(MenuItem item) {
-                    closeFile(getCurrentFilename());
+                    closeFile(tag);
                     return true;
                 }
             });
-
         pm.show();
     }
 
@@ -177,43 +180,37 @@ public class CodeEditor {
             FileUtils.writeStringToFile(new File(getCurrentFilename()),
                                         getCurrentEditor().getText().toString());
             setFileModifiedStatus(getCurrentFilename(), false);
+            return true;
         } catch (IOException ioe) {
             Logger.addLog(ioe);
         }
 
-        return true;
+        return false;
     }
 
     public EditText getCurrentEditor() {
-        return (EditText) tabHost.findViewWithTag(getCurrentFilename());
+        return (EditText) tabHost.getTabContentView().findViewWithTag(getCurrentFilename());
     }
 
     private void closeFile(String filename) {
-        rmFileModifiedStatus(filename);
-        tabHost.getTabWidget().getChildTabViewAt(tabHost.getCurrentTab()).setVisibility(View.GONE);
-        tabHost.setCurrentTabByTag(tabList.getLast());
+        // TODO: try del
+        tabHost.getTabWidget().getChildAt(tabHost.getCurrentTab()).setVisibility(View.GONE);
+        tabHost.getTabContentView().removeView(tabHost.getCurrentView());
+
+        fileModifiedStatusMap.remove(filename);
+        filenameList.remove(filename);
+
+        if (!filenameList.isEmpty()) {
+            tabHost.setCurrentTabByTag(filenameList.getLast());
+        }
     }
 
     private String getCurrentFilename() {
         return tabHost.getCurrentTabTag();
     }
 
-    private boolean getFileModifiedStatus(String filename) {
-        if (isFileOpen(filename)) {
-            return fileModifiedStatusMap.get(filename);
-        }
-
-        return false;
-    }
-
     private void setFileModifiedStatus(String filename, boolean modifiedStatus) {
         fileModifiedStatusMap.put(filename, modifiedStatus);
-    }
-
-    private void rmFileModifiedStatus(String filename) {
-        if (isFileOpen(filename)) {
-            fileModifiedStatusMap.remove(filename);
-        }
     }
 
     private boolean isFileOpen(String filename) {
@@ -221,7 +218,13 @@ public class CodeEditor {
     }
 
     public boolean isCurrentFileModified() {
-        return getFileModifiedStatus(getCurrentFilename());
+        String filename = getCurrentFilename();
+
+        if (isFileOpen(filename)) {
+            return fileModifiedStatusMap.get(filename);
+        }
+
+        return false;
     }
 
     public void setFontSize(int size) {
