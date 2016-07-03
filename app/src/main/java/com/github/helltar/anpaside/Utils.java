@@ -24,11 +24,13 @@ public class Utils {
     }
 
     public static boolean copyFileToDir(String srcFile, String destDir) {
-        try {
-            FileUtils.copyFileToDirectory(new File(srcFile), new File(destDir));
-            return true;
-        } catch (IOException ioe) {
-            Logger.addLog(ioe);
+        if (fileExists(srcFile, true)) {
+            try {
+                FileUtils.copyFileToDirectory(new File(srcFile), new File(destDir));
+                return true;
+            } catch (IOException ioe) {
+                Logger.addLog(ioe);
+            }
         }
 
         return false;

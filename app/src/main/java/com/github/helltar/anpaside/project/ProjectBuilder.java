@@ -84,18 +84,11 @@ public class ProjectBuilder extends ProjectManager {
 
         while (m.find()) {
             String libName = "Lib_" + m.group(1) + EXT_CLASS;
-            String libFilename = getProjLibsDir() + libName;
 
             // пробуем найти библиотеку в libs каталоге проекта
-            if (fileExists(libFilename)) {
-                copyFileToDir(libFilename, projPrebuildDir);
-            } else {
+            if (!copyFileToDir(getProjLibsDir() + libName, projPrebuildDir)) {
                 // если нет берем из глобального
-                libFilename = globLibsDir + libName;
-
-                if (fileExists(libFilename, true)) {
-                    copyFileToDir(libFilename, projPrebuildDir);
-                }
+                copyFileToDir(globLibsDir + libName, projPrebuildDir);
             }
         }
     }
@@ -104,11 +97,7 @@ public class ProjectBuilder extends ProjectManager {
         Matcher m = Pattern.compile("\\^2(.*?)\n").matcher(output);
 
         while (m.find()) {
-            String stubFilename = stubsDir + m.group(1);
-
-            if (fileExists(stubFilename, true)) {
-                copyFileToDir(stubFilename, projPrebuildDir);
-            }
+            copyFileToDir(stubsDir + m.group(1), projPrebuildDir);
         }
     }
 
