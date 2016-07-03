@@ -162,22 +162,20 @@ public class ProjectBuilder extends ProjectManager {
 
     private String deleteCharacters(String output) {
         String[] lines = output.split("\n");
-        String cleanOutput = "";
+        StringBuilder cleanOutput = new StringBuilder();
 
         for (int i = 0; i < lines.length; i++) {
             if (!lines[i].startsWith("@")) {
-                cleanOutput += lines[i] + "\n";
+                cleanOutput.append(lines[i] + "\n");
             }
         }
 
-        cleanOutput = cleanOutput
+        return cleanOutput.toString()
             .replace("[Pascal Error]", "")
             .replace("^1", "Lib: ")
             .replace("^2", "")
             .replace("^3", "")
             .trim();
-
-        return cleanOutput;
     }
 
     private boolean createManifest(String path) {
