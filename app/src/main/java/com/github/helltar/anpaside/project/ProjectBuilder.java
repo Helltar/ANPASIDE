@@ -153,12 +153,7 @@ public class ProjectBuilder extends ProjectManager {
 
     private boolean isDirEmpty(String dirPath) {
         File file = new File(dirPath);
-
-        if (file.isDirectory() && file.list().length <= 0) {
-            return true;
-        }
-
-        return false;
+        return file.isDirectory() && file.list().length <= 0;
     }
 
     public String getJarFilename() {
