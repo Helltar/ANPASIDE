@@ -24,7 +24,11 @@ public class Utils {
     }
 
     public static boolean copyFileToDir(String srcFile, String destDir) {
-        if (fileExists(srcFile, true)) {
+        return copyFileToDir(srcFile, destDir, true);
+    }
+
+    public static boolean copyFileToDir(String srcFile, String destDir, boolean showErrMsg) {
+        if (fileExists(srcFile, showErrMsg)) {
             try {
                 FileUtils.copyFileToDirectory(new File(srcFile), new File(destDir));
                 return true;
@@ -41,10 +45,12 @@ public class Utils {
     }
 
     public static boolean fileExists(String filename, boolean showErrMsg) {
-        if (new File(filename).exists()) {
-            return true;
-        } else if (showErrMsg) {
-            Logger.addLog(LANG_ERR_FILE_NOT_FOUND + ": " + filename, LMT_ERROR);
+        if (!filename.isEmpty()) { // пустая строка может передаватся при отсутствии последнего открытого файла
+            if (new File(filename).exists()) {
+                return true;
+            } else if (showErrMsg) {
+                Logger.addLog(LANG_ERR_FILE_NOT_FOUND + ": " + filename, LMT_ERROR);
+            }
         }
 
         return false;

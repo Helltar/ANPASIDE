@@ -50,9 +50,11 @@ public class ProjectBuilder extends ProjectManager {
 
         while (m.find()) {
             String moduleName = m.group(1);
-            // если уже скомпилен пропускаем
-            if (!fileExists(projPrebuildDir + moduleName + EXT_CLASS)
-                && !compile(getProjectPath() + DIR_SRC + moduleName + EXT_PAS)) {
+            filename = getProjectPath() + DIR_SRC + moduleName + EXT_PAS;
+            
+            if (!fileExists(filename, true)
+                && !fileExists(projPrebuildDir + moduleName + EXT_CLASS) // если уже скомпилен
+                && !compile(filename)) {
                 return false;
             }
         }
@@ -60,14 +62,15 @@ public class ProjectBuilder extends ProjectManager {
         // компиляция родителя
         output = runProc(args);
 
-        findAndCopyStubs(output);
-        findAndCopyLib(output);
-
-        String cleanOutput = deleteCharacters(output); // очистка ненужной информации
+        // очистка ненужной информации
+        String cleanOutput = deleteCharacters(output);
 
         if (!isErr(output)) {
             Logger.addLog(cleanOutput);
-            return true;
+
+            if (findAndCopyStubs(output) && findAndCopyLib(output)) {
+                return true;
+            }
         } else {
             Logger.addLog(cleanOutput, LMT_ERROR);
         }
@@ -76,29 +79,37 @@ public class ProjectBuilder extends ProjectManager {
     }
 
     private boolean isErr(String output) {
-        return output.contains("[Pascal Error]");
+        return output.contains("[Pascal Error]") || output.contains("Fatal error");
     }
 
-    private void findAndCopyLib(String output) {
+    private boolean findAndCopyLib(String output) {
         Matcher m = Pattern.compile("\\^1(.*?)\n").matcher(output);
 
         while (m.find()) {
             String libName = "Lib_" + m.group(1) + EXT_CLASS;
 
             // пробуем найти библиотеку в libs каталоге проекта
-            if (!copyFileToDir(getProjLibsDir() + libName, projPrebuildDir)) {
+            if (!copyFileToDir(getProjLibsDir() + libName, projPrebuildDir, false)) {
                 // если нет берем из глобального
-                copyFileToDir(globLibsDir + libName, projPrebuildDir);
+                if (!copyFileToDir(globLibsDir + libName, projPrebuildDir)) {
+                    return false;
+                }
             }
         }
+
+        return true;
     }
 
-    private void findAndCopyStubs(String output) {
+    private boolean findAndCopyStubs(String output) {
         Matcher m = Pattern.compile("\\^2(.*?)\n").matcher(output);
 
         while (m.find()) {
-            copyFileToDir(stubsDir + m.group(1), projPrebuildDir);
+            if (!copyFileToDir(stubsDir + m.group(1), projPrebuildDir)) {
+                return false;
+            }
         }
+
+        return true;
     }
 
     public boolean build() {

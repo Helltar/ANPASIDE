@@ -58,7 +58,7 @@ public class MainActivity extends AppCompatActivity {
 
         tvLog = (TextView) findViewById(R.id.tvLog);
         svLog = (ScrollView) findViewById(R.id.svLog);
-        
+
         TabHost tabHost = (TabHost) findViewById(android.R.id.tabhost);
         tabHost.setup();
 
@@ -81,7 +81,11 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public static void addGuiLog(final String msg, final int msgType) {
+    public static void addGuiLog(String msg, int msgType) {
+        if (msg.isEmpty()) {
+            return;
+        }
+
         String fontColor = "#aaaaaa";
 
         switch (msgType) {
@@ -141,10 +145,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private boolean openFile(String filename) {
-        if (filename.isEmpty()) {
-            return false;
-        }
-
         if (fileExists(filename, true)) {
             if (isProjectFile(filename) && pman.openProject(filename)) {
                 editorConfig.setLastProject(filename);
