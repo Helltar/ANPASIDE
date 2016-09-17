@@ -235,7 +235,7 @@ public class MainActivity extends AppCompatActivity {
                         return;
                     }
 
-                    final String filename = pman.getMainModuleFilename();
+                    final String filename = pman.getProjectPath() + DIR_SRC + moduleName + EXT_PAS;
 
                     if (!fileExists(filename)) {
                         createModule(filename);
