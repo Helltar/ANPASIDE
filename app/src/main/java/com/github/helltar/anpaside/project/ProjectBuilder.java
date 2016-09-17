@@ -51,10 +51,12 @@ public class ProjectBuilder extends ProjectManager {
         while (m.find()) {
             String moduleName = m.group(1);
             filename = getProjectPath() + DIR_SRC + moduleName + EXT_PAS;
-            
-            if (!fileExists(filename, true)
-                && !fileExists(projPrebuildDir + moduleName + EXT_CLASS) // если уже скомпилен
-                && !compile(filename)) {
+
+            if (fileExists(filename, true)
+                && !fileExists(projPrebuildDir + moduleName + EXT_CLASS, true) // если уже скомпилен
+                && compile(filename)) {
+                continue;
+            } else {
                 return false;
             }
         }
