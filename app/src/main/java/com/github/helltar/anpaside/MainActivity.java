@@ -112,6 +112,9 @@ public class MainActivity extends AppCompatActivity {
         new Handler(Looper.getMainLooper()).post(new Runnable() {
                 @Override
                 public void run() {
+                    if (tvLog.getText().length() > 1024) {
+                        tvLog.setText("");
+                    }
                     tvLog.append(text);
                     svLog.fullScroll(ScrollView.FOCUS_DOWN);
                 }
