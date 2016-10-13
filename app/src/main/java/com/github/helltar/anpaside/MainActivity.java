@@ -88,13 +88,10 @@ public class MainActivity extends AppCompatActivity {
 
         String fontColor = "#aaaaaa";
 
-        switch (msgType) {
-            case LMT_INFO:
-                fontColor = "#00aa00";
-                break;
-            case LMT_ERROR:
-                fontColor = "#ee0000";
-                break;
+        if (msgType == LMT_INFO) {
+            fontColor = "#00aa00";
+        } else if (msgType == LMT_ERROR) {
+            fontColor = "#ee0000";
         }
 
         String[] msgLines = msg.split("\n");
@@ -115,6 +112,7 @@ public class MainActivity extends AppCompatActivity {
                     if (tvLog.getText().length() > 1024) {
                         tvLog.setText("");
                     }
+
                     tvLog.append(text);
                     svLog.fullScroll(ScrollView.FOCUS_DOWN);
                 }
@@ -342,6 +340,7 @@ public class MainActivity extends AppCompatActivity {
                 } else {
                     showToastMsg(R.string.msg_no_open_project);
                 }
+
                 return true;
 
             case R.id.miCreateProject:

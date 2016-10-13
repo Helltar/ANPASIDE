@@ -45,7 +45,7 @@ public class Utils {
     }
 
     public static boolean fileExists(String filename, boolean showErrMsg) {
-        if (!filename.isEmpty()) { // пустая строка может передаватся при отсутствии последнего открытого файла
+        if (!filename.isEmpty()) {
             if (new File(filename).exists()) {
                 return true;
             } else if (showErrMsg) {
