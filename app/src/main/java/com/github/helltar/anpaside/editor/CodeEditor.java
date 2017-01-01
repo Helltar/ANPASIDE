@@ -108,8 +108,9 @@ public class CodeEditor {
             if (keyEvent.getAction() == KeyEvent.ACTION_DOWN) {
                 switch (keyCode) {
                     case KeyEvent.KEYCODE_TAB:
-                        EditText e = (EditText) v;
-                        e.getText().insert(e.getSelectionStart(), tabIns);
+                        EditText editText = (EditText) v;
+                        editText.getText().insert(editText.getSelectionStart(),
+                                                  tabIns);
                         return true;
 
                     case KeyEvent.KEYCODE_S:
@@ -117,6 +118,7 @@ public class CodeEditor {
                             saveCurrentFile();
                             return true;
                         }
+
                         return false;
                 }
             }

@@ -39,7 +39,7 @@ public class ProjectManager extends ProjectConfig {
             copyFileToDir(DATA_PKG_PATH + ASSET_DIR_FILES + "/icon.png", projectPath + DIR_RES);
             return true;
         }
-        
+
         return false;
     }
 
