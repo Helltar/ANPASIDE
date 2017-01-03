@@ -53,7 +53,7 @@ public class ProjectBuilder extends ProjectManager {
             filename = getProjectPath() + DIR_SRC + moduleName + EXT_PAS;
 
             if (fileExists(filename, true)
-                && !fileExists(projPrebuildDir + moduleName + EXT_CLASS, true) // если уже скомпилен
+                && !fileExists(projPrebuildDir + moduleName + EXT_CLASS) // если уже скомпилен
                 && compile(filename)) {
                 continue;
             } else {
