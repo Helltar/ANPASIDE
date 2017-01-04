@@ -33,7 +33,11 @@ public class ProjectBuilder extends ProjectManager {
         projPrebuildDir = getProjectPath() + DIR_PREBUILD;
     }
 
-    public boolean compile(String filename) {
+    private String runCompiler(String filename) {
+        return runCompiler(filename, false);
+    }
+
+    private String runCompiler(String filename, boolean detectUnits) {
         String args =
             mp3cc
             + " -s " + filename
@@ -43,18 +47,25 @@ public class ProjectBuilder extends ProjectManager {
             + " -m " + Integer.toString(getMathType())
             + " c " + Integer.toString(getCanvasType());
 
-        // detect units (в выводе получаем список модулей из uses)
-        String output = runProc(args + " -d");
+        if (detectUnits) {
+            args += " -d";
+        }
 
-        Matcher m = Pattern.compile("\\^0(.*?)\n").matcher(output); // берем имя
+        return runProc(args);
+    }
+
+    public boolean compile(final String filename) {
+        String output = runCompiler(filename, true);
+
+        Matcher m = Pattern.compile("\\^0(.*?)\n").matcher(output);
 
         while (m.find()) {
-            String moduleName = m.group(1);
-            filename = getProjectPath() + DIR_SRC + moduleName + EXT_PAS;
+            String unitName = m.group(1);
+            String unitFilename = getProjectPath() + DIR_SRC + unitName + EXT_PAS;
 
-            if (fileExists(filename, true)
-                && !fileExists(projPrebuildDir + moduleName + EXT_CLASS) // если уже скомпилен
-                && compile(filename)) {
+            if (fileExists(unitFilename, true)
+                && !fileExists(projPrebuildDir + unitName + EXT_CLASS)
+                && compile(unitFilename)) {
                 continue;
             } else {
                 return false;
@@ -62,7 +73,7 @@ public class ProjectBuilder extends ProjectManager {
         }
 
         // компиляция родителя
-        output = runProc(args);
+        output = runCompiler(filename);
 
         // очистка ненужной информации
         String cleanOutput = deleteCharacters(output);

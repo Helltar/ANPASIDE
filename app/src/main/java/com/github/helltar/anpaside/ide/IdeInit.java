@@ -1,8 +1,8 @@
 package com.github.helltar.anpaside.ide;
 
 import android.content.res.AssetManager;
-import com.github.helltar.anpaside.logging.Logger;
 import com.github.helltar.anpaside.Utils;
+import com.github.helltar.anpaside.logging.Logger;
 import java.io.File;
 import java.io.IOException;
 import org.apache.commons.io.FileUtils;
