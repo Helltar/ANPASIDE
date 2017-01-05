@@ -75,12 +75,13 @@ public class Utils {
         return false;
     }
 
-    // TODO: bool
-    public static String runProc(String args) {
+    public static ProcessResult runProc(String args) {
+        boolean result = false;
         StringBuffer output = new StringBuffer();
 
         try {
             Process process = Runtime.getRuntime().exec(args);
+
             BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
 
             String line = "";
@@ -90,13 +91,15 @@ public class Utils {
                 process.waitFor();
             }
 
-        } catch (InterruptedException ie) {
-            Logger.addLog(ie);
+            result = true;
+
         } catch (IOException ioe) {
             Logger.addLog(ioe);
+        } catch (InterruptedException ie) {
+            Logger.addLog(ie);
         }
 
-        return output.toString();
+        return new ProcessResult(result, output.toString());
     }
 }
 

@@ -21,8 +21,9 @@ public class IdeInit {
         if (copyAssets(ASSET_DIR_BIN)
             && copyAssets(ASSET_DIR_STUBS)
             && copyAssets(ASSET_DIR_FILES)) {
-            Utils.runProc("chmod 755 " + DATA_PKG_PATH + ASSET_DIR_BIN + "/" + MP3CC);
-            return true;
+            if (Utils.runProc("chmod 755 " + DATA_PKG_PATH + ASSET_DIR_BIN + "/" + MP3CC).started) {
+                return true;
+            }
         }
 
         return false;

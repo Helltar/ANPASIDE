@@ -1,5 +1,6 @@
 package com.github.helltar.anpaside.project;
 
+import com.github.helltar.anpaside.ProcessResult;
 import com.github.helltar.anpaside.logging.Logger;
 import java.io.File;
 import java.io.IOException;
@@ -33,11 +34,7 @@ public class ProjectBuilder extends ProjectManager {
         projPrebuildDir = getProjectPath() + DIR_PREBUILD;
     }
 
-    private String runCompiler(String filename) {
-        return runCompiler(filename, false);
-    }
-
-    private String runCompiler(String filename, boolean detectUnits) {
+    private ProcessResult runCompiler(String filename, boolean detectUnits) {
         String args =
             mp3cc
             + " -s " + filename
@@ -55,7 +52,13 @@ public class ProjectBuilder extends ProjectManager {
     }
 
     public boolean compile(final String filename) {
-        String output = runCompiler(filename, true);
+        ProcessResult compilerProc = runCompiler(filename, true);
+
+        if (!compilerProc.started) {
+            return false;
+        }
+
+        String output = compilerProc.output;
 
         Matcher m = Pattern.compile("\\^0(.*?)\n").matcher(output);
 
@@ -73,7 +76,13 @@ public class ProjectBuilder extends ProjectManager {
         }
 
         // компиляция родителя
-        output = runCompiler(filename);
+        compilerProc = runCompiler(filename, false);
+
+        if (!compilerProc.started) {
+            return false;
+        }
+
+        output = compilerProc.output;
 
         // очистка ненужной информации
         String cleanOutput = deleteCharacters(output);
