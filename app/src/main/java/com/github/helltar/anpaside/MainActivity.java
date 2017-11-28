@@ -1,5 +1,7 @@
 package com.github.helltar.anpaside;
 
+import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -9,8 +11,6 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.text.Html;
 import android.text.Spanned;
 import android.view.Gravity;
@@ -41,7 +41,7 @@ import static com.github.helltar.anpaside.Consts.*;
 import static com.github.helltar.anpaside.logging.Logger.*;
 import static com.github.helltar.anpaside.Utils.*;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends Activity {
 
     private CodeEditor editor;
     private EditorConfig editorConfig;
