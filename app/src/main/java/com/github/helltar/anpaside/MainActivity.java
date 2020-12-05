@@ -1,5 +1,6 @@
 package com.github.helltar.anpaside;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -10,6 +11,8 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.text.Html;
 import android.text.Spanned;
 import android.view.Gravity;
@@ -72,6 +75,10 @@ public class MainActivity extends Activity {
     }
 
     private void init() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{ Manifest.permission.WRITE_EXTERNAL_STORAGE }, 0);
+        }
+
         if (ideConfig.isAssetsInstall()) {
             Logger.addLog(getString(R.string.app_name) + " " + getAppVersionName());
             openFile(editorConfig.getLastFilename());
