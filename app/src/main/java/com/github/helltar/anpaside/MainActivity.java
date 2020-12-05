@@ -6,7 +6,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -34,6 +33,7 @@ import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.concurrent.Executors;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 
@@ -77,7 +77,7 @@ public class MainActivity extends Activity {
             openFile(editorConfig.getLastFilename());
             openFile(editorConfig.getLastProject());
         } else {
-            new Install().execute();
+            installAssets();
         }
     }
 
@@ -124,6 +124,22 @@ public class MainActivity extends Activity {
         intent.setAction(Intent.ACTION_GET_CONTENT);
         intent.setType("file/*");
         startActivityForResult(intent, 1);
+    }
+
+    private void startActionViewIntent(String filename) {
+        File file = new File(filename);
+
+        String ext = MimeTypeMap.getFileExtensionFromUrl(file.getName());
+        String type = MimeTypeMap.getSingleton().getMimeTypeFromExtension(ext);
+
+        if (type == null) {
+            type = "*/*";
+        }
+
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        intent.setDataAndType(Uri.fromFile(file), type);
+
+        startActivity(intent);
     }
 
     @Override
@@ -335,7 +351,7 @@ public class MainActivity extends Activity {
             case R.id.miRun:
                 if (pman.isProjectOpen()) {
                     if (saveCurrentFile(false)) { 
-                        new BuildProj().execute();
+                        buildProject();
                     }
                 } else {
                     showToastMsg(R.string.msg_no_open_project);
@@ -372,60 +388,53 @@ public class MainActivity extends Activity {
         }
     }
 
-    private void startActionViewIntent(String filename) {
-        File file = new File(filename);
+    private void buildProject() {
+        Executors.newSingleThreadExecutor().execute(new Runnable() {
+                boolean result = false;
+                ProjectBuilder builder;
 
-        String ext = MimeTypeMap.getFileExtensionFromUrl(file.getName());
-        String type = MimeTypeMap.getSingleton().getMimeTypeFromExtension(ext);
+                @Override
+                public void run() {
+                    builder = new ProjectBuilder(
+                        pman.getProjectConfigFilename(),
+                        DATA_PKG_PATH + ASSET_DIR_BIN + "/" + MP3CC,
+                        DATA_PKG_PATH + ASSET_DIR_STUBS + "/",
+                        pman.getProjLibsDir());
 
-        if (type == null) {
-            type = "*/*";
-        }
+                    result = builder.build();
 
-        Intent intent = new Intent(Intent.ACTION_VIEW);
-        intent.setDataAndType(Uri.fromFile(file), type);
-
-        startActivity(intent);
+                    new Handler(Looper.getMainLooper()).post(new Runnable() {
+                            @Override
+                            public void run() {
+                                if (result) {
+                                    startActionViewIntent(builder.getJarFilename());
+                                }
+                            }
+                        });
+                }
+            });
     }
 
-    private class Install extends AsyncTask<Void, Void, Boolean> {
+    private void installAssets() {
+        Logger.addLog(getString(R.string.msg_install_start));
 
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            Logger.addLog(getString(R.string.msg_install_start));
-        }
+        Executors.newSingleThreadExecutor().execute(new Runnable() {
+                boolean result = false;
 
-        @Override
-        protected Boolean doInBackground(Void... params) {
-            return new IdeInit(MainApp.getContext().getAssets()).install();
-        }
+                @Override
+                public void run() {
+                    result = new IdeInit(MainApp.getContext().getAssets()).install();
 
-        @Override
-        protected void onPostExecute(Boolean result) {
-            super.onPostExecute(result);
-            if (result) {
-                ideConfig.setInstState(true);
-                Logger.addLog(getString(R.string.msg_install_ok), LMT_INFO);
-            }
-        }
-    }
-
-    private class BuildProj extends AsyncTask<Void, Void, Void> {
-
-        @Override
-        protected Void doInBackground(Void... params)  {
-            ProjectBuilder builder = new ProjectBuilder(pman.getProjectConfigFilename(),
-                                                        DATA_PKG_PATH + ASSET_DIR_BIN + "/" + MP3CC,
-                                                        DATA_PKG_PATH + ASSET_DIR_STUBS + "/",
-                                                        pman.getProjLibsDir());
-
-            if (builder.build()) {
-                startActionViewIntent(builder.getJarFilename());
-            }
-
-            return null;
-        }
-    }
+                    new Handler(Looper.getMainLooper()).post(new Runnable() {
+                            @Override
+                            public void run() {
+                                if (result) {
+                                    ideConfig.setInstState(true);
+                                    Logger.addLog(getString(R.string.msg_install_ok), LMT_INFO);
+                                }
+                            }
+                        });
+                }
+            });
+    }    
 }
-
