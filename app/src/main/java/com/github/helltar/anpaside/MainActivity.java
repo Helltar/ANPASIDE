@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
+import android.os.StrictMode;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.text.Html;
@@ -58,6 +59,10 @@ public class MainActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
+        StrictMode.setVmPolicy(builder.build());
+        builder.detectFileUriExposure();
 
         tvLog = (TextView) findViewById(R.id.tvLog);
         svLog = (ScrollView) findViewById(R.id.svLog);
@@ -127,21 +132,14 @@ public class MainActivity extends Activity {
     }
 
     private void showOpenFileDialog() {
-        Intent intent = new Intent();
-        intent.setAction(Intent.ACTION_GET_CONTENT);
-        intent.setType("file/*");
+        Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+        intent.setType("*/*");
         startActivityForResult(intent, 1);
     }
 
     private void startActionViewIntent(String filename) {
         File file = new File(filename);
-
-        String ext = MimeTypeMap.getFileExtensionFromUrl(file.getName());
-        String type = MimeTypeMap.getSingleton().getMimeTypeFromExtension(ext);
-
-        if (type == null) {
-            type = "*/*";
-        }
+        String type = MimeTypeMap.getSingleton().getMimeTypeFromExtension(MimeTypeMap.getFileExtensionFromUrl(file.getName()));
 
         Intent intent = new Intent(Intent.ACTION_VIEW);
         intent.setDataAndType(Uri.fromFile(file), type);
@@ -151,8 +149,8 @@ public class MainActivity extends Activity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (data != null) {
-            openFile(data.getData().getPath());
+        if (resultCode == RESULT_OK) {
+            openFile(getPathFromUri(this, data.getData()));
         }
     }
 
