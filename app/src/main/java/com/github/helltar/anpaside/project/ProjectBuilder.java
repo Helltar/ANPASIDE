@@ -66,12 +66,14 @@ public class ProjectBuilder extends ProjectManager {
             String unitName = m.group(1);
             String unitFilename = getProjectPath() + DIR_SRC + unitName + EXT_PAS;
 
-            if (fileExists(unitFilename, true)
-                && !fileExists(projPrebuildDir + unitName + EXT_CLASS)
-                && compile(unitFilename)) {
-                continue;
-            } else {
-                return false;
+            if (fileExists(unitFilename, true)) {
+                if (!fileExists(projPrebuildDir + unitName + EXT_CLASS)) {
+                    if (compile(unitFilename)) {
+                        continue;
+                    } else {
+                        return false;
+                    }
+                }
             }
         }
 
