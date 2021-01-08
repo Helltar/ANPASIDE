@@ -38,7 +38,7 @@
     <string name="dlg.title.new_project">Новый проект</string>
     <string name="dlg.title.new_module">Новый модуль</string>
     <string name="dlg.title.invalid_value">Недопустимое значение</string>
-    <string name="dlg.subtitle.new_project">Родительський каталог: %s</string>
+    <string name="dlg.subtitle.new_project">Родительский каталог: %s</string>
     <string name="dlg.hint.project_name">название</string>
     <string name="dlg.hint.module_name">название</string>
 
