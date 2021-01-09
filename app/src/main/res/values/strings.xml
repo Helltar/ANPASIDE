@@ -40,8 +40,9 @@
     <string name="dlg.title.new_project">New project</string>
     <string name="dlg.title.new_module">New unit</string>
     <string name="dlg.title.invalid_value">Invalid value</string>
-    <string name="dlg.subtitle.new_project">Parent directory: %s</string>
+    <string name="dlg.subtitle.new_project">Internal memory: %s</string>
     <string name="dlg.hint.project_name">project name</string>
+    <string name="dlg.hint.projects_dir_name">Parent directory</string>
     <string name="dlg.hint.module_name">module name</string>
 
     <!-- buttons -->

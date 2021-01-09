@@ -13,7 +13,7 @@ public class Consts {
     public static final String ASSET_DIR_FILES = "files";
     public static final String ASSET_DIR_STUBS = "stubs";
 
-    public static final String DIR_MAIN = "AppProjects/";
+    public static final String DIR_MAIN = "AppProjects";
     public static final String DIR_BIN = "bin/";
     public static final String DIR_SRC = "src/";
     public static final String DIR_LIBS = "libs/";

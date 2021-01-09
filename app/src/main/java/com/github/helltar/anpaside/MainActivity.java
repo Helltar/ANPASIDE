@@ -17,8 +17,10 @@ import android.support.v4.content.ContextCompat;
 import android.text.Html;
 import android.text.Spanned;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.webkit.MimeTypeMap;
 import android.widget.EditText;
 import android.widget.ScrollView;
@@ -44,7 +46,6 @@ import org.apache.commons.io.FilenameUtils;
 import static com.github.helltar.anpaside.Consts.*;
 import static com.github.helltar.anpaside.logging.Logger.*;
 import static com.github.helltar.anpaside.Utils.*;
-import android.view.View;
 
 public class MainActivity extends Activity {
 
@@ -65,10 +66,10 @@ public class MainActivity extends Activity {
         StrictMode.setVmPolicy(builder.build());
         builder.detectFileUriExposure();
 
-        tvLog = (TextView) findViewById(R.id.tvLog);
-        svLog = (ScrollView) findViewById(R.id.svLog);
+        tvLog = findViewById(R.id.tvLog);
+        svLog = findViewById(R.id.svLog);
 
-        TabHost tabHost = (TabHost) findViewById(android.R.id.tabhost);
+        TabHost tabHost = findViewById(android.R.id.tabhost);
         tabHost.setup();
 
         editor = new CodeEditor(this, tabHost);
@@ -156,9 +157,39 @@ public class MainActivity extends Activity {
         }
     }
 
-    private void createProject(String path, String name) {
-        if (pman.createProject(path, name)) {
-            openFile(pman.getProjectConfigFilename());
+    private void createProject(final String projDir, final String projName) {
+        final String sdcardPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/";
+
+        if (projName.length() < 3) {
+            showAlertMsg(R.string.dlg_title_invalid_value,
+                         String.format(getString(R.string.err_project_name_least_chars), 3));
+            return;
+        }
+
+        final String projectPath = sdcardPath + projDir + "/" + projName + "/";
+
+        if (!fileExists(projectPath)) {
+            if (pman.createProject(sdcardPath + projDir + "/", projName)) {
+                openFile(pman.getProjectConfigFilename());
+            }
+        } else {
+            new AlertDialog.Builder(MainActivity.this)
+                .setMessage(R.string.err_project_exists)
+                .setPositiveButton(R.string.dlg_btn_rewrite,
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int whichButton) {
+                        try {
+                            FileUtils.deleteDirectory(new File(projectPath));
+                            if (pman.createProject(sdcardPath + projDir + "/", projName)) {
+                                openFile(pman.getProjectConfigFilename());
+                            }
+                        } catch (IOException ioe) {
+                            Logger.addLog(ioe);
+                        }
+                    }
+                })
+                .setNegativeButton(R.string.dlg_btn_cancel, null)
+                .show();
         }
     }
 
@@ -189,55 +220,24 @@ public class MainActivity extends Activity {
     }
 
     private void showNewProjectDialog() {
-        final EditText edtProjectName = new EditText(this);
-        edtProjectName.setHint(R.string.dlg_hint_project_name);
+        LayoutInflater li = this.getLayoutInflater();
+        View view = li.inflate(R.layout.new_project_dialog, null);
 
-        String sdcardPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/";
-        final String projectsPath = sdcardPath + DIR_MAIN;
+        final EditText edtProjectsDir = view.findViewById(R.id.edtProjectsDir);
+        final EditText edtProjectName = view.findViewById(R.id.edtProjectName);
+
+        edtProjectsDir.setText(DIR_MAIN);
 
         new AlertDialog.Builder(this)
             .setTitle(R.string.dlg_title_new_project)
-            .setMessage(String.format(getString(R.string.dlg_subtitle_new_project), projectsPath))
-            .setView(edtProjectName)
-            .setPositiveButton(R.string.dlg_btn_create,
-            new DialogInterface.OnClickListener() {
+            .setMessage("")
+            .setView(view)
+            .setNegativeButton(R.string.dlg_btn_cancel, null)
+            .setPositiveButton(R.string.dlg_btn_create, new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int whichButton) {
-                    final String projName = edtProjectName.getText().toString();
-
-                    if (projName.length() < 3) {
-                        showAlertMsg(R.string.dlg_title_invalid_value,
-                                     String.format(getString(R.string.err_project_name_least_chars), 3));
-                        return;
-                    }
-
-                    final String projPath = projectsPath + projName;
-
-                    if (!mkdir(projectsPath)) {
-                        return;
-                    }
-
-                    if (!fileExists(projPath)) {
-                        createProject(projectsPath, projName);
-                    } else {
-                        new AlertDialog.Builder(MainActivity.this)
-                            .setMessage(R.string.err_project_exists)
-                            .setPositiveButton(R.string.dlg_btn_rewrite,
-                            new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int whichButton) {
-                                    try {
-                                        FileUtils.deleteDirectory(new File(projPath));
-                                        createProject(projectsPath, projName);
-                                    } catch (IOException ioe) {
-                                        Logger.addLog(ioe);
-                                    }
-                                }
-                            })
-                            .setNegativeButton(R.string.dlg_btn_cancel, null)
-                            .show();
-                    }
+                    createProject(edtProjectsDir.getText().toString(), edtProjectName.getText().toString());
                 }
             })
-            .setNegativeButton(R.string.dlg_btn_cancel, null)
             .show();
     }
 
