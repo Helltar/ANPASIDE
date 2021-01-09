@@ -44,6 +44,7 @@ import org.apache.commons.io.FilenameUtils;
 import static com.github.helltar.anpaside.Consts.*;
 import static com.github.helltar.anpaside.logging.Logger.*;
 import static com.github.helltar.anpaside.Utils.*;
+import android.view.View;
 
 public class MainActivity extends Activity {
 
@@ -53,7 +54,7 @@ public class MainActivity extends Activity {
     private ProjectManager pman = new ProjectManager();
 
     private static TextView tvLog;
-    private static ScrollView svLog;
+    public static ScrollView svLog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -127,6 +128,7 @@ public class MainActivity extends Activity {
 
                     tvLog.append(text);
                     svLog.fullScroll(ScrollView.FOCUS_DOWN);
+                    svLog.setVisibility(View.VISIBLE);
                 }
             });
     }

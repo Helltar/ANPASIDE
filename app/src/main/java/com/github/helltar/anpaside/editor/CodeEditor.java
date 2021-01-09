@@ -17,6 +17,7 @@ import android.widget.ScrollView;
 import android.widget.TabHost;
 import android.widget.TabHost.TabContentFactory;
 import android.widget.TabHost.TabSpec;
+import com.github.helltar.anpaside.MainActivity;
 import com.github.helltar.anpaside.logging.Logger;
 import java.io.File;
 import java.io.IOException;
@@ -89,7 +90,9 @@ public class CodeEditor {
 
     private TextWatcher textWatcher = new TextWatcher() {
         @Override
-        public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            MainActivity.svLog.setVisibility(View.GONE);
+        }
 
         @Override
         public void onTextChanged(CharSequence s, int start, int before, int count) {
