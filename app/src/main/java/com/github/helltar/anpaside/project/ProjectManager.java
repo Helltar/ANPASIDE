@@ -17,6 +17,8 @@ public class ProjectManager extends ProjectConfig {
     private boolean createConfigFile(String filename, String midletName) {
         setMidletName(midletName);
         setMainModuleName(midletName.toLowerCase());
+        setMidletVendor("vendor");
+        setVersion("1.0");
 
         try {
             save(filename);
@@ -94,7 +96,7 @@ public class ProjectManager extends ProjectConfig {
     }
 
     public String getMidletVersion() {
-        return getVersMajor() + "." + getVersMinor() + "." + getVersBuild();
+        return getVersion();
     }
 
     private boolean createGitIgnore(String path) {

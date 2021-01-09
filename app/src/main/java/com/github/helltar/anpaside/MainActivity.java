@@ -46,6 +46,7 @@ import org.apache.commons.io.FilenameUtils;
 import static com.github.helltar.anpaside.Consts.*;
 import static com.github.helltar.anpaside.logging.Logger.*;
 import static com.github.helltar.anpaside.Utils.*;
+import android.os.PersistableBundle;
 
 public class MainActivity extends Activity {
 
@@ -81,6 +82,30 @@ public class MainActivity extends Activity {
         init();
     }
 
+    @Override
+    protected void onResume() {
+        // TODO: Implement this method
+        super.onResume();
+    }
+
+    @Override
+    protected void onRestart() {
+        // TODO: Implement this method
+        super.onRestart();
+    }
+
+    @Override
+    protected void onPause() {
+        // TODO: Implement this method
+        super.onPause();
+    }
+
+    @Override
+    public void onRestoreInstanceState(Bundle savedInstanceState, PersistableBundle persistentState) {
+        // TODO: Implement this method
+        super.onRestoreInstanceState(savedInstanceState, persistentState);
+    }
+
     private void init() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{ Manifest.permission.WRITE_EXTERNAL_STORAGE }, 0);
@@ -88,8 +113,8 @@ public class MainActivity extends Activity {
 
         if (ideConfig.isAssetsInstall()) {
             Logger.addLog(getString(R.string.app_name) + " " + getAppVersionName());
-            openFile(editorConfig.getLastFilename());
             openFile(editorConfig.getLastProject());
+            openFile(editorConfig.getLastFilename());
         } else {
             installAssets();
         }
@@ -230,7 +255,6 @@ public class MainActivity extends Activity {
 
         new AlertDialog.Builder(this)
             .setTitle(R.string.dlg_title_new_project)
-            .setMessage("")
             .setView(view)
             .setNegativeButton(R.string.dlg_btn_cancel, null)
             .setPositiveButton(R.string.dlg_btn_create, new DialogInterface.OnClickListener() {
@@ -241,13 +265,45 @@ public class MainActivity extends Activity {
             .show();
     }
 
+    private void showProjectConfigDialog() {
+        LayoutInflater li = this.getLayoutInflater();
+        View view = li.inflate(R.layout.project_config, null);
+
+        final EditText edtMidletName = view.findViewById(R.id.edtMidletName);
+        final EditText edtMidletVendor = view.findViewById(R.id.edtMidletVendor);
+        final EditText edtMidletVersion = view.findViewById(R.id.edtMidletVersion);
+
+        edtMidletName.setText(pman.getMidletName());
+        edtMidletVendor.setText(pman.getMidletVendor());
+        edtMidletVersion.setText(pman.getMidletVersion());
+
+        new AlertDialog.Builder(this)
+            .setTitle(R.string.manifest_mf)
+            .setView(view)
+            .setNegativeButton(R.string.dlg_btn_cancel, null)
+            .setPositiveButton(R.string.menu_file_save, new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int whichButton) {
+                    try {
+                        pman.setMidletName(edtMidletName.getText().toString());
+                        pman.setMidletVendor(edtMidletVendor.getText().toString());
+                        pman.setVersion(edtMidletVersion.getText().toString());
+                        pman.save(pman.getProjectConfigFilename());
+                    } catch (IOException e) {
+                        Logger.addLog(e);
+                    }
+                }
+            })
+            .show();
+    }
+
     private void showNewModuleDialog() {
-        final EditText edtModuleName = new EditText(this);
-        edtModuleName.setHint(R.string.dlg_hint_module_name);
+        LayoutInflater li = this.getLayoutInflater();
+        View view = li.inflate(R.layout.new_module, null);
+        final EditText edtModuleName = view.findViewById(R.id.edtNewModuleName);
 
         new AlertDialog.Builder(this)
             .setTitle(R.string.dlg_title_new_module)
-            .setView(edtModuleName)
+            .setView(view)
             .setPositiveButton(R.string.dlg_btn_create,
             new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int whichButton) {
@@ -348,6 +404,7 @@ public class MainActivity extends Activity {
     public boolean onPrepareOptionsMenu(Menu menu) {
         menu.findItem(R.id.miCreateModule).setEnabled(pman.isProjectOpen());
         menu.findItem(R.id.miFileSave).setEnabled(editor.isCurrentFileModified());
+        menu.findItem(R.id.miProjectConfig).setEnabled(pman.isProjectOpen());
         return super.onPrepareOptionsMenu(menu);
     }
 
@@ -372,6 +429,10 @@ public class MainActivity extends Activity {
 
             case R.id.miCreateModule:
                 showNewModuleDialog();
+                return true;
+
+            case R.id.miProjectConfig:
+                showProjectConfigDialog();
                 return true;
 
             case R.id.miFileOpen:

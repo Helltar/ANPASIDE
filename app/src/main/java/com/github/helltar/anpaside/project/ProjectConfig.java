@@ -64,29 +64,12 @@ public class ProjectConfig {
     public String getMidletIcon() {
         return p.getProperty("Icon", "/icon.png");
     }
-
-    public void setVersMajor(int versMajor) {
-        p.setProperty("Major", Integer.toString(versMajor));
+    
+    public void setVersion(String version) {
+        p.setProperty("Version", version);
     }
 
-    public int getVersMajor() {
-        return Integer.parseInt(p.getProperty("Major", "1"));
-    }
-
-    public void setVersMinor(int versMinor) {
-        p.setProperty("Minor", Integer.toString(versMinor));
-    }
-
-    public int getVersMinor() {
-        return Integer.parseInt(p.getProperty("Minor", "0"));
-    }
-
-    public void setVersBuild(int versBuild) {
-        p.setProperty("Build", Integer.toString(versBuild));
-    }
-
-    public int getVersBuild() {
-        return Integer.parseInt(p.getProperty("Build", "0"));
+    public String getVersion() {
+        return p.getProperty("Version", "1");
     }
 }
-

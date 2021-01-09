@@ -26,6 +26,7 @@
 
     <string name="menu.create_project">Create project</string>
     <string name="menu.create_module">New module</string>
+    <string name="menu.project_config">Project config</string>
     <string name="menu.file_open">Open file</string>
     <string name="menu.file_save">Save</string>
     <string name="menu.about">About</string>
@@ -41,9 +42,9 @@
     <string name="dlg.title.new_module">New unit</string>
     <string name="dlg.title.invalid_value">Invalid value</string>
     <string name="dlg.subtitle.new_project">Internal memory: %s</string>
-    <string name="dlg.hint.project_name">project name</string>
+    <string name="dlg.hint.project_name">Project name</string>
     <string name="dlg.hint.projects_dir_name">Parent directory</string>
-    <string name="dlg.hint.module_name">module name</string>
+    <string name="dlg.hint.module_name">Module name</string>
 
     <!-- buttons -->
 
@@ -51,6 +52,8 @@
     <string name="dlg.btn.cancel">Cancel</string>
     <string name="dlg.btn.rewrite">Rewrite</string>
 
+    <string name="manifest.mf">MANIFEST.MF</string>
+    
     <string name="about_text">
         Android Pascal IDE
         \n\nАuthor: Helltar
