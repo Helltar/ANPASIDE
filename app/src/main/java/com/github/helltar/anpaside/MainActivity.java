@@ -11,13 +11,13 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
+import android.os.PersistableBundle;
 import android.os.StrictMode;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.text.Html;
 import android.text.Spanned;
 import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -46,7 +46,6 @@ import org.apache.commons.io.FilenameUtils;
 import static com.github.helltar.anpaside.Consts.*;
 import static com.github.helltar.anpaside.logging.Logger.*;
 import static com.github.helltar.anpaside.Utils.*;
-import android.os.PersistableBundle;
 
 public class MainActivity extends Activity {
 
@@ -114,7 +113,6 @@ public class MainActivity extends Activity {
         if (ideConfig.isAssetsInstall()) {
             Logger.addLog(getString(R.string.app_name) + " " + getAppVersionName());
             openFile(editorConfig.getLastProject());
-            openFile(editorConfig.getLastFilename());
         } else {
             installAssets();
         }
@@ -186,8 +184,7 @@ public class MainActivity extends Activity {
         final String sdcardPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/";
 
         if (projName.length() < 3) {
-            showAlertMsg(R.string.dlg_title_invalid_value,
-                         String.format(getString(R.string.err_project_name_least_chars), 3));
+            showAlertMsg(R.string.dlg_title_invalid_value, String.format(getString(R.string.err_project_name_least_chars), 3));
             return;
         }
 
@@ -218,9 +215,34 @@ public class MainActivity extends Activity {
         }
     }
 
-    private void createModule(String filename) {
-        if (pman.createModule(filename)) {
-            openFile(filename);
+    private void createModule(String moduleName) {
+        if (moduleName.length() < 3) {
+            showAlertMsg(R.string.dlg_title_invalid_value, String.format(getString(R.string.err_module_name_least_chars), 3));
+            return;
+        }
+
+        final String filename = pman.getProjectPath() + DIR_SRC + moduleName + EXT_PAS;
+
+        if (!fileExists(filename)) {
+            if (pman.createModule(filename)) {
+                openFile(filename);
+            }
+        } else {
+            new AlertDialog.Builder(this)
+                .setMessage(R.string.err_module_exists)
+                .setNegativeButton(R.string.dlg_btn_cancel, null)
+                .setPositiveButton(R.string.dlg_btn_rewrite,
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int whichButton) {
+                        if (new File(filename).delete()) {
+                            if (pman.createModule(filename)) {
+                                openFile(filename);
+                            }
+                        } else {
+                            Logger.addLog(getString(R.string.err_del_old_module) + ": " + filename, LMT_ERROR);
+                        }
+                    }})
+                .show();
         }
     }
 
@@ -244,9 +266,12 @@ public class MainActivity extends Activity {
         return FilenameUtils.getExtension(filename).equals(EXT_PROJ.substring(1, EXT_PROJ.length()));
     }
 
+    private View getViewById(int resource) {
+        return this.getLayoutInflater().inflate(resource, null);
+    }
+
     private void showNewProjectDialog() {
-        LayoutInflater li = this.getLayoutInflater();
-        View view = li.inflate(R.layout.new_project_dialog, null);
+        View view = getViewById(R.layout.dialog_new_project);
 
         final EditText edtProjectsDir = view.findViewById(R.id.edtProjectsDir);
         final EditText edtProjectName = view.findViewById(R.id.edtProjectName);
@@ -266,8 +291,7 @@ public class MainActivity extends Activity {
     }
 
     private void showProjectConfigDialog() {
-        LayoutInflater li = this.getLayoutInflater();
-        View view = li.inflate(R.layout.project_config, null);
+        View view = getViewById(R.layout.dialog_project_config);
 
         final EditText edtMidletName = view.findViewById(R.id.edtMidletName);
         final EditText edtMidletVendor = view.findViewById(R.id.edtMidletVendor);
@@ -297,8 +321,8 @@ public class MainActivity extends Activity {
     }
 
     private void showNewModuleDialog() {
-        LayoutInflater li = this.getLayoutInflater();
-        View view = li.inflate(R.layout.new_module, null);
+        View view = getViewById(R.layout.dialog_new_module);
+
         final EditText edtModuleName = view.findViewById(R.id.edtNewModuleName);
 
         new AlertDialog.Builder(this)
@@ -307,36 +331,7 @@ public class MainActivity extends Activity {
             .setPositiveButton(R.string.dlg_btn_create,
             new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int whichButton) {
-                    String moduleName = edtModuleName.getText().toString();
-
-                    if (moduleName.length() < 3) {
-                        showAlertMsg(R.string.dlg_title_invalid_value,
-                                     String.format(getString(R.string.err_module_name_least_chars), 3));
-                        return;
-                    }
-
-                    final String filename = pman.getProjectPath() + DIR_SRC + moduleName + EXT_PAS;
-
-                    if (!fileExists(filename)) {
-                        createModule(filename);
-                    } else {
-                        new AlertDialog.Builder(MainActivity.this)
-                            .setMessage(R.string.err_module_exists)
-                            .setPositiveButton(R.string.dlg_btn_rewrite,
-                            new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int whichButton) {
-                                    if (new File(filename).delete()) {
-                                        createModule(filename);
-                                    } else {
-                                        Logger.addLog(
-                                            getString(R.string.err_del_old_module) + ": " + filename,
-                                            LMT_ERROR);
-                                    }
-                                }
-                            })
-                            .setNegativeButton(R.string.dlg_btn_cancel, null)
-                            .show();
-                    }
+                    createModule(edtModuleName.getText().toString());
                 }
 
             })
