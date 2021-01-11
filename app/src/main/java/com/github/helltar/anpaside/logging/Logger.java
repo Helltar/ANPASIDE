@@ -26,7 +26,7 @@ public class Logger {
     }
 
     public static void addLog(Exception e) {
-        addLog(e.getMessage(), LMT_ERROR);
+        addGuiLog(e.getMessage(), LMT_ERROR);
         RoboErrorReporter.reportError(MainApp.getContext(), e);
     }
 }

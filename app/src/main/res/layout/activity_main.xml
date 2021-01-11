@@ -16,33 +16,35 @@
 			android:layout_height="match_parent"
 			android:orientation="vertical">
 
-            <HorizontalScrollView
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:fillViewport="true"
-                android:scrollbars="none" >
+			<HorizontalScrollView
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:fillViewport="true"
+				android:scrollbars="none">
 
-                <TabWidget
-                    android:id="@android:id/tabs"
-                    android:layout_width="wrap_content"
-                    android:layout_height="36dp"/>
+				<TabWidget
+					android:id="@android:id/tabs"
+					android:layout_width="wrap_content"
+					android:layout_height="36dp"/>
 
-            </HorizontalScrollView>
+			</HorizontalScrollView>
 
 			<FrameLayout
 				android:id="@android:id/tabcontent"
 				android:layout_height="match_parent"
 				android:layout_width="match_parent"
-				android:layout_margin="12dp"/>
+				android:layout_margin="12dp">
+
+			</FrameLayout>
 
 		</LinearLayout>
 
 	</TabHost>
 
 	<View
-		android:layout_height="1dp"
 		android:background="?android:attr/dividerVertical"
-		android:layout_width="match_parent"/>
+		android:layout_width="match_parent"
+		android:layout_height="1dp"/>
 
 	<ScrollView
 		android:layout_height="match_parent"

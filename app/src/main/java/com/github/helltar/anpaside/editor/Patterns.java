@@ -9,4 +9,3 @@ public class Patterns {
     public static final Pattern commentsPattern = Pattern.compile("/\\*(?:.|[\\n\\r])*?\\*/|(?<!:)//.*|#.*");
     public static final Pattern keywordsPattern = Pattern.compile("(?<=\\b)((begin)|(end)|(program)|(var)|(function)|(procedure)|(if)|(for))(?=\\b)", Pattern.CASE_INSENSITIVE);
 }
-

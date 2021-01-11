@@ -17,7 +17,9 @@ import android.widget.ScrollView;
 import android.widget.TabHost;
 import android.widget.TabHost.TabContentFactory;
 import android.widget.TabHost.TabSpec;
+import android.widget.Toast;
 import com.github.helltar.anpaside.MainActivity;
+import com.github.helltar.anpaside.R;
 import com.github.helltar.anpaside.logging.Logger;
 import java.io.File;
 import java.io.IOException;
@@ -119,6 +121,7 @@ public class CodeEditor {
                     case KeyEvent.KEYCODE_S:
                         if (keyEvent.isCtrlPressed()) {
                             saveCurrentFile();
+                            showToastFileSaved();
                             return true;
                         }
 
@@ -214,6 +217,12 @@ public class CodeEditor {
         if (!filenameList.isEmpty()) {
             tabHost.setCurrentTabByTag(filenameList.getLast());
         }
+    }
+
+    private void showToastFileSaved() {
+        Toast toast = Toast.makeText(context, context.getString(R.string.msg_saved), Toast.LENGTH_SHORT);
+        toast.setGravity(Gravity.BOTTOM, 0, 80);
+        toast.show();
     }
 
     private String getCurrentFilename() {
