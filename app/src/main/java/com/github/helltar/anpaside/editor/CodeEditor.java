@@ -181,13 +181,15 @@ public class CodeEditor {
     }
 
     public boolean saveCurrentFile() {
-        try {
-            FileUtils.writeStringToFile(new File(getCurrentFilename()),
-                                        getCurrentEditor().getText().toString());
-            setFileModifiedStatus(getCurrentFilename(), false);
-            return true;
-        } catch (IOException ioe) {
-            Logger.addLog(ioe);
+        if (isEditorActive()) {
+            try {
+                FileUtils.writeStringToFile(new File(getCurrentFilename()),
+                                            getCurrentEditor().getText().toString());
+                setFileModifiedStatus(getCurrentFilename(), false);
+                return true;
+            } catch (IOException ioe) {
+                Logger.addLog(ioe);
+            }
         }
 
         return false;
@@ -195,6 +197,10 @@ public class CodeEditor {
 
     public EditText getCurrentEditor() {
         return (EditText) tabHost.getTabContentView().findViewWithTag(getCurrentFilename());
+    }
+
+    private boolean isEditorActive() {
+        return getCurrentEditor() != null;
     }
 
     private void closeFile(String filename) {
