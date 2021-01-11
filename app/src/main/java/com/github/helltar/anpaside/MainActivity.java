@@ -460,7 +460,7 @@ public class MainActivity extends Activity {
                 public void run() {
                     builder = new ProjectBuilder(
                         pman.getProjectConfigFilename(),
-                        DATA_PKG_PATH + ASSET_DIR_BIN + "/" + MP3CC,
+                        DATA_LIB_PATH + MP3CC,
                         DATA_PKG_PATH + ASSET_DIR_STUBS + "/",
                         pman.getProjLibsDir());
 

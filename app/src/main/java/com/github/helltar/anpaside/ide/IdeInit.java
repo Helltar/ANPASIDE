@@ -18,10 +18,8 @@ public class IdeInit {
     }
 
     public boolean install() {
-        if (copyAssets(ASSET_DIR_BIN)
-            && copyAssets(ASSET_DIR_STUBS)
-            && copyAssets(ASSET_DIR_FILES)) {
-            if (Utils.runProc("chmod 755 " + DATA_PKG_PATH + ASSET_DIR_BIN + "/" + MP3CC).started) {
+        if (copyAssets(ASSET_DIR_STUBS)) {
+            if (copyAssets(ASSET_DIR_FILES)) {
                 return true;
             }
         }

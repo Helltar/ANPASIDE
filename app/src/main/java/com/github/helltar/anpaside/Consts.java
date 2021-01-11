@@ -5,8 +5,9 @@ import com.github.helltar.anpaside.MainApp;
 public class Consts {
 
     public static final String DATA_PKG_PATH = MainApp.getContext().getApplicationInfo().dataDir + "/";
+    public static final String DATA_LIB_PATH = MainApp.getContext().getApplicationInfo().nativeLibraryDir + "/";
 
-    public static final String MP3CC = "mp3cc";
+    public static final String MP3CC = "libmp3cc.so";
     public static final String FW_CLASS = "FW.class";
 
     public static final String ASSET_DIR_BIN = "bin";
