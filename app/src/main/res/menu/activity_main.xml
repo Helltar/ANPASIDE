@@ -5,7 +5,8 @@
     <item
         android:id="@+id/miRun"
         android:icon="@drawable/ic_run"
-        android:showAsAction="always"/>
+        android:showAsAction="always"
+        android:contentDescription="Run"/>
 
     <item
         android:id="@+id/miCreateProject"
