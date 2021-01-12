@@ -439,7 +439,7 @@ public class MainActivity extends Activity {
                 return true;
 
             case R.id.miAbout:
-                showAlertMsg(R.string.about_text);
+                showAlertMsg(getString(R.string.app_name), getString(R.string.about_text));
                 return true;
 
             case R.id.miExit:

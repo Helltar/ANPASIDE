@@ -55,8 +55,7 @@
     <string name="manifest.mf">MANIFEST.MF</string>
     
     <string name="about_text">
-        Android Pascal IDE
-        \n\nАuthor: Helltar
+        Аuthor: Helltar
         \nLicense: MIT
         \nGithub: /helltar/anpaside
     </string>

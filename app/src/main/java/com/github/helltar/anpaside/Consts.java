@@ -10,7 +10,6 @@ public class Consts {
     public static final String MP3CC = "libmp3cc.so";
     public static final String FW_CLASS = "FW.class";
 
-    public static final String ASSET_DIR_BIN = "bin";
     public static final String ASSET_DIR_FILES = "files";
     public static final String ASSET_DIR_STUBS = "stubs";
 
