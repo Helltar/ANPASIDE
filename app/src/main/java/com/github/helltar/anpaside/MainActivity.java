@@ -343,10 +343,6 @@ public class MainActivity extends Activity {
         showAlertMsg(getString(resId), msg);
     }
 
-    private void showAlertMsg(int resId) {
-        showAlertMsg("", getString(resId));
-    }
-
     private void showAlertMsg(String title, String msg) {
         new AlertDialog.Builder(this)
             .setTitle(title)
