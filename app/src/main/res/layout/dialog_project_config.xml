@@ -11,18 +11,22 @@
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:hint="MIDlet-Name"
-		android:id="@+id/edtMidletName"/>
+		android:id="@+id/edtMidletName"
+		android:minHeight="48dp"/>
 
 	<EditText
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:hint="MIDlet-Vendor"
-		android:id="@+id/edtMidletVendor"/>
+		android:id="@+id/edtMidletVendor"
+		android:minHeight="48dp"/>
 
 	<EditText
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:hint="MIDlet-Version"
-		android:id="@+id/edtMidletVersion"/>
+		android:id="@+id/edtMidletVersion"
+		android:minHeight="48dp"/>
 
 </LinearLayout>
+

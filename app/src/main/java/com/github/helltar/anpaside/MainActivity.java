@@ -105,7 +105,7 @@ public class MainActivity extends Activity {
         String lines = "";
 
         for (int i = 1; i < msgLines.length; i++) {
-            lines += "\t\t\t\t\t\t- " + msgLines[i] + "<br>";
+            lines += "\t\t\t\t\t\t\t\t\t- " + msgLines[i] + "<br>";
         }
 
         final Spanned text = Html.fromHtml(new SimpleDateFormat("[HH:mm:ss]: ").format(new Date())

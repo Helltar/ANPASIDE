@@ -11,7 +11,8 @@
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:id="@+id/edtNewModuleName"
-        android:hint="@string/dlg.hint.module_name"/>
+		android:hint="@string/dlg.hint.module_name"
+		android:minHeight="48dp"/>
 
 </LinearLayout>
 
