@@ -2,6 +2,7 @@ package com.github.helltar.anpaside;
 
 import android.app.Application;
 import android.content.Context;
+import android.os.StrictMode;
 import com.github.helltar.anpaside.logging.RoboErrorReporter;
 
 public class MainApp extends Application {
@@ -12,6 +13,11 @@ public class MainApp extends Application {
     public void onCreate() {
         super.onCreate();
         context = this;
+
+        StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
+        StrictMode.setVmPolicy(builder.build());
+        builder.detectFileUriExposure();
+
         RoboErrorReporter.bindReporter(this);
     }
 
@@ -23,4 +29,3 @@ public class MainApp extends Application {
         return context.getString(resId);
     }
 }
-

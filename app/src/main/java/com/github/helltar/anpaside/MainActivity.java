@@ -11,8 +11,6 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
-import android.os.PersistableBundle;
-import android.os.StrictMode;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.text.Html;
@@ -62,10 +60,6 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
-        StrictMode.setVmPolicy(builder.build());
-        builder.detectFileUriExposure();
-
         tvLog = findViewById(R.id.tvLog);
         svLog = findViewById(R.id.svLog);
 
@@ -79,30 +73,6 @@ public class MainActivity extends Activity {
         editorConfig = new EditorConfig(this);
 
         init();
-    }
-
-    @Override
-    protected void onResume() {
-        // TODO: Implement this method
-        super.onResume();
-    }
-
-    @Override
-    protected void onRestart() {
-        // TODO: Implement this method
-        super.onRestart();
-    }
-
-    @Override
-    protected void onPause() {
-        // TODO: Implement this method
-        super.onPause();
-    }
-
-    @Override
-    public void onRestoreInstanceState(Bundle savedInstanceState, PersistableBundle persistentState) {
-        // TODO: Implement this method
-        super.onRestoreInstanceState(savedInstanceState, persistentState);
     }
 
     private void init() {
