@@ -309,6 +309,14 @@ public class MainActivity extends Activity {
             .show();
     }
 
+    private void showAbout() {
+        new AlertDialog.Builder(this)
+            .setTitle(R.string.app_name)
+            .setView(getViewById(R.layout.dialog_about))
+            .setNegativeButton("ОК", null)
+            .show();
+    }
+
     private void showAlertMsg(int resId, String msg) {
         showAlertMsg(getString(resId), msg);
     }
@@ -405,7 +413,7 @@ public class MainActivity extends Activity {
                 return true;
 
             case R.id.miAbout:
-                showAlertMsg(getString(R.string.app_name), getString(R.string.about_text));
+                showAbout();
                 return true;
 
             case R.id.miExit:
