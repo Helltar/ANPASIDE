@@ -59,7 +59,8 @@
 			android:layout_width="match_parent"
 			android:id="@+id/tvLog"
 			android:typeface="monospace"
-			android:textColor="#A2A2A2"/>
+			android:textColor="#A2A2A2"
+			android:textIsSelectable="true"/>
 
 	</ScrollView>
 
