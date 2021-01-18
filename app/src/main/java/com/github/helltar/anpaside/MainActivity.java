@@ -76,15 +76,37 @@ public class MainActivity extends Activity {
     }
 
     private void init() {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{ Manifest.permission.WRITE_EXTERNAL_STORAGE }, 0);
+        Logger.addLog(getString(R.string.app_name) + " " + getAppVersionName());
+
+        if (!ideConfig.isAssetsInstall()) {
+            installAssets();
         }
 
-        if (ideConfig.isAssetsInstall()) {
-            Logger.addLog(getString(R.string.app_name) + " " + getAppVersionName());
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
             openFile(editorConfig.getLastProject());
         } else {
-            installAssets();
+            ActivityCompat.requestPermissions(this, new String[]{ Manifest.permission.WRITE_EXTERNAL_STORAGE }, 0);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        if (requestCode == 0) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                openFile(editorConfig.getLastProject());
+            } else {
+                new AlertDialog.Builder(this)
+                    .setTitle("Error")
+                    .setMessage("permission.WRITE_EXTERNAL_STORAGE error")
+                    .setPositiveButton("Exit",
+                    new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int whichButton) {
+                            finish();
+                        }
+
+                    })
+                    .show();
+            }
         }
     }
 
