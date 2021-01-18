@@ -102,6 +102,7 @@ public class MainActivity extends Activity {
                     new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int whichButton) {
                             finish();
+                            System.exit(0);
                         }
 
                     })
@@ -440,6 +441,7 @@ public class MainActivity extends Activity {
 
             case R.id.miExit:
                 finish();
+                System.exit(0);
                 return true;
 
             default:
