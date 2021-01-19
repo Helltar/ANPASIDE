@@ -47,7 +47,7 @@ public class CodeEditText extends android.widget.EditText {
                 canvas.drawText("" + lineNumber, rect.left, baseline, paint);
                 ++lineNumber;
             }
-        }   
+        }
 
         if (lineCount < 100) {
             setPadding(pxToDp(30), getPaddingTop(), getPaddingRight(), getPaddingBottom());

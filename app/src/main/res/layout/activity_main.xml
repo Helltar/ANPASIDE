@@ -33,7 +33,7 @@
 				android:id="@android:id/tabcontent"
 				android:layout_height="match_parent"
 				android:layout_width="match_parent"
-				android:layout_marginLeft="12dp">
+				android:layout_marginLeft="4dp">
 
 			</FrameLayout>
 

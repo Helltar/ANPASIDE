@@ -74,7 +74,6 @@ public class CodeEditor {
         edtText.setBackgroundColor(android.R.color.transparent);
         edtText.setGravity(Gravity.TOP);
         edtText.setHorizontallyScrolling(true);
-
         edtText.addTextChangedListener(textWatcher);
         edtText.setOnKeyListener(keyListener);
 
@@ -88,7 +87,6 @@ public class CodeEditor {
                 public View createTabContent(String p1) {
                     ScrollView sv = new ScrollView(context);
                     sv.setFillViewport(true);
-                    sv.setHorizontalScrollBarEnabled(true);
                     sv.addView(edtText);
                     return sv;
                 }
