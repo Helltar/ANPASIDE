@@ -33,16 +33,15 @@ public class CodeEditor {
     private Context context;
     private TabHost tabHost;
 
-    private Map<String, Boolean> fileModifiedStatusMap = new HashMap<>();
-    private LinkedList<String> filenameList = new LinkedList<>();
-
+    private String btnTabCloseName = "Close";
+    private boolean highlighterEnabled = false;
+    private String tabIns = "    ";
     private int fontSize = 14;
     private int fontColor = Color.rgb(220, 220, 220);
-    private Typeface typeface = Typeface.MONOSPACE;
-    private String tabIns = "    ";
-    private boolean hScrolling = true;
-    private String btnTabCloseName = "Close";
-    private boolean highlighterEnabled = true;
+    private Typeface fontTypeface = Typeface.MONOSPACE;
+
+    private Map<String, Boolean> fileModifiedStatusMap = new HashMap<>();
+    private LinkedList<String> filenameList = new LinkedList<>();
 
     public CodeEditor(Context context, TabHost tabHost) {
         this.context = context;
@@ -64,7 +63,7 @@ public class CodeEditor {
             return false;
         }
 
-        final EditText edtText = createEditText();
+        final EditText edtText = new CodeEditText(context);
 
         createTabs(filename, new File(filename).getName(), new TabContentFactory() {
                 @Override
@@ -77,6 +76,9 @@ public class CodeEditor {
             });
 
         edtText.setTag(filename);
+        edtText.setTextSize(fontSize);
+        edtText.setTextColor(fontColor);
+        edtText.setTypeface(fontTypeface);
         edtText.setText(text);
 
         edtText.addTextChangedListener(textWatcher);
@@ -138,17 +140,6 @@ public class CodeEditor {
             Highlighter.highlights(s);
         }
     }
-
-    private EditText createEditText() {
-        return new EditText(context) {{
-                setTextSize(fontSize);
-                setTextColor(fontColor);
-                setTypeface(typeface);
-                setGravity(Gravity.TOP);
-                setHorizontallyScrolling(hScrolling);
-                setBackgroundColor(android.R.color.transparent);
-            }};
-    }   
 
     private void createTabs(String tag, String title, TabContentFactory tabContent) {
         final TabSpec tabSpec = tabHost.newTabSpec(tag);
@@ -247,6 +238,18 @@ public class CodeEditor {
         return false;
     }
 
+    public void setBtnTabCloseName(String name) {
+        btnTabCloseName = name;
+    }
+
+    public void setHighlighterEnabled(boolean enabled) {
+        highlighterEnabled = enabled;
+    }
+
+    public void setTabIns(String symbol) {
+        tabIns = symbol;
+    }
+
     public void setFontSize(int size) {
         fontSize = size;
     }
@@ -255,24 +258,7 @@ public class CodeEditor {
         fontColor = color;
     }
 
-    public void setTypeface(Typeface tf) {
-        typeface = tf;
-    }
-
-    public void setTabIns(String symbol) {
-        tabIns = symbol;
-    }
-
-    public void setHScrolling(boolean enabled) {
-        hScrolling = enabled;
-    }
-
-    public void setBtnTabCloseName(String name) {
-        btnTabCloseName = name;
-    }
-
-    public void setHighlighterEnabled(boolean enabled) {
-        highlighterEnabled = enabled;
+    public void setFontTypeface(Typeface tf) {
+        fontTypeface = tf;
     }
 }
-
