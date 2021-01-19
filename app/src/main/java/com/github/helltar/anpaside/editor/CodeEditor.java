@@ -34,7 +34,7 @@ public class CodeEditor {
     private TabHost tabHost;
 
     private String btnTabCloseName = "Close";
-    private boolean highlighterEnabled = false;
+    private boolean highlighterEnabled = true;
     private String tabIns = "    ";
     private int fontSize = 14;
     private int fontColor = Color.rgb(220, 220, 220);
@@ -65,27 +65,34 @@ public class CodeEditor {
 
         final EditText edtText = new CodeEditText(context);
 
+        edtText.setTag(filename);
+
+        edtText.setTextSize(fontSize);
+        edtText.setTextColor(fontColor);
+        edtText.setTypeface(fontTypeface);
+
+        edtText.setBackgroundColor(android.R.color.transparent);
+        edtText.setGravity(Gravity.TOP);
+        edtText.setHorizontallyScrolling(true);
+
+        edtText.addTextChangedListener(textWatcher);
+        edtText.setOnKeyListener(keyListener);
+
+        edtText.setText(text);
+
+        setFileModifiedStatus(filename, false);
+        highlights(edtText.getEditableText());
+
         createTabs(filename, new File(filename).getName(), new TabContentFactory() {
                 @Override
                 public View createTabContent(String p1) {
                     ScrollView sv = new ScrollView(context);
                     sv.setFillViewport(true);
+                    sv.setHorizontalScrollBarEnabled(true);
                     sv.addView(edtText);
                     return sv;
                 }
             });
-
-        edtText.setTag(filename);
-        edtText.setTextSize(fontSize);
-        edtText.setTextColor(fontColor);
-        edtText.setTypeface(fontTypeface);
-        edtText.setText(text);
-
-        edtText.addTextChangedListener(textWatcher);
-        edtText.setOnKeyListener(keyListener);
-
-        setFileModifiedStatus(filename, false);
-        highlights(edtText.getEditableText());
 
         edtText.requestFocus();
 

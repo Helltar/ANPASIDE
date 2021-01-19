@@ -5,26 +5,30 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
-import android.view.Gravity;
 
 public class CodeEditText extends android.widget.EditText {
 
     private Rect rect;
     private Paint paint;
+    private Context context;
 
     public CodeEditText(Context context) {
         super(context);
 
-        rect = new Rect();
+        this.context = context;
+
         paint = new Paint();
+        rect = new Rect();
 
         paint.setStyle(Paint.Style.FILL);
         paint.setColor(Color.rgb(80, 80, 80));
-        paint.setTextSize(24);
-        paint.setFlags(Paint.ANTI_ALIAS_FLAG);
+        paint.setTextSize(pxToDp(14));
+        paint.setAntiAlias(true);
+    }
 
-        setBackgroundColor(android.R.color.transparent);
-        setGravity(Gravity.TOP);
+    private int pxToDp(int px) {
+        float density = context.getResources().getDisplayMetrics().density;
+        return Math.round(px * density);
     }
 
     @Override
@@ -46,13 +50,13 @@ public class CodeEditText extends android.widget.EditText {
         }   
 
         if (lineCount < 100) {
-            setPadding(50, getPaddingTop(), getPaddingRight(), getPaddingBottom());
+            setPadding(pxToDp(30), getPaddingTop(), getPaddingRight(), getPaddingBottom());
         } else if (lineCount > 99 && lineCount < 1000) {
-            setPadding(70, getPaddingTop(), getPaddingRight(), getPaddingBottom());
+            setPadding(pxToDp(40), getPaddingTop(), getPaddingRight(), getPaddingBottom());
         } else if (lineCount > 999 && lineCount < 10000) {
-            setPadding(90, getPaddingTop(), getPaddingRight(), getPaddingBottom());
+            setPadding(pxToDp(45), getPaddingTop(), getPaddingRight(), getPaddingBottom());
         } else if (lineCount > 9999 && lineCount < 100000) {
-            setPadding(110, getPaddingTop(), getPaddingRight(), getPaddingBottom());
+            setPadding(pxToDp(50), getPaddingTop(), getPaddingRight(), getPaddingBottom());
         }
 
         super.onDraw(canvas);

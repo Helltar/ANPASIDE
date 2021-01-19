@@ -406,7 +406,7 @@ public class MainActivity extends Activity {
 
             case R.id.miRun:
                 if (pman.isProjectOpen()) {
-                    if (saveCurrentFile(false)) { 
+                    if (saveCurrentFile(false)) {
                         buildProject();
                     }
                 } else {
