@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 public class IdeConfig {
 
     private final String PREF_NAME_INSTALL = "install";
+    private final String PREF_NAME_GLOBAL_DIR_PATH = "global_libs_dir";
 
     private Context context;
 
@@ -29,8 +30,15 @@ public class IdeConfig {
         getMainEditor().putBoolean(PREF_NAME_INSTALL, val).apply();
     }
 
+    public String getGlobalDirPath() {
+        return getSpMain().getString(PREF_NAME_GLOBAL_DIR_PATH, "");
+    }
+
+    public void setGlobalDirPath(String path) {
+        getMainEditor().putString(PREF_NAME_GLOBAL_DIR_PATH, path).apply();
+    }
+
     public boolean isAssetsInstall() {
         return getInstState();
     }
 }
-

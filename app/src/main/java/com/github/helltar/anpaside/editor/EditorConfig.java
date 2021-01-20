@@ -34,4 +34,3 @@ public class EditorConfig {
         getSpMain().edit().putString(PREF_NAME_LAST_PROJECT, filename).apply();
     }
 }
-

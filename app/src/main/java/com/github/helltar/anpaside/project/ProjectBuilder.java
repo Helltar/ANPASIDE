@@ -115,7 +115,7 @@ public class ProjectBuilder extends ProjectManager {
             // пробуем найти библиотеку в libs каталоге проекта
             if (!copyFileToDir(getProjLibsDir() + libName, projPrebuildDir, false)) {
                 // если нет берем из глобального
-                if (!copyFileToDir(globLibsDir + libName, projPrebuildDir)) {
+                if (!copyFileToDir(globLibsDir + libName, projPrebuildDir, true)) {
                     return false;
                 }
             }
