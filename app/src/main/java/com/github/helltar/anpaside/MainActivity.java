@@ -56,7 +56,7 @@ public class MainActivity extends Activity {
     public static ScrollView svLog;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -435,6 +435,11 @@ public class MainActivity extends Activity {
                 saveCurrentFile();
                 return true;
 
+            case R.id.miSettings:
+                Intent intent = new Intent(this, SettingsActivity.class);
+                startActivity(intent);
+                return true;
+
             case R.id.miAbout:
                 showAbout();
                 return true;
@@ -460,7 +465,7 @@ public class MainActivity extends Activity {
                         pman.getProjectConfigFilename(),
                         DATA_LIB_PATH + MP3CC,
                         DATA_PKG_PATH + ASSET_DIR_STUBS + "/",
-                        pman.getProjLibsDir());
+                        ideConfig.getGlobalDirPath());
 
                     result = builder.build();
 

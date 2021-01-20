@@ -27,6 +27,7 @@
     <string name="menu.project_config">Настройки проекта</string>
     <string name="menu.file_open">Открыть файл</string>
     <string name="menu.file_save">Сохранить</string>
+    <string name="menu.settings">Настройки</string>
     <string name="menu.about">О программе</string>
     <string name="menu.exit">Выход</string>
 
@@ -44,6 +45,10 @@
     <string name="dlg.hint.projects_dir_name">Родительский каталог</string>
     <string name="dlg.hint.module_name">Имя модуля</string>
 
+    <!-- text views -->
+
+    <string name="text.global.directory.libs">Глобальный каталог с библиотеками:</string>
+
     <!-- buttons -->
 
     <string name="dlg.btn.create">Создать</string>
@@ -51,4 +56,3 @@
     <string name="dlg.btn.rewrite">Перезаписать</string>
 
 </resources>
-

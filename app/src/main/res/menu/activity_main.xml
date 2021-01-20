@@ -15,7 +15,7 @@
     <item
         android:id="@+id/miCreateModule"
         android:title="@string/menu.create_module"/>
-    
+
     <item
         android:id="@+id/miProjectConfig"
         android:title="@string/menu.project_config"/>
@@ -28,13 +28,22 @@
         android:id="@+id/miFileSave"
         android:title="@string/menu.file_save"/>
 
-    <item
-        android:id="@+id/miAbout"
-        android:title="@string/menu.about"/>
 
     <item
-        android:id="@+id/miExit"
-        android:title="@string/menu.exit"/>
+        android:title="@string/app_name">
 
+        <menu>
+            <item
+                android:id="@+id/miSettings"
+                android:title="@string/menu.settings"/>
+
+            <item
+                android:id="@+id/miAbout"
+                android:title="@string/menu.about"/>
+
+            <item
+                android:id="@+id/miExit"
+                android:title="@string/menu.exit"/>
+        </menu>
+    </item>
 </menu>
-

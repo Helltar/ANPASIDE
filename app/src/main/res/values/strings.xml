@@ -29,6 +29,7 @@
     <string name="menu.project_config">Project config</string>
     <string name="menu.file_open">Open file</string>
     <string name="menu.file_save">Save</string>
+    <string name="menu.settings">Settings</string>
     <string name="menu.about">About</string>
     <string name="menu.exit">Exit</string>
 
@@ -45,6 +46,10 @@
     <string name="dlg.hint.project_name">Project name</string>
     <string name="dlg.hint.projects_dir_name">Parent directory</string>
     <string name="dlg.hint.module_name">Module name</string>
+
+    <!-- text views -->
+
+    <string name="text.global.directory.libs">Global libs directory path:</string>
 
     <!-- buttons -->
 
