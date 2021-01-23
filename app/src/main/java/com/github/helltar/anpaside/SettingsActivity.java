@@ -30,7 +30,14 @@ public class SettingsActivity extends Activity {
     }
 
     public void onBtnSaveClick(View v) {
-        ideConfig.setGlobalDirPath(edtGlobLibsPath.getText().toString());
+        String path = edtGlobLibsPath.getText().toString();
+
+        if (!path.endsWith("/")) {
+            path += "/";
+        }
+
+        ideConfig.setGlobalDirPath(path);
+
         finish();
     }
 }
