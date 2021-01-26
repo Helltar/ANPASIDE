@@ -2,6 +2,9 @@ package com.github.helltar.anpaside.ide;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.os.Environment;
+
+import static com.github.helltar.anpaside.Consts.*;
 
 public class IdeConfig {
 
@@ -31,7 +34,7 @@ public class IdeConfig {
     }
 
     public String getGlobalDirPath() {
-        return getSpMain().getString(PREF_NAME_GLOBAL_DIR_PATH, "");
+        return getSpMain().getString(PREF_NAME_GLOBAL_DIR_PATH, Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + DIR_MAIN + "/" + DIR_LIBS);
     }
 
     public void setGlobalDirPath(String path) {

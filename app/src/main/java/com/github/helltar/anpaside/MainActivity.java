@@ -25,9 +25,7 @@ import android.widget.ScrollView;
 import android.widget.TabHost;
 import android.widget.TextView;
 import android.widget.Toast;
-import com.github.helltar.anpaside.MainActivity;
 import com.github.helltar.anpaside.editor.CodeEditor;
-import com.github.helltar.anpaside.editor.EditorConfig;
 import com.github.helltar.anpaside.ide.IdeConfig;
 import com.github.helltar.anpaside.ide.IdeInit;
 import com.github.helltar.anpaside.logging.Logger;
@@ -47,9 +45,8 @@ import static com.github.helltar.anpaside.Utils.*;
 
 public class MainActivity extends Activity {
 
-    private CodeEditor editor;
-    private EditorConfig editorConfig;
-    private IdeConfig ideConfig;
+    public static CodeEditor editor;
+    public static IdeConfig ideConfig;
     private ProjectManager pman = new ProjectManager();
 
     private static TextView tvLog;
@@ -70,7 +67,6 @@ public class MainActivity extends Activity {
         editor.setBtnTabCloseName(getString(R.string.pmenu_tab_close));
 
         ideConfig = new IdeConfig(this);
-        editorConfig = new EditorConfig(this);
 
         init();
     }
@@ -83,7 +79,7 @@ public class MainActivity extends Activity {
         }
 
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
-            openFile(editorConfig.getLastProject());
+            openFile(editor.editorConfig.getLastProject());
         } else {
             ActivityCompat.requestPermissions(this, new String[]{ Manifest.permission.WRITE_EXTERNAL_STORAGE }, 0);
         }
@@ -93,7 +89,7 @@ public class MainActivity extends Activity {
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         if (requestCode == 0) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                openFile(editorConfig.getLastProject());
+                openFile(editor.editorConfig.getLastProject());
             } else {
                 new AlertDialog.Builder(this)
                     .setTitle("Error")
@@ -242,12 +238,12 @@ public class MainActivity extends Activity {
     private boolean openFile(String filename) {
         if (fileExists(filename, true)) {
             if (isProjectFile(filename) && pman.openProject(filename)) {
-                editorConfig.setLastProject(filename);
+                editor.editorConfig.setLastProject(filename);
                 filename = pman.getMainModuleFilename();
             }
 
             if (editor.openFile(filename)) {
-                editorConfig.setLastFilename(filename);
+                editor.editorConfig.setLastFilename(filename);
                 return true;
             }
         }

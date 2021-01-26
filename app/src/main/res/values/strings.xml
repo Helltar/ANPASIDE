@@ -50,6 +50,7 @@
     <!-- text views -->
 
     <string name="text.global.directory.libs">Global libs directory path:</string>
+    <string name="text.editor.font.size">Font size:</string>
 
     <!-- buttons -->
 

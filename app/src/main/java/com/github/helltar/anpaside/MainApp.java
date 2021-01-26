@@ -16,7 +16,6 @@ public class MainApp extends Application {
 
         StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
         StrictMode.setVmPolicy(builder.build());
-        builder.detectFileUriExposure();
 
         RoboErrorReporter.bindReporter(this);
     }

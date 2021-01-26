@@ -32,11 +32,10 @@ public class CodeEditor {
 
     private Context context;
     private TabHost tabHost;
+    public EditorConfig editorConfig;
 
     private String btnTabCloseName = "Close";
-    private boolean highlighterEnabled = true;
     private String tabIns = "    ";
-    private int fontSize = 14;
     private int fontColor = Color.rgb(220, 220, 220);
     private Typeface fontTypeface = Typeface.MONOSPACE;
 
@@ -46,6 +45,7 @@ public class CodeEditor {
     public CodeEditor(Context context, TabHost tabHost) {
         this.context = context;
         this.tabHost = tabHost;
+        editorConfig = new EditorConfig(context);
     }
 
     public boolean openFile(String filename) {
@@ -67,7 +67,7 @@ public class CodeEditor {
 
         edtText.setTag(filename);
 
-        edtText.setTextSize(fontSize);
+        edtText.setTextSize(editorConfig.getFontSize());
         edtText.setTextColor(fontColor);
         edtText.setTypeface(fontTypeface);
 
@@ -79,6 +79,7 @@ public class CodeEditor {
 
         edtText.setText(text);
 
+        filenameList.add(filename);
         setFileModifiedStatus(filename, false);
         highlights(edtText.getEditableText());
 
@@ -141,7 +142,7 @@ public class CodeEditor {
     };
 
     private void highlights(Editable s) {
-        if (highlighterEnabled && !Highlighter.isRun) {
+        if (editorConfig.getHighlighterEnabled() && !Highlighter.isRun) {
             Highlighter.highlights(s);
         }
     }
@@ -153,6 +154,7 @@ public class CodeEditor {
 
         tabHost.addTab(tabSpec);
         tabHost.setCurrentTabByTag(tag);
+
         tabHost.getTabWidget().getChildAt(tabHost.getTabWidget().getChildCount() - 1)
             .setOnLongClickListener(new OnLongClickListener() {
                 @Override
@@ -162,8 +164,6 @@ public class CodeEditor {
                     return true;
                 }
             });
-
-        filenameList.add(tag);
     }
 
     private void showPopupMenu(View v, final String tag) {
@@ -176,6 +176,7 @@ public class CodeEditor {
                     return true;
                 }
             });
+
         pm.show();
     }
 
@@ -230,7 +231,7 @@ public class CodeEditor {
     }
 
     private boolean isFileOpen(String filename) {
-        return fileModifiedStatusMap.containsKey(filename);
+        return filenameList.contains(filename);
     }
 
     public boolean isCurrentFileModified() {
@@ -247,23 +248,12 @@ public class CodeEditor {
         btnTabCloseName = name;
     }
 
-    public void setHighlighterEnabled(boolean enabled) {
-        highlighterEnabled = enabled;
-    }
-
-    public void setTabIns(String symbol) {
-        tabIns = symbol;
+    public void setHighlighterEnabled(boolean he) {
+        editorConfig.setHighlighterEnabled(he);
     }
 
     public void setFontSize(int size) {
-        fontSize = size;
-    }
-
-    public void setFontColor(int color) {
-        fontColor = color;
-    }
-
-    public void setFontTypeface(Typeface tf) {
-        fontTypeface = tf;
+        editorConfig.setFontSize(size);
+        getCurrentEditor().setTextSize(size);
     }
 }

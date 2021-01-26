@@ -7,8 +7,10 @@ public class EditorConfig {
 
     private Context context;
 
-    private final String PREF_NAME_LAST_FILENAME = "lastfilename";
-    private final String PREF_NAME_LAST_PROJECT = "last_project";
+    private final String LAST_FILENAME = "lastfilename";
+    private final String LAST_PROJECT = "last_project";
+    private final String FONT_SIZE = "font_size";
+    private final String HIGHLIGHTER_ENABLED = "highlighter_enabled";
 
     public EditorConfig(Context context) {
         this.context = context;
@@ -19,18 +21,34 @@ public class EditorConfig {
     }
 
     public String getLastFilename() {
-        return getSpMain().getString(PREF_NAME_LAST_FILENAME, "");
+        return getSpMain().getString(LAST_FILENAME, "");
     }
 
     public void setLastFilename(String filename) {
-        getSpMain().edit().putString(PREF_NAME_LAST_FILENAME, filename).apply();
+        getSpMain().edit().putString(LAST_FILENAME, filename).apply();
     }
 
     public String getLastProject() {
-        return getSpMain().getString(PREF_NAME_LAST_PROJECT, "");
+        return getSpMain().getString(LAST_PROJECT, "");
     }
 
     public void setLastProject(String filename) {
-        getSpMain().edit().putString(PREF_NAME_LAST_PROJECT, filename).apply();
+        getSpMain().edit().putString(LAST_PROJECT, filename).apply();
+    }
+
+    public int getFontSize() {
+        return getSpMain().getInt(FONT_SIZE, 14);
+    }
+
+    public void setFontSize(int size) {
+        getSpMain().edit().putInt(FONT_SIZE, size).apply();
+    }
+
+    public boolean getHighlighterEnabled() {
+        return getSpMain().getBoolean(HIGHLIGHTER_ENABLED, true);
+    }
+
+    public void setHighlighterEnabled(boolean he) {
+        getSpMain().edit().putBoolean(HIGHLIGHTER_ENABLED, he).apply();
     }
 }
