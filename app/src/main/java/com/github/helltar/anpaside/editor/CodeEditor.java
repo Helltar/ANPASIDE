@@ -39,7 +39,7 @@ public class CodeEditor {
     private int fontColor = Color.rgb(220, 220, 220);
     private Typeface fontTypeface = Typeface.MONOSPACE;
 
-    private Map<String, Boolean> fileModifiedStatusMap = new HashMap<>();
+    public static boolean filesModifiedStatus = false;
     private LinkedList<String> filenameList = new LinkedList<>();
 
     public CodeEditor(Context context, TabHost tabHost) {
@@ -80,7 +80,7 @@ public class CodeEditor {
         edtText.setText(text);
 
         filenameList.add(filename);
-        setFileModifiedStatus(filename, false);
+        filesModifiedStatus = false;
         highlights(edtText.getEditableText());
 
         createTabs(filename, new File(filename).getName(), new TabContentFactory() {
@@ -106,7 +106,7 @@ public class CodeEditor {
 
         @Override
         public void onTextChanged(CharSequence s, int start, int before, int count) {
-            setFileModifiedStatus(getCurrentFilename(), true);
+            filesModifiedStatus = true;
         }
 
         @Override
@@ -188,9 +188,9 @@ public class CodeEditor {
                 for (int i = 0; i < filenameList.size(); i++) {
                     FileUtils.writeStringToFile(new File(filenameList.get(i)),
                                                 getEditorWithTag(filenameList.get(i)).getText().toString());
-                    setFileModifiedStatus(filenameList.get(i), false);
                 }
 
+                filesModifiedStatus = false;
                 return true;
             } catch (IOException ioe) {
                 Logger.addLog(ioe);
@@ -213,7 +213,7 @@ public class CodeEditor {
         tabHost.getTabWidget().getChildAt(tabHost.getCurrentTab()).setVisibility(View.GONE);
         tabHost.getTabContentView().removeView(tabHost.getCurrentView());
 
-        fileModifiedStatusMap.remove(filename);
+        filesModifiedStatus = false;
         filenameList.remove(filename);
 
         if (!filenameList.isEmpty()) {
@@ -227,26 +227,8 @@ public class CodeEditor {
         toast.show();
     }
 
-    private String getCurrentFilename() {
-        return tabHost.getCurrentTabTag();
-    }
-
-    private void setFileModifiedStatus(String filename, boolean modifiedStatus) {
-        fileModifiedStatusMap.put(filename, modifiedStatus);
-    }
-
     private boolean isFileOpen(String filename) {
         return filenameList.contains(filename);
-    }
-
-    public boolean isCurrentFileModified() {
-        String filename = getCurrentFilename();
-
-        if (isFileOpen(filename)) {
-            return fileModifiedStatusMap.get(filename);
-        }
-
-        return false;
     }
 
     public void setBtnTabCloseName(String name) {

@@ -391,7 +391,7 @@ public class MainActivity extends Activity {
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         menu.findItem(R.id.miCreateModule).setEnabled(pman.isProjectOpen());
-        menu.findItem(R.id.miFileSave).setEnabled(editor.isCurrentFileModified());
+        menu.findItem(R.id.miFileSave).setEnabled(editor.filesModifiedStatus);
         menu.findItem(R.id.miProjectConfig).setEnabled(pman.isProjectOpen());
         return super.onPrepareOptionsMenu(menu);
     }
