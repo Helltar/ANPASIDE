@@ -11,19 +11,11 @@ import static com.github.helltar.anpaside.editor.Patterns.*;
 
 public class Highlighter {
 
-    public static boolean isRun = false;
-
     public static void highlights(Editable s) {
-        isRun = true;
-
-        clearSpans(s);
-
         setColorByRegex(s, stringsPattern, getColorFromRgb(255, 204, 51));
         setColorByRegex(s, numbersPattern, getColorFromRgb(255, 102, 51));
         setColorByRegex(s, keywordsPattern, getColorFromRgb(0, 190, 230));
         setColorByRegex(s, commentsPattern, getColorFromRgb(10, 200, 10));
-
-        isRun = false;
     }
 
     private static void setColorByRegex(Editable s, Pattern pattern, int rgb) {
@@ -40,7 +32,7 @@ public class Highlighter {
         return Color.rgb(red, green, blue);
     }
 
-    private static void clearSpans(Editable s) {
+    public static void clearSpans(Editable s) {
         ForegroundColorSpan spans[] = s.getSpans(0, s.length(), ForegroundColorSpan.class);
 
         for (int i = 0; i < spans.length; i++) {

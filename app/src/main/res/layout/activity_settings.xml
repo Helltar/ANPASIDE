@@ -18,10 +18,17 @@
 		android:ems="10"
 		android:id="@+id/edtEditorFontSize"/>
 
+	<CheckBox
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:text="@string/text.editor.highlighter"
+		android:id="@+id/cbHighlighter"/>
+
 	<TextView
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
-		android:text="@string/text.global.directory.libs"/>
+		android:text="@string/text.global.directory.libs"
+		android:layout_marginTop="10dp"/>
 
 	<EditText
 		android:layout_width="match_parent"
@@ -34,7 +41,8 @@
 		android:layout_height="wrap_content"
 		android:text="@string/menu.file_save"
 		android:id="@+id/btnSave"
-		android:onClick="onBtnSaveClick"/>
+		android:onClick="onBtnSaveClick"
+		android:layout_marginTop="10dp"/>
 
 </LinearLayout>
 

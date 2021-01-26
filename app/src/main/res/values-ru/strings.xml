@@ -47,8 +47,9 @@
 
     <!-- text views -->
 
-    <string name="text.global.directory.libs">Глобальный каталог с библиотеками:</string>
     <string name="text.editor.font.size">Размер шрифта:</string>
+    <string name="text.editor.highlighter">Подсветка синтаксиса</string>
+    <string name="text.global.directory.libs">Глобальный каталог с библиотеками:</string>
 
     <!-- buttons -->
 

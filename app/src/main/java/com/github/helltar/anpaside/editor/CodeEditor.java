@@ -142,7 +142,9 @@ public class CodeEditor {
     };
 
     private void highlights(Editable s) {
-        if (editorConfig.getHighlighterEnabled() && !Highlighter.isRun) {
+        Highlighter.clearSpans(s);
+
+        if (editorConfig.getHighlighterEnabled()) {
             Highlighter.highlights(s);
         }
     }
@@ -250,6 +252,10 @@ public class CodeEditor {
 
     public void setHighlighterEnabled(boolean he) {
         editorConfig.setHighlighterEnabled(he);
+
+        int ss = getCurrentEditor().getSelectionStart();
+        getCurrentEditor().setText(getCurrentEditor().getText());
+        getCurrentEditor().setSelection(ss);
     }
 
     public void setFontSize(int size) {
