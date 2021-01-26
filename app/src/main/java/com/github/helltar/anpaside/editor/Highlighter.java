@@ -12,6 +12,8 @@ import static com.github.helltar.anpaside.editor.Patterns.*;
 public class Highlighter {
 
     public static void highlights(Editable s) {
+        clearSpans(s);
+
         setColorByRegex(s, stringsPattern, getColorFromRgb(255, 204, 51));
         setColorByRegex(s, numbersPattern, getColorFromRgb(255, 102, 51));
         setColorByRegex(s, keywordsPattern, getColorFromRgb(0, 190, 230));

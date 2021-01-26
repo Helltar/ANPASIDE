@@ -128,7 +128,7 @@ public class CodeEditor {
 
                     case KeyEvent.KEYCODE_S:
                         if (keyEvent.isCtrlPressed()) {
-                            saveCurrentFile();
+                            saveAllFiles();
                             showToastFileSaved();
                             return true;
                         }
@@ -142,8 +142,6 @@ public class CodeEditor {
     };
 
     private void highlights(Editable s) {
-        Highlighter.clearSpans(s);
-
         if (editorConfig.getHighlighterEnabled()) {
             Highlighter.highlights(s);
         }
@@ -151,6 +149,7 @@ public class CodeEditor {
 
     private void createTabs(String tag, String title, TabContentFactory tabContent) {
         final TabSpec tabSpec = tabHost.newTabSpec(tag);
+
         tabSpec.setIndicator(title);
         tabSpec.setContent(tabContent);
 
@@ -170,6 +169,7 @@ public class CodeEditor {
 
     private void showPopupMenu(View v, final String tag) {
         PopupMenu pm = new PopupMenu(context, v);
+
         pm.getMenu().add(btnTabCloseName);
         pm.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                 @Override
@@ -182,12 +182,15 @@ public class CodeEditor {
         pm.show();
     }
 
-    public boolean saveCurrentFile() {
+    public boolean saveAllFiles() {
         if (isEditorActive()) {
             try {
-                FileUtils.writeStringToFile(new File(getCurrentFilename()),
-                                            getCurrentEditor().getText().toString());
-                setFileModifiedStatus(getCurrentFilename(), false);
+                for (int i = 0; i < filenameList.size(); i++) {
+                    FileUtils.writeStringToFile(new File(filenameList.get(i)),
+                                                getEditorWithTag(filenameList.get(i)).getText().toString());
+                    setFileModifiedStatus(filenameList.get(i), false);
+                }
+
                 return true;
             } catch (IOException ioe) {
                 Logger.addLog(ioe);
@@ -197,12 +200,12 @@ public class CodeEditor {
         return false;
     }
 
-    public EditText getCurrentEditor() {
-        return (EditText) tabHost.getTabContentView().findViewWithTag(getCurrentFilename());
+    private EditText getEditorWithTag(String tag) {
+        return (EditText) tabHost.getTabContentView().findViewWithTag(tag);
     }
 
     private boolean isEditorActive() {
-        return getCurrentEditor() != null;
+        return filenameList.size() > 0;
     }
 
     private void closeFile(String filename) {
@@ -253,13 +256,16 @@ public class CodeEditor {
     public void setHighlighterEnabled(boolean he) {
         editorConfig.setHighlighterEnabled(he);
 
-        int ss = getCurrentEditor().getSelectionStart();
-        getCurrentEditor().setText(getCurrentEditor().getText());
-        getCurrentEditor().setSelection(ss);
+        for (int i = 0; i < filenameList.size(); i++) {
+            Highlighter.clearSpans(getEditorWithTag(filenameList.get(i)).getEditableText());
+        }
     }
 
     public void setFontSize(int size) {
         editorConfig.setFontSize(size);
-        getCurrentEditor().setTextSize(size);
+
+        for (int i = 0; i < filenameList.size(); i++) {
+            getEditorWithTag(filenameList.get(i)).setTextSize(size);
+        }
     }
 }

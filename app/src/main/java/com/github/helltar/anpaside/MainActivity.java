@@ -366,12 +366,12 @@ public class MainActivity extends Activity {
         }
     }
 
-    private boolean saveCurrentFile() {
-        return saveCurrentFile(true);
+    private boolean saveAllFiles() {
+        return saveAllFiles(true);
     }
 
-    private boolean saveCurrentFile(boolean showOkMsg) {
-        if (editor.saveCurrentFile()) {
+    private boolean saveAllFiles(boolean showOkMsg) {
+        if (editor.saveAllFiles()) {
             if (showOkMsg) {
                 showToastMsg(R.string.msg_saved);
             }
@@ -402,7 +402,7 @@ public class MainActivity extends Activity {
 
             case R.id.miRun:
                 if (pman.isProjectOpen()) {
-                    if (saveCurrentFile(false)) {
+                    if (saveAllFiles(false)) {
                         buildProject();
                     }
                 } else {
@@ -428,7 +428,7 @@ public class MainActivity extends Activity {
                 return true;
 
             case R.id.miFileSave:
-                saveCurrentFile();
+                saveAllFiles();
                 return true;
 
             case R.id.miSettings:
