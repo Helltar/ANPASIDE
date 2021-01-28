@@ -44,6 +44,7 @@
     <string name="dlg.hint.project_name">Название проекта</string>
     <string name="dlg.hint.projects_dir_name">Родительский каталог</string>
     <string name="dlg.hint.module_name">Имя модуля</string>
+    <string name="dlg.msg.save_modified_files">Сохранить измененные открытые файлы?</string>
 
     <!-- text views -->
 
@@ -56,5 +57,7 @@
     <string name="dlg.btn.create">Создать</string>
     <string name="dlg.btn.cancel">Отмена</string>
     <string name="dlg.btn.rewrite">Перезаписать</string>
+    <string name="dlg.btn.yes">Да</string>
+    <string name="dlg.btn.no">Нет</string>
 
 </resources>

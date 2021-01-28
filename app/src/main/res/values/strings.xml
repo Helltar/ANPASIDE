@@ -46,6 +46,7 @@
     <string name="dlg.hint.project_name">Project name</string>
     <string name="dlg.hint.projects_dir_name">Parent directory</string>
     <string name="dlg.hint.module_name">Module name</string>
+    <string name="dlg.msg.save_modified_files">Save modified open files?</string>
 
     <!-- text views -->
 
@@ -58,6 +59,8 @@
     <string name="dlg.btn.create">Create</string>
     <string name="dlg.btn.cancel">Cancel</string>
     <string name="dlg.btn.rewrite">Rewrite</string>
+    <string name="dlg.btn.yes">Yes</string>
+    <string name="dlg.btn.no">No</string>
 
     <string name="manifest.mf">MANIFEST.MF</string>
     

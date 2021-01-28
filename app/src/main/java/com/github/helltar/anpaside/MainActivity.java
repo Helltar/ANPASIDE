@@ -97,8 +97,7 @@ public class MainActivity extends Activity {
                     .setPositiveButton("Exit",
                     new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int whichButton) {
-                            finish();
-                            System.exit(0);
+                            exitApp();
                         }
 
                     })
@@ -391,7 +390,7 @@ public class MainActivity extends Activity {
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         menu.findItem(R.id.miCreateModule).setEnabled(pman.isProjectOpen());
-        menu.findItem(R.id.miFileSave).setEnabled(editor.filesModifiedStatus);
+        menu.findItem(R.id.miFileSave).setEnabled(editor.isFilesModified);
         menu.findItem(R.id.miProjectConfig).setEnabled(pman.isProjectOpen());
         return super.onPrepareOptionsMenu(menu);
     }
@@ -441,13 +440,43 @@ public class MainActivity extends Activity {
                 return true;
 
             case R.id.miExit:
-                finish();
-                System.exit(0);
+                if (editor.isFilesModified) {
+                    showExitDialog();
+                } else {
+                    exitApp();
+                }
                 return true;
 
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    private void showExitDialog() {
+        new AlertDialog.Builder(this)
+            .setTitle(R.string.menu_exit)
+            .setMessage(R.string.dlg_msg_save_modified_files)
+            .setPositiveButton(R.string.dlg_btn_yes,
+            new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int whichButton) {
+                    if (editor.saveAllFiles()) {
+                        exitApp();
+                    }
+                }
+            })
+            .setNegativeButton(R.string.dlg_btn_no,
+            new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int whichButton) {
+                    exitApp();
+                }
+
+            })
+            .show();
+    }
+
+    private void exitApp() {
+        finish();
+        System.exit(0);
     }
 
     private void buildProject() {

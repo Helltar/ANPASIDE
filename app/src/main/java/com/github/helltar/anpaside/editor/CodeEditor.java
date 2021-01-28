@@ -23,9 +23,7 @@ import com.github.helltar.anpaside.R;
 import com.github.helltar.anpaside.logging.Logger;
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.Map;
 import org.apache.commons.io.FileUtils;
 
 public class CodeEditor {
@@ -39,7 +37,7 @@ public class CodeEditor {
     private int fontColor = Color.rgb(220, 220, 220);
     private Typeface fontTypeface = Typeface.MONOSPACE;
 
-    public static boolean filesModifiedStatus = false;
+    public static boolean isFilesModified = false;
     private LinkedList<String> filenameList = new LinkedList<>();
 
     public CodeEditor(Context context, TabHost tabHost) {
@@ -80,7 +78,7 @@ public class CodeEditor {
         edtText.setText(text);
 
         filenameList.add(filename);
-        filesModifiedStatus = false;
+        isFilesModified = false;
         highlights(edtText.getEditableText());
 
         createTabs(filename, new File(filename).getName(), new TabContentFactory() {
@@ -106,7 +104,7 @@ public class CodeEditor {
 
         @Override
         public void onTextChanged(CharSequence s, int start, int before, int count) {
-            filesModifiedStatus = true;
+            isFilesModified = true;
         }
 
         @Override
@@ -122,8 +120,7 @@ public class CodeEditor {
                 switch (keyCode) {
                     case KeyEvent.KEYCODE_TAB:
                         EditText editText = (EditText) v;
-                        editText.getText().insert(editText.getSelectionStart(),
-                                                  tabIns);
+                        editText.getText().insert(editText.getSelectionStart(), tabIns);
                         return true;
 
                     case KeyEvent.KEYCODE_S:
@@ -190,7 +187,7 @@ public class CodeEditor {
                                                 getEditorWithTag(filenameList.get(i)).getText().toString());
                 }
 
-                filesModifiedStatus = false;
+                isFilesModified = false;
                 return true;
             } catch (IOException ioe) {
                 Logger.addLog(ioe);
@@ -213,7 +210,7 @@ public class CodeEditor {
         tabHost.getTabWidget().getChildAt(tabHost.getCurrentTab()).setVisibility(View.GONE);
         tabHost.getTabContentView().removeView(tabHost.getCurrentView());
 
-        filesModifiedStatus = false;
+        isFilesModified = false;
         filenameList.remove(filename);
 
         if (!filenameList.isEmpty()) {
@@ -238,8 +235,10 @@ public class CodeEditor {
     public void setHighlighterEnabled(boolean he) {
         editorConfig.setHighlighterEnabled(he);
 
-        for (int i = 0; i < filenameList.size(); i++) {
-            Highlighter.clearSpans(getEditorWithTag(filenameList.get(i)).getEditableText());
+        if (!he) {
+            for (int i = 0; i < filenameList.size(); i++) {
+                Highlighter.clearSpans(getEditorWithTag(filenameList.get(i)).getEditableText());
+            }
         }
     }
 
