@@ -5,16 +5,21 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Environment;
 import android.provider.DocumentsContract;
+
 import com.github.helltar.anpaside.logging.Logger;
+
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
+import java.nio.charset.StandardCharsets;
 
-import static com.github.helltar.anpaside.Consts.*;
-import static com.github.helltar.anpaside.logging.Logger.*;
+import static com.github.helltar.anpaside.Consts.LANG_ERR_CREATE_DIR;
+import static com.github.helltar.anpaside.Consts.LANG_ERR_FILE_NOT_FOUND;
+import static com.github.helltar.anpaside.logging.Logger.LMT_ERROR;
 
 public class Utils {
 
@@ -71,7 +76,9 @@ public class Utils {
 
     public static boolean createTextFile(String filename, String text) {
         try {
-            FileUtils.writeStringToFile(new File(filename), text);
+            FileUtils.writeStringToFile(
+                new File(filename), text, StandardCharsets.UTF_8
+            );
             return true;
         } catch (IOException ioe) {
             Logger.addLog(ioe);

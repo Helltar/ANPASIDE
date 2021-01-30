@@ -18,13 +18,19 @@ import android.widget.TabHost;
 import android.widget.TabHost.TabContentFactory;
 import android.widget.TabHost.TabSpec;
 import android.widget.Toast;
+
+import androidx.core.content.ContextCompat;
+
 import com.github.helltar.anpaside.MainActivity;
 import com.github.helltar.anpaside.R;
 import com.github.helltar.anpaside.logging.Logger;
+
+import org.apache.commons.io.FileUtils;
+
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.LinkedList;
-import org.apache.commons.io.FileUtils;
 
 public class CodeEditor {
 
@@ -55,7 +61,10 @@ public class CodeEditor {
         String text = "";
 
         try {
-            text = FileUtils.readFileToString(new File(filename));
+            text = FileUtils.readFileToString(
+                new File(filename),
+                StandardCharsets.UTF_8
+            );
         } catch (IOException ioe) {
             Logger.addLog(ioe);
             return false;
@@ -69,7 +78,9 @@ public class CodeEditor {
         edtText.setTextColor(fontColor);
         edtText.setTypeface(fontTypeface);
 
-        edtText.setBackgroundColor(android.R.color.transparent);
+        edtText.setBackgroundColor(ContextCompat.getColor(
+            context, R.color.TRANSPARENT)
+        );
         edtText.setGravity(Gravity.TOP);
         edtText.setHorizontallyScrolling(true);
         edtText.addTextChangedListener(textWatcher);
@@ -183,8 +194,11 @@ public class CodeEditor {
         if (isEditorActive()) {
             try {
                 for (int i = 0; i < filenameList.size(); i++) {
-                    FileUtils.writeStringToFile(new File(filenameList.get(i)),
-                                                getEditorWithTag(filenameList.get(i)).getText().toString());
+                    FileUtils.writeStringToFile(
+                        new File(filenameList.get(i)),
+                        getEditorWithTag(filenameList.get(i)).getText().toString(),
+                        StandardCharsets.UTF_8
+                    );
                 }
 
                 isFilesModified = false;

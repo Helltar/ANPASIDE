@@ -30,8 +30,10 @@ ext {
     zip4jVersion = '2.6.4'
 
     // Android Jetpack
+    // Core
+    coreVersion = "1.3.2"
     // Support
-    supportVersion = "28.0.0"
+    supportVersion = "1.0.0"
 }
 dependencies {
     // Commons-IO
@@ -40,8 +42,10 @@ dependencies {
     implementation "net.lingala.zip4j:zip4j:$zip4jVersion"
 
     // Android Jetpack
+    // Core
+    implementation "androidx.core:core:$coreVersion"
     // Support
-    implementation 'androidx.legacy:legacy-support-core-utils:1.0.0'
+    implementation "androidx.legacy:legacy-support-core-utils:$supportVersion"
 }
 tasks.withType(JavaCompile) {
     options.compilerArgs << "-Xlint:unchecked" << "-Xlint:deprecation"
