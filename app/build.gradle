@@ -43,3 +43,6 @@ dependencies {
     // Support
     implementation 'androidx.legacy:legacy-support-core-utils:1.0.0'
 }
+tasks.withType(JavaCompile) {
+    options.compilerArgs << "-Xlint:unchecked" << "-Xlint:deprecation"
+}
