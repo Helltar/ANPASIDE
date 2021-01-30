@@ -25,9 +25,9 @@ android {
 }
 ext {
     // Commons-IO
-    commonsIOVersion = "2.5"
+    commonsIOVersion = "2.8.0"
     // Zip4j
-    zip4jVersion = "1.3.2"
+    zip4jVersion = '2.6.4'
 
     // Android Jetpack
     // Support
@@ -41,5 +41,5 @@ dependencies {
 
     // Android Jetpack
     // Support
-    implementation "com.android.support:support-core-utils:$supportVersion"
+    implementation 'androidx.legacy:legacy-support-core-utils:1.0.0'
 }

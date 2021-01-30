@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Gradle: net.lingala.zip4j:zip4j:2.6.4">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/net.lingala.zip4j/zip4j/2.6.4/b1edd95127caa3a6c38b75b092b9c4a3ab91b835/zip4j-2.6.4.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/net.lingala.zip4j/zip4j/2.6.4/8a6b1bb44477914ed36c1f2610d60a6c4cf9e4f6/zip4j-2.6.4-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/net.lingala.zip4j/zip4j/2.6.4/da43d3f805b0e572c1898bff3a29f9269a2ceba1/zip4j-2.6.4-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

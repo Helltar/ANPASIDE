@@ -6,7 +6,6 @@ import android.os.StrictMode;
 import com.github.helltar.anpaside.logging.RoboErrorReporter;
 
 public class MainApp extends Application {
-
     private static Context context;
 
     @Override
@@ -24,7 +23,7 @@ public class MainApp extends Application {
         return context;
     }
 
-    public static String getString(int resId) {
+    public static String receiveString(int resId) {
         return context.getString(resId);
     }
 }
