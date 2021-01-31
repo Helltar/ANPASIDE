@@ -17,6 +17,7 @@ import android.widget.ScrollView;
 import android.widget.TabHost;
 import android.widget.TabHost.TabContentFactory;
 import android.widget.TabHost.TabSpec;
+import android.widget.TextView.BufferType;
 import android.widget.Toast;
 import com.github.helltar.anpaside.MainActivity;
 import com.github.helltar.anpaside.R;
@@ -75,7 +76,7 @@ public class CodeEditor {
         edtText.addTextChangedListener(textWatcher);
         edtText.setOnKeyListener(keyListener);
 
-        edtText.setText(text);
+        edtText.setText(text, BufferType.SPANNABLE);
 
         filenameList.add(filename);
         isFilesModified = false;
