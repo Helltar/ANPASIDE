@@ -347,38 +347,12 @@ public class MainActivity extends Activity {
             .show();
     }
 
-    private void showToastMsg(int resId) {
-        showToastMsg(getString(resId));
-    }
-
-    private void showToastMsg(String msg) {
-        Toast toast = Toast.makeText(this, msg, Toast.LENGTH_SHORT);
-        toast.setGravity(Gravity.BOTTOM, 0, 80);
-        toast.show();
-    }
-
     private String getAppVersionName() {
         try {
             return getPackageManager().getPackageInfo(getPackageName(), 0).versionName;  
         } catch (PackageManager.NameNotFoundException e) {
             return "null";
         }
-    }
-
-    private boolean saveAllFiles() {
-        return saveAllFiles(true);
-    }
-
-    private boolean saveAllFiles(boolean showOkMsg) {
-        if (editor.saveAllFiles()) {
-            if (showOkMsg) {
-                showToastMsg(R.string.msg_saved);
-            }
-
-            return true;
-        }
-
-        return false;
     }
 
     @Override
@@ -401,11 +375,13 @@ public class MainActivity extends Activity {
 
             case R.id.miRun:
                 if (pman.isProjectOpen()) {
-                    if (saveAllFiles(false)) {
+                    if (editor.saveAllFiles()) {
                         buildProject();
                     }
                 } else {
-                    showToastMsg(R.string.msg_no_open_project);
+                    Toast toast = Toast.makeText(this, R.string.msg_no_open_project, Toast.LENGTH_SHORT);
+                    toast.setGravity(Gravity.BOTTOM, 0, 80);
+                    toast.show();
                 }
 
                 return true;
@@ -427,7 +403,7 @@ public class MainActivity extends Activity {
                 return true;
 
             case R.id.miFileSave:
-                saveAllFiles();
+                editor.saveAllFiles(true);
                 return true;
 
             case R.id.miSettings:

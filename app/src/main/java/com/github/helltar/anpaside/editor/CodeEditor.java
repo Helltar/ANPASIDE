@@ -79,7 +79,6 @@ public class CodeEditor {
         edtText.setText(text, BufferType.SPANNABLE);
 
         filenameList.add(filename);
-        isFilesModified = false;
         highlights(edtText.getEditableText());
 
         createTabs(filename, new File(filename).getName(), new TabContentFactory() {
@@ -126,8 +125,7 @@ public class CodeEditor {
 
                     case KeyEvent.KEYCODE_S:
                         if (keyEvent.isCtrlPressed()) {
-                            saveAllFiles();
-                            showToastFileSaved();
+                            saveAllFiles(true);
                             return true;
                         }
 
@@ -181,6 +179,10 @@ public class CodeEditor {
     }
 
     public boolean saveAllFiles() {
+        return saveAllFiles(false);
+    }
+
+    public boolean saveAllFiles(boolean showMsg) {
         if (isEditorActive()) {
             try {
                 for (int i = 0; i < filenameList.size(); i++) {
@@ -189,6 +191,13 @@ public class CodeEditor {
                 }
 
                 isFilesModified = false;
+
+                if (showMsg) {
+                    Toast toast = Toast.makeText(context, context.getString(R.string.msg_saved), Toast.LENGTH_SHORT);
+                    toast.setGravity(Gravity.BOTTOM, 0, 80);
+                    toast.show();
+                }
+
                 return true;
             } catch (IOException ioe) {
                 Logger.addLog(ioe);
@@ -209,8 +218,8 @@ public class CodeEditor {
     ////////// костыль begin
 
     private void closeFile(String filename) {
-        tabHost.clearAllTabs(); 
-        isFilesModified = false;
+        saveAllFiles();
+        tabHost.clearAllTabs();
         filenameList.remove(filename);
 
         LinkedList<String> ll = new LinkedList<>();
@@ -227,12 +236,6 @@ public class CodeEditor {
     }
 
     ////////// end
-
-    private void showToastFileSaved() {
-        Toast toast = Toast.makeText(context, context.getString(R.string.msg_saved), Toast.LENGTH_SHORT);
-        toast.setGravity(Gravity.BOTTOM, 0, 80);
-        toast.show();
-    }
 
     private boolean isFileOpen(String filename) {
         return filenameList.contains(filename);
