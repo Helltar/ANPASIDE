@@ -203,21 +203,30 @@ public class CodeEditor {
     }
 
     private boolean isEditorActive() {
-        return filenameList.size() > 0;
+        return !filenameList.isEmpty();
     }
 
-    private void closeFile(String filename) {
-        // TODO: try del
-        tabHost.getTabWidget().getChildAt(tabHost.getCurrentTab()).setVisibility(View.GONE);
-        tabHost.getTabContentView().removeView(tabHost.getCurrentView());
+    ////////// костыль begin
 
+    private void closeFile(String filename) {
+        tabHost.clearAllTabs(); 
         isFilesModified = false;
         filenameList.remove(filename);
 
-        if (!filenameList.isEmpty()) {
-            tabHost.setCurrentTabByTag(filenameList.getLast());
+        LinkedList<String> ll = new LinkedList<>();
+        ll.addAll(filenameList);
+        filenameList.clear();
+
+        if (!ll.isEmpty()) {
+            for (int i = 0; i < ll.size(); i++) {
+                openFile(ll.get(i));
+            }
+
+            tabHost.setCurrentTabByTag(ll.getLast());
         }
     }
+
+    ////////// end
 
     private void showToastFileSaved() {
         Toast toast = Toast.makeText(context, context.getString(R.string.msg_saved), Toast.LENGTH_SHORT);
