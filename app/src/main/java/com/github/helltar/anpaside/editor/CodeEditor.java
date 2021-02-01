@@ -65,6 +65,7 @@ public class CodeEditor {
         final EditText edtText = new CodeEditText(context);
 
         edtText.setTag(filename);
+        edtText.setText(text, BufferType.SPANNABLE);
 
         edtText.setTextSize(editorConfig.getFontSize());
         edtText.setTextColor(fontColor);
@@ -73,10 +74,9 @@ public class CodeEditor {
         edtText.setBackgroundColor(android.R.color.transparent);
         edtText.setGravity(Gravity.TOP);
         edtText.setHorizontallyScrolling(true);
-        edtText.addTextChangedListener(textWatcher);
-        edtText.setOnKeyListener(keyListener);
 
-        edtText.setText(text, BufferType.SPANNABLE);
+        edtText.setOnKeyListener(keyListener);
+        edtText.addTextChangedListener(textWatcher);
 
         filenameList.add(filename);
         highlights(edtText.getEditableText());
