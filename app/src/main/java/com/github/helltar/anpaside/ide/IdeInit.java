@@ -42,8 +42,7 @@ public class IdeInit {
                     copyAssets(assetDir + "/" + assets[i]);
                 }
             } else {
-                FileUtils.copyInputStreamToFile(assetManager.open(assetDir), 
-                                                new File(DATA_PKG_PATH + assetDir));
+                FileUtils.copyInputStreamToFile(assetManager.open(assetDir), new File(DATA_PKG_PATH + assetDir));
             }
 
             return true;

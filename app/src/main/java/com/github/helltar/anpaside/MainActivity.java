@@ -79,6 +79,7 @@ public class MainActivity extends Activity {
         }
 
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+            editor.openRecentFiles();
             openFile(editor.editorConfig.getLastProject());
         } else {
             ActivityCompat.requestPermissions(this, new String[]{ Manifest.permission.WRITE_EXTERNAL_STORAGE }, 0);
@@ -89,6 +90,7 @@ public class MainActivity extends Activity {
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         if (requestCode == 0) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                editor.openRecentFiles();
                 openFile(editor.editorConfig.getLastProject());
             } else {
                 new AlertDialog.Builder(this)
@@ -242,7 +244,6 @@ public class MainActivity extends Activity {
             }
 
             if (editor.openFile(filename)) {
-                editor.editorConfig.setLastFilename(filename);
                 return true;
             }
         }
@@ -485,23 +486,9 @@ public class MainActivity extends Activity {
     private void installAssets() {
         Logger.addLog(getString(R.string.msg_install_start));
 
-        Executors.newSingleThreadExecutor().execute(new Runnable() {
-                boolean result = false;
-
-                @Override
-                public void run() {
-                    result = new IdeInit(MainApp.getContext().getAssets()).install();
-
-                    new Handler(Looper.getMainLooper()).post(new Runnable() {
-                            @Override
-                            public void run() {
-                                if (result) {
-                                    ideConfig.setInstState(true);
-                                    Logger.addLog(getString(R.string.msg_install_ok), LMT_INFO);
-                                }
-                            }
-                        });
-                }
-            });
-    }    
+        if (new IdeInit(MainApp.getContext().getAssets()).install()) {
+            ideConfig.setInstState(true);
+            Logger.addLog(getString(R.string.msg_install_ok), LMT_INFO);
+        }
+    }
 }

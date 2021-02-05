@@ -7,7 +7,7 @@ public class EditorConfig {
 
     private Context context;
 
-    private final String LAST_FILENAME = "lastfilename";
+    private final String RECENT_FILENAMES = "recent_filenames";
     private final String LAST_PROJECT = "last_project";
     private final String FONT_SIZE = "font_size";
     private final String HIGHLIGHTER_ENABLED = "highlighter_enabled";
@@ -20,12 +20,12 @@ public class EditorConfig {
         return context.getSharedPreferences("editor_config", context.MODE_PRIVATE);
     }
 
-    public String getLastFilename() {
-        return getSpMain().getString(LAST_FILENAME, "");
+    public String getRecentFilenames() {
+        return getSpMain().getString(RECENT_FILENAMES, "");
     }
 
-    public void setLastFilename(String filename) {
-        getSpMain().edit().putString(LAST_FILENAME, filename).apply();
+    public void setRecentFilenames(String filenames) {
+        getSpMain().edit().putString(RECENT_FILENAMES, filenames).apply();
     }
 
     public String getLastProject() {

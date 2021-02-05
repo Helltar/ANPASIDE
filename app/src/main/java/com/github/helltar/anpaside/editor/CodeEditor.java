@@ -65,20 +65,22 @@ public class CodeEditor {
         final EditText edtText = new CodeEditText(context);
 
         edtText.setTag(filename);
-        edtText.setText(text, BufferType.SPANNABLE);
-
-        edtText.setTextSize(editorConfig.getFontSize());
-        edtText.setTextColor(fontColor);
-        edtText.setTypeface(fontTypeface);
 
         edtText.setBackgroundColor(android.R.color.transparent);
         edtText.setGravity(Gravity.TOP);
         edtText.setHorizontallyScrolling(true);
 
+        edtText.setTextSize(editorConfig.getFontSize());
+        edtText.setTextColor(fontColor);
+        edtText.setTypeface(fontTypeface);
+        edtText.setText(text, BufferType.SPANNABLE);
+
         edtText.setOnKeyListener(keyListener);
         edtText.addTextChangedListener(textWatcher);
 
         filenameList.add(filename);
+        saveRecentFilenames();
+
         highlights(edtText.getEditableText());
 
         createTabs(filename, new File(filename).getName(), new TabContentFactory() {
@@ -221,6 +223,7 @@ public class CodeEditor {
         saveAllFiles();
         tabHost.clearAllTabs();
         filenameList.remove(filename);
+        saveRecentFilenames();
 
         LinkedList<String> ll = new LinkedList<>();
         ll.addAll(filenameList);
@@ -236,6 +239,28 @@ public class CodeEditor {
     }
 
     ////////// end
+
+    public void openRecentFiles() {
+        String recentFilenames = editorConfig.getRecentFilenames();
+
+        if (!recentFilenames.isEmpty()) {
+            String[] recentFiles = recentFilenames.split(", ");
+
+            for (int i = 0; i < recentFiles.length; i++) {
+                openFile(recentFiles[i]);
+            }
+        }
+    }
+
+    private void saveRecentFilenames() {
+        StringBuilder sb = new StringBuilder();
+
+        for (int i = 0; i < filenameList.size(); i++) {
+            sb.append(filenameList.get(i)).append(", ");
+        }
+
+        editorConfig.setRecentFilenames(sb.toString());
+    }
 
     private boolean isFileOpen(String filename) {
         return filenameList.contains(filename);
