@@ -128,7 +128,9 @@ public class MainActivity extends Activity {
             lines += "\t\t\t\t\t\t\t\t\t- " + msgLines[i] + "<br>";
         }
 
-        final Spanned text = Html.fromHtml(new SimpleDateFormat("[HH:mm:ss]: ").format(new Date())
+        final Spanned text = Html.fromHtml("<font color='#555555'>"
+                                           + new SimpleDateFormat("HH:mm:ss").format(new Date())
+                                           + "</font> "
                                            + "<font color='" + fontColor + "'>"
                                            + msgLines[0].replace("\n", "<br>") + "</font><br>"
                                            + lines);
