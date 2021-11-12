@@ -1,7 +1,7 @@
 ANPASIDE
 ========
 
-A mobile development environment using the [MIDletPascal](http://ru.wikipedia.org/wiki/MIDletPascal) programming language compiler
+A mobile development environment using the [MIDletPascal](http://wikipedia.org/wiki/MIDletPascal) programming language compiler
 
 <a href='https://play.google.com/store/apps/details?id=com.github.helltar.anpaside'><img alt='Get it on Google Play' src='https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png' height='75'/></a>
 ---
