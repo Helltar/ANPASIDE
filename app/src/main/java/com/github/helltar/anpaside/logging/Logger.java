@@ -18,7 +18,7 @@ public class Logger {
     }
 
     public static void addLog(int resId) {
-        addGuiLog(MainApp.getString(resId), LMT_TEXT);
+        addGuiLog(MainApp.getStr(resId), LMT_TEXT);
     }
 
     public static void addLog(String msg, int msgType) {

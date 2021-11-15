@@ -1,13 +1,17 @@
 package com.github.helltar.anpaside.ide;
 
+import static com.github.helltar.anpaside.Consts.ASSET_DIR_FILES;
+import static com.github.helltar.anpaside.Consts.ASSET_DIR_STUBS;
+import static com.github.helltar.anpaside.Consts.DATA_PKG_PATH;
+
 import android.content.res.AssetManager;
-import com.github.helltar.anpaside.Utils;
+
 import com.github.helltar.anpaside.logging.Logger;
-import java.io.File;
-import java.io.IOException;
+
 import org.apache.commons.io.FileUtils;
 
-import static com.github.helltar.anpaside.Consts.*;
+import java.io.File;
+import java.io.IOException;
 
 public class IdeInit {
 

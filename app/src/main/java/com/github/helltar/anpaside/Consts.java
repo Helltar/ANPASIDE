@@ -1,7 +1,5 @@
 package com.github.helltar.anpaside;
 
-import com.github.helltar.anpaside.MainApp;
-
 public class Consts {
 
     public static final String DATA_PKG_PATH = MainApp.getContext().getApplicationInfo().dataDir + "/";
@@ -37,7 +35,7 @@ public class Consts {
     public static final String LANG_ERR_CREATE_DIR = getString(R.string.err_create_dir);
 
     private static String getString(int resId) {
-        return MainApp.getString(resId);
+        return MainApp.getStr(resId);
     }
 }
 

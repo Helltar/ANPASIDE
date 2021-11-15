@@ -1,10 +1,11 @@
 package com.github.helltar.anpaside.ide;
 
+import static com.github.helltar.anpaside.Consts.DIR_LIBS;
+import static com.github.helltar.anpaside.Consts.DIR_MAIN;
+
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Environment;
-
-import static com.github.helltar.anpaside.Consts.*;
 
 public class IdeConfig {
 
@@ -22,7 +23,7 @@ public class IdeConfig {
     }
 
     private SharedPreferences.Editor getMainEditor() {
-        return getSpMain().edit();   
+        return getSpMain().edit();
     }
 
     private boolean getInstState() {

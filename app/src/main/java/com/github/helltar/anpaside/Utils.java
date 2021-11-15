@@ -1,20 +1,24 @@
 package com.github.helltar.anpaside;
 
+import static com.github.helltar.anpaside.Consts.LANG_ERR_CREATE_DIR;
+import static com.github.helltar.anpaside.Consts.LANG_ERR_FILE_NOT_FOUND;
+import static com.github.helltar.anpaside.logging.Logger.LMT_ERROR;
+
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Environment;
 import android.provider.DocumentsContract;
+
 import com.github.helltar.anpaside.logging.Logger;
+
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
-
-import static com.github.helltar.anpaside.Consts.*;
-import static com.github.helltar.anpaside.logging.Logger.*;
 
 public class Utils {
 
@@ -130,7 +134,7 @@ public class Utils {
     private static String getDataColumn(Context context, Uri uri, String selection, String[] selectionArgs) {
         Cursor cursor = null;
         final String column = "_data";
-        final String[] projection = { column };
+        final String[] projection = {column};
 
         try {
             cursor = context.getContentResolver().query(uri, projection, selection, selectionArgs, null);

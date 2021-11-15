@@ -1,13 +1,17 @@
 package com.github.helltar.anpaside.editor;
 
+import static com.github.helltar.anpaside.editor.Patterns.commentsPattern;
+import static com.github.helltar.anpaside.editor.Patterns.keywordsPattern;
+import static com.github.helltar.anpaside.editor.Patterns.numbersPattern;
+import static com.github.helltar.anpaside.editor.Patterns.stringsPattern;
+
 import android.graphics.Color;
 import android.text.Editable;
 import android.text.Spannable;
 import android.text.style.ForegroundColorSpan;
+
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import static com.github.helltar.anpaside.editor.Patterns.*;
 
 public class Highlighter {
 
@@ -25,8 +29,8 @@ public class Highlighter {
 
         while (m.find()) {
             s.setSpan(new ForegroundColorSpan(rgb),
-                      m.start(), m.end(),
-                      Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    m.start(), m.end(),
+                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         }
     }
 

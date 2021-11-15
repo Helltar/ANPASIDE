@@ -20,6 +20,7 @@ import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Environment;
+
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -74,17 +75,17 @@ final class ExceptionHandler implements Thread.UncaughtExceptionHandler {
             StringBuilder reportBuilder = new StringBuilder();
 
             reportBuilder
-                .append("\n\n######################################################\n\n")
-                .append(formatter.format(dumpDate)).append("\n")
-                .append(String.format("Version: %s (%d)\n", versionName, versionCode))
-                .append(thread.toString()).append("\n");
+                    .append("\n\n######################################################\n\n")
+                    .append(formatter.format(dumpDate)).append("\n")
+                    .append(String.format("Version: %s (%d)\n", versionName, versionCode))
+                    .append(thread.toString()).append("\n");
 
             processThrowable(exception, reportBuilder);
 
             File sd = Environment.getExternalStorageDirectory();
             File stacktrace = new File(sd.getPath() + stacktraceDir,
-                                       String.format("stacktrace-%s.txt", 
-                                                     fileFormatter.format(dumpDate)));
+                    String.format("stacktrace-%s.txt",
+                            fileFormatter.format(dumpDate)));
             File dumpdir = stacktrace.getParentFile();
             boolean dirReady = dumpdir.isDirectory() || dumpdir.mkdirs();
 
@@ -121,8 +122,8 @@ final class ExceptionHandler implements Thread.UncaughtExceptionHandler {
         StackTraceElement[] stackTraceElements = exception.getStackTrace();
 
         builder
-            .append("Exception: ").append(exception.getClass().getName()).append("\n")
-            .append("Message: ").append(exception.getMessage()).append("\nStacktrace:\n");
+                .append("Exception: ").append(exception.getClass().getName()).append("\n")
+                .append("Message: ").append(exception.getMessage()).append("\nStacktrace:\n");
 
         for (StackTraceElement element : stackTraceElements) {
             builder.append("\t").append(element.toString()).append("\n");

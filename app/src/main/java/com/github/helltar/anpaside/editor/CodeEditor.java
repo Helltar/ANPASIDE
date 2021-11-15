@@ -19,13 +19,16 @@ import android.widget.TabHost.TabContentFactory;
 import android.widget.TabHost.TabSpec;
 import android.widget.TextView.BufferType;
 import android.widget.Toast;
+
 import com.github.helltar.anpaside.MainActivity;
 import com.github.helltar.anpaside.R;
 import com.github.helltar.anpaside.logging.Logger;
+
+import org.apache.commons.io.FileUtils;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.LinkedList;
-import org.apache.commons.io.FileUtils;
 
 public class CodeEditor {
 
@@ -84,14 +87,14 @@ public class CodeEditor {
         highlights(edtText.getEditableText());
 
         createTabs(filename, new File(filename).getName(), new TabContentFactory() {
-                @Override
-                public View createTabContent(String p1) {
-                    ScrollView sv = new ScrollView(context);
-                    sv.setFillViewport(true);
-                    sv.addView(edtText);
-                    return sv;
-                }
-            });
+            @Override
+            public View createTabContent(String p1) {
+                ScrollView sv = new ScrollView(context);
+                sv.setFillViewport(true);
+                sv.addView(edtText);
+                return sv;
+            }
+        });
 
         edtText.requestFocus();
 
@@ -155,14 +158,14 @@ public class CodeEditor {
         tabHost.setCurrentTabByTag(tag);
 
         tabHost.getTabWidget().getChildAt(tabHost.getTabWidget().getChildCount() - 1)
-            .setOnLongClickListener(new OnLongClickListener() {
-                @Override
-                public boolean onLongClick(View v) {
-                    tabHost.setCurrentTabByTag(tabSpec.getTag());
-                    showPopupMenu(v, tabSpec.getTag());
-                    return true;
-                }
-            });
+                .setOnLongClickListener(new OnLongClickListener() {
+                    @Override
+                    public boolean onLongClick(View v) {
+                        tabHost.setCurrentTabByTag(tabSpec.getTag());
+                        showPopupMenu(v, tabSpec.getTag());
+                        return true;
+                    }
+                });
     }
 
     private void showPopupMenu(View v, final String tag) {
@@ -170,12 +173,12 @@ public class CodeEditor {
 
         pm.getMenu().add(btnTabCloseName);
         pm.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-                @Override
-                public boolean onMenuItemClick(MenuItem item) {
-                    closeFile(tag);
-                    return true;
-                }
-            });
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                closeFile(tag);
+                return true;
+            }
+        });
 
         pm.show();
     }
@@ -189,7 +192,7 @@ public class CodeEditor {
             try {
                 for (int i = 0; i < filenameList.size(); i++) {
                     FileUtils.writeStringToFile(new File(filenameList.get(i)),
-                                                getEditorWithTag(filenameList.get(i)).getText().toString());
+                            getEditorWithTag(filenameList.get(i)).getText().toString());
                 }
 
                 isFilesModified = false;
