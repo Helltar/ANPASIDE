@@ -14,9 +14,9 @@ import static com.github.helltar.anpaside.logging.Logger.LMT_ERROR;
 import static com.github.helltar.anpaside.logging.Logger.LMT_INFO;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
@@ -59,7 +59,7 @@ public class MainActivity extends Activity {
 
     public static CodeEditor editor;
     public static IdeConfig ideConfig;
-    private ProjectManager pman = new ProjectManager();
+    private final ProjectManager pman = new ProjectManager();
 
     private static TextView tvLog;
     public static ScrollView svLog;
@@ -109,12 +109,7 @@ public class MainActivity extends Activity {
                         .setTitle("Error")
                         .setMessage("permission.WRITE_EXTERNAL_STORAGE error")
                         .setPositiveButton("Exit",
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int whichButton) {
-                                        exitApp();
-                                    }
-
-                                })
+                                (dialog, whichButton) -> exitApp())
                         .show();
             }
         }
@@ -134,30 +129,27 @@ public class MainActivity extends Activity {
         }
 
         String[] msgLines = msg.split("\n");
-        String lines = "";
+        StringBuilder lines = new StringBuilder();
 
         for (int i = 1; i < msgLines.length; i++) {
-            lines += "\t\t\t\t\t\t\t\t\t- " + msgLines[i] + "<br>";
+            lines.append("\t\t\t\t\t\t\t\t\t- ").append(msgLines[i]).append("<br>");
         }
 
-        final Spanned text = Html.fromHtml("<font color='#555555'>"
+        @SuppressLint("SimpleDateFormat") final Spanned text = Html.fromHtml("<font color='#555555'>"
                 + new SimpleDateFormat("HH:mm:ss").format(new Date())
                 + "</font> "
                 + "<font color='" + fontColor + "'>"
                 + msgLines[0].replace("\n", "<br>") + "</font><br>"
                 + lines);
 
-        new Handler(Looper.getMainLooper()).post(new Runnable() {
-            @Override
-            public void run() {
-                if (tvLog.getText().length() > 1024) {
-                    tvLog.setText("");
-                }
-
-                tvLog.append(text);
-                svLog.fullScroll(ScrollView.FOCUS_DOWN);
-                svLog.setVisibility(View.VISIBLE);
+        new Handler(Looper.getMainLooper()).post(() -> {
+            if (tvLog.getText().length() > 1024) {
+                tvLog.setText("");
             }
+
+            tvLog.append(text);
+            svLog.fullScroll(ScrollView.FOCUS_DOWN);
+            svLog.setVisibility(View.VISIBLE);
         });
     }
 
@@ -202,16 +194,14 @@ public class MainActivity extends Activity {
             new AlertDialog.Builder(MainActivity.this)
                     .setMessage(R.string.err_project_exists)
                     .setPositiveButton(R.string.dlg_btn_rewrite,
-                            new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int whichButton) {
-                                    try {
-                                        FileUtils.deleteDirectory(new File(projectPath));
-                                        if (pman.createProject(sdcardPath + projDir + "/", projName)) {
-                                            openFile(pman.getProjectConfigFilename());
-                                        }
-                                    } catch (IOException ioe) {
-                                        Logger.addLog(ioe);
+                            (dialog, whichButton) -> {
+                                try {
+                                    FileUtils.deleteDirectory(new File(projectPath));
+                                    if (pman.createProject(sdcardPath + projDir + "/", projName)) {
+                                        openFile(pman.getProjectConfigFilename());
                                     }
+                                } catch (IOException ioe) {
+                                    Logger.addLog(ioe);
                                 }
                             })
                     .setNegativeButton(R.string.dlg_btn_cancel, null)
@@ -236,15 +226,13 @@ public class MainActivity extends Activity {
                     .setMessage(R.string.err_module_exists)
                     .setNegativeButton(R.string.dlg_btn_cancel, null)
                     .setPositiveButton(R.string.dlg_btn_rewrite,
-                            new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int whichButton) {
-                                    if (new File(filename).delete()) {
-                                        if (pman.createModule(filename)) {
-                                            openFile(filename);
-                                        }
-                                    } else {
-                                        Logger.addLog(getString(R.string.err_del_old_module) + ": " + filename, LMT_ERROR);
+                            (dialog, whichButton) -> {
+                                if (new File(filename).delete()) {
+                                    if (pman.createModule(filename)) {
+                                        openFile(filename);
                                     }
+                                } else {
+                                    Logger.addLog(getString(R.string.err_del_old_module) + ": " + filename, LMT_ERROR);
                                 }
                             })
                     .show();
@@ -258,16 +246,14 @@ public class MainActivity extends Activity {
                 filename = pman.getMainModuleFilename();
             }
 
-            if (editor.openFile(filename)) {
-                return true;
-            }
+            return editor.openFile(filename);
         }
 
         return false;
     }
 
     private boolean isProjectFile(String filename) {
-        return FilenameUtils.getExtension(filename).equals(EXT_PROJ.substring(1, EXT_PROJ.length()));
+        return FilenameUtils.getExtension(filename).equals(EXT_PROJ.substring(1));
     }
 
     private View getViewById(int resource) {
@@ -286,11 +272,7 @@ public class MainActivity extends Activity {
                 .setTitle(R.string.dlg_title_new_project)
                 .setView(view)
                 .setNegativeButton(R.string.dlg_btn_cancel, null)
-                .setPositiveButton(R.string.dlg_btn_create, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int whichButton) {
-                        createProject(edtProjectsDir.getText().toString(), edtProjectName.getText().toString());
-                    }
-                })
+                .setPositiveButton(R.string.dlg_btn_create, (dialog, whichButton) -> createProject(edtProjectsDir.getText().toString(), edtProjectName.getText().toString()))
                 .show();
     }
 
@@ -309,16 +291,14 @@ public class MainActivity extends Activity {
                 .setTitle(R.string.manifest_mf)
                 .setView(view)
                 .setNegativeButton(R.string.dlg_btn_cancel, null)
-                .setPositiveButton(R.string.menu_file_save, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int whichButton) {
-                        try {
-                            pman.setMidletName(edtMidletName.getText().toString());
-                            pman.setMidletVendor(edtMidletVendor.getText().toString());
-                            pman.setVersion(edtMidletVersion.getText().toString());
-                            pman.save(pman.getProjectConfigFilename());
-                        } catch (IOException e) {
-                            Logger.addLog(e);
-                        }
+                .setPositiveButton(R.string.menu_file_save, (dialog, whichButton) -> {
+                    try {
+                        pman.setMidletName(edtMidletName.getText().toString());
+                        pman.setMidletVendor(edtMidletVendor.getText().toString());
+                        pman.setVersion(edtMidletVersion.getText().toString());
+                        pman.save(pman.getProjectConfigFilename());
+                    } catch (IOException e) {
+                        Logger.addLog(e);
                     }
                 })
                 .show();
@@ -333,12 +313,7 @@ public class MainActivity extends Activity {
                 .setTitle(R.string.dlg_title_new_module)
                 .setView(view)
                 .setPositiveButton(R.string.dlg_btn_create,
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int whichButton) {
-                                createModule(edtModuleName.getText().toString());
-                            }
-
-                        })
+                        (dialog, whichButton) -> createModule(edtModuleName.getText().toString()))
                 .setNegativeButton(R.string.dlg_btn_cancel, null)
                 .show();
     }
@@ -380,11 +355,12 @@ public class MainActivity extends Activity {
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         menu.findItem(R.id.miCreateModule).setEnabled(pman.isProjectOpen());
-        menu.findItem(R.id.miFileSave).setEnabled(editor.isFilesModified);
+        menu.findItem(R.id.miFileSave).setEnabled(CodeEditor.isFilesModified);
         menu.findItem(R.id.miProjectConfig).setEnabled(pman.isProjectOpen());
         return super.onPrepareOptionsMenu(menu);
     }
 
+    @SuppressLint("NonConstantResourceId")
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
@@ -432,7 +408,7 @@ public class MainActivity extends Activity {
                 return true;
 
             case R.id.miExit:
-                if (editor.isFilesModified) {
+                if (CodeEditor.isFilesModified) {
                     showExitDialog();
                 } else {
                     exitApp();
@@ -449,20 +425,13 @@ public class MainActivity extends Activity {
                 .setTitle(R.string.menu_exit)
                 .setMessage(R.string.dlg_msg_save_modified_files)
                 .setPositiveButton(R.string.dlg_btn_yes,
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int whichButton) {
-                                if (editor.saveAllFiles()) {
-                                    exitApp();
-                                }
+                        (dialog, whichButton) -> {
+                            if (editor.saveAllFiles()) {
+                                exitApp();
                             }
                         })
                 .setNegativeButton(R.string.dlg_btn_no,
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int whichButton) {
-                                exitApp();
-                            }
-
-                        })
+                        (dialog, whichButton) -> exitApp())
                 .show();
     }
 
@@ -486,12 +455,9 @@ public class MainActivity extends Activity {
 
                 result = builder.build();
 
-                new Handler(Looper.getMainLooper()).post(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (result) {
-                            startActionViewIntent(builder.getJarFilename());
-                        }
+                new Handler(Looper.getMainLooper()).post(() -> {
+                    if (result) {
+                        startActionViewIntent(builder.getJarFilename());
                     }
                 });
             }

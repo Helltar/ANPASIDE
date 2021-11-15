@@ -12,14 +12,14 @@ public class IdeConfig {
     private final String PREF_NAME_INSTALL = "install";
     private final String PREF_NAME_GLOBAL_DIR_PATH = "global_libs_dir";
 
-    private Context context;
+    private final Context context;
 
     public IdeConfig(Context context) {
         this.context = context;
     }
 
     private SharedPreferences getSpMain() {
-        return context.getSharedPreferences("ide_config", context.MODE_PRIVATE);
+        return context.getSharedPreferences("ide_config", Context.MODE_PRIVATE);
     }
 
     private SharedPreferences.Editor getMainEditor() {

@@ -4,6 +4,7 @@ import com.github.helltar.anpaside.ProcessResult;
 import com.github.helltar.anpaside.logging.Logger;
 import java.io.File;
 import java.io.IOException;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import net.lingala.zip4j.core.ZipFile;
@@ -41,8 +42,8 @@ public class ProjectBuilder extends ProjectManager {
             + " -o " + projPrebuildDir
             + " -l " + globLibsDir
             + " -p " + getProjLibsDir()
-            + " -m " + Integer.toString(getMathType())
-            + " c " + Integer.toString(getCanvasType());
+            + " -m " + getMathType()
+            + " c " + getCanvasType();
 
         if (detectUnits) {
             args += " -d";
@@ -92,9 +93,7 @@ public class ProjectBuilder extends ProjectManager {
         if (!isErr(output)) {
             Logger.addLog(cleanOutput);
 
-            if (findAndCopyStubs(output) && findAndCopyLib(output)) {
-                return true;
-            }
+            return findAndCopyStubs(output) && findAndCopyLib(output);
         } else {
             Logger.addLog(cleanOutput, LMT_ERROR);
         }
@@ -166,18 +165,14 @@ public class ProjectBuilder extends ProjectManager {
 
         String manifestDir = projPrebuildDir + "META-INF";
 
-        if (mkdir(manifestDir)
-            && createManifest(manifestDir)
-            && copyFileToDir(stubsDir + "/" + FW_CLASS, projPrebuildDir)) {
-            return true;
-        }
-
-        return false;
+        return mkdir(manifestDir)
+                && createManifest(manifestDir)
+                && copyFileToDir(stubsDir + "/" + FW_CLASS, projPrebuildDir);
     }
 
     private boolean isDirEmpty(String dirPath) {
         File file = new File(dirPath);
-        return file.isDirectory() && file.list().length <= 0;
+        return file.isDirectory() && Objects.requireNonNull(file.list()).length <= 0;
     }
 
     public String getJarFilename() {
@@ -188,9 +183,9 @@ public class ProjectBuilder extends ProjectManager {
         String[] lines = output.split("\n");
         StringBuilder cleanOutput = new StringBuilder();
 
-        for (int i = 0; i < lines.length; i++) {
-            if (!lines[i].startsWith("@")) {
-                cleanOutput.append(lines[i] + "\n");
+        for (String line : lines) {
+            if (!line.startsWith("@")) {
+                cleanOutput.append(line).append("\n");
             }
         }
 

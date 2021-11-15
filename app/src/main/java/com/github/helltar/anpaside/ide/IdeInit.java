@@ -15,7 +15,7 @@ import java.io.IOException;
 
 public class IdeInit {
 
-    private AssetManager assetManager;
+    private final AssetManager assetManager;
 
     public IdeInit(AssetManager assetManager) {
         this.assetManager = assetManager;
@@ -23,9 +23,7 @@ public class IdeInit {
 
     public boolean install() {
         if (copyAssets(ASSET_DIR_STUBS)) {
-            if (copyAssets(ASSET_DIR_FILES)) {
-                return true;
-            }
+            return copyAssets(ASSET_DIR_FILES);
         }
 
         return false;
@@ -42,8 +40,8 @@ public class IdeInit {
                     dir.mkdir();
                 }
 
-                for (int i = 0; i < assets.length; i++) {
-                    copyAssets(assetDir + "/" + assets[i]);
+                for (String asset : assets) {
+                    copyAssets(assetDir + "/" + asset);
                 }
             } else {
                 FileUtils.copyInputStreamToFile(assetManager.open(assetDir), new File(DATA_PKG_PATH + assetDir));

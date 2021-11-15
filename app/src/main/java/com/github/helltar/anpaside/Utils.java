@@ -86,26 +86,24 @@ public class Utils {
 
     public static ProcessResult runProc(String args) {
         boolean result = false;
-        StringBuffer output = new StringBuffer();
+        StringBuilder output = new StringBuilder();
 
         try {
             Process process = Runtime.getRuntime().exec(args);
 
             BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
 
-            String line = "";
+            String line;
 
             while ((line = reader.readLine()) != null) {
-                output.append(line + "\n");
+                output.append(line).append("\n");
                 process.waitFor();
             }
 
             result = true;
 
-        } catch (IOException ioe) {
+        } catch (IOException | InterruptedException ioe) {
             Logger.addLog(ioe);
-        } catch (InterruptedException ie) {
-            Logger.addLog(ie);
         }
 
         return new ProcessResult(result, output.toString());
@@ -123,7 +121,7 @@ public class Utils {
                 }
             }
         } else if ("content".equalsIgnoreCase(uri.getScheme())) {
-            return getDataColumn(context, uri, null, null);
+            return getDataColumn(context, uri);
         } else if ("file".equalsIgnoreCase(uri.getScheme())) {
             return uri.getPath();
         }
@@ -131,13 +129,13 @@ public class Utils {
         return uri.toString();
     }
 
-    private static String getDataColumn(Context context, Uri uri, String selection, String[] selectionArgs) {
+    private static String getDataColumn(Context context, Uri uri) {
         Cursor cursor = null;
         final String column = "_data";
         final String[] projection = {column};
 
         try {
-            cursor = context.getContentResolver().query(uri, projection, selection, selectionArgs, null);
+            cursor = context.getContentResolver().query(uri, projection, null, null, null);
 
             if (cursor != null && cursor.moveToFirst()) {
                 final int index = cursor.getColumnIndexOrThrow(column);

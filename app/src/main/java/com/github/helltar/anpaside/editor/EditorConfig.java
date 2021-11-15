@@ -5,7 +5,7 @@ import android.content.SharedPreferences;
 
 public class EditorConfig {
 
-    private Context context;
+    private final Context context;
 
     private final String RECENT_FILENAMES = "recent_filenames";
     private final String LAST_PROJECT = "last_project";
@@ -17,7 +17,7 @@ public class EditorConfig {
     }
 
     private SharedPreferences getSpMain() {
-        return context.getSharedPreferences("editor_config", context.MODE_PRIVATE);
+        return context.getSharedPreferences("editor_config", Context.MODE_PRIVATE);
     }
 
     public String getRecentFilenames() {

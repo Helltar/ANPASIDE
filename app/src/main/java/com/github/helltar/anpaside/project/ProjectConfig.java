@@ -7,7 +7,7 @@ import java.util.Properties;
 
 public class ProjectConfig {
 
-    private Properties p = new Properties();
+    private final Properties p = new Properties();
 
     public void open(String filename) throws IOException {
         p.load(new FileInputStream(filename));

@@ -64,15 +64,11 @@ public class ProjectManager extends ProjectConfig {
     }
 
     public boolean mkProjectDirs(String path) {
-        if (mkdir(path + DIR_BIN)
-            && mkdir(path + DIR_SRC)
-            && mkdir(path + DIR_PREBUILD)
-            && mkdir(path + DIR_RES)
-            && mkdir(path + DIR_LIBS)) {
-            return true;
-        }
-
-        return false;
+        return mkdir(path + DIR_BIN)
+                && mkdir(path + DIR_SRC)
+                && mkdir(path + DIR_PREBUILD)
+                && mkdir(path + DIR_RES)
+                && mkdir(path + DIR_LIBS);
     }
 
     public boolean isProjectOpen() {

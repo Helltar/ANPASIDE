@@ -39,10 +39,10 @@ public class Highlighter {
     }
 
     public static void clearSpans(Editable s) {
-        ForegroundColorSpan spans[] = s.getSpans(0, s.length(), ForegroundColorSpan.class);
+        ForegroundColorSpan[] spans = s.getSpans(0, s.length(), ForegroundColorSpan.class);
 
-        for (int i = 0; i < spans.length; i++) {
-            s.removeSpan(spans[i]);
+        for (ForegroundColorSpan span : spans) {
+            s.removeSpan(span);
         }
     }
 }

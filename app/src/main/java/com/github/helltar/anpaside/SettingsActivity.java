@@ -21,7 +21,7 @@ public class SettingsActivity extends Activity {
         cbHighlighter = findViewById(R.id.cbHighlighter);
         edtGlobLibsPath = findViewById(R.id.edtGlobalDirPath);
 
-        edtFontSize.setText("" + MainActivity.editor.editorConfig.getFontSize());
+        edtFontSize.setText(String.valueOf(MainActivity.editor.editorConfig.getFontSize()));
         cbHighlighter.setChecked(MainActivity.editor.editorConfig.getHighlighterEnabled());
         edtGlobLibsPath.setText(MainActivity.ideConfig.getGlobalDirPath());
     }
