@@ -24,8 +24,6 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.text.Html;
 import android.text.Spanned;
 import android.view.Gravity;
@@ -38,6 +36,9 @@ import android.widget.ScrollView;
 import android.widget.TabHost;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 import com.github.helltar.anpaside.editor.CodeEditor;
 import com.github.helltar.anpaside.ide.IdeConfig;
@@ -272,7 +273,9 @@ public class MainActivity extends Activity {
                 .setTitle(R.string.dlg_title_new_project)
                 .setView(view)
                 .setNegativeButton(R.string.dlg_btn_cancel, null)
-                .setPositiveButton(R.string.dlg_btn_create, (dialog, whichButton) -> createProject(edtProjectsDir.getText().toString(), edtProjectName.getText().toString()))
+                .setPositiveButton(R.string.dlg_btn_create,
+                        (dialog, whichButton) -> createProject(edtProjectsDir.getText().toString(),
+                                edtProjectName.getText().toString()))
                 .show();
     }
 
