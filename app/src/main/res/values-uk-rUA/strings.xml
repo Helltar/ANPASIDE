@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">ANPASIDE</string>
     <string name="msg.saved">Збережено</string>
     <string name="msg.no_open_project">Немає відкритого проєкта</string>
     <string name="msg.install_start">Йде встановлення компілятора, почекайте</string>
@@ -39,4 +38,5 @@
     <string name="dlg.btn.cancel">Відміна</string>
     <string name="dlg.btn.rewrite">Перезаписати</string>
     <string name="dlg.btn.yes">Так</string>
+    <string name="dlg.btn.no">Ні</string>
 </resources>

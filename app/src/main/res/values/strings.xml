@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">ANPASIDE</string>
+    <string name="app_name" translatable="false">ANPASIDE</string>
 
     <!-- messages -->
 
@@ -63,9 +63,9 @@
     <string name="dlg.btn.yes">Yes</string>
     <string name="dlg.btn.no">No</string>
 
-    <string name="manifest.mf">MANIFEST.MF</string>
+    <string name="manifest.mf" translatable="false">MANIFEST.MF</string>
     
-    <string name="about_text">
+    <string name="about_text" translatable="false">
         Аuthor: Helltar
         \nLicense: MIT
         \nhttps://github.com/helltar/anpaside
@@ -73,7 +73,7 @@
 
     <!-- templates -->
 
-    <string name="tpl.helloworld">
+    <string name="tpl.helloworld" translatable="false">
 "program %s;
 var
     s: string;
@@ -91,7 +91,7 @@ begin
 end."
     </string>
 
-    <string name="tpl.module">
+    <string name="tpl.module" translatable="false">
 "unit %s;
 
 interface
@@ -109,7 +109,7 @@ initialization
 end."
     </string>
 
-    <string name="tpl.manifest" formatted="false">
+    <string name="tpl.manifest" formatted="false" translatable="false">
 "Manifest-Version: 1.0
 Created-By: ANPASIDE
 MIDlet-1: %s, /icon.png, FW
@@ -120,7 +120,7 @@ MicroEdition-Configuration: CLDC-1.%s
 MicroEdition-Profile: MIDP-%s.0"
     </string>
 
-    <string name="tpl.gitignore">
+    <string name="tpl.gitignore" translatable="false">
 "bin/
 prebuild/"
     </string>
