@@ -6,7 +6,9 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 
-public class CodeEditText extends android.widget.EditText {
+import java.util.Objects;
+
+public class CodeEditText extends androidx.appcompat.widget.AppCompatEditText {
 
     private final Rect rect;
     private final Paint paint;
@@ -43,7 +45,7 @@ public class CodeEditText extends android.widget.EditText {
             if (i == 0) {
                 canvas.drawText("" + lineNumber, rect.left, baseline, paint);
                 ++lineNumber;
-            } else if (getText().charAt(getLayout().getLineStart(i) - 1) == '\n') {
+            } else if (Objects.requireNonNull(getText()).charAt(getLayout().getLineStart(i) - 1) == '\n') {
                 canvas.drawText("" + lineNumber, rect.left, baseline, paint);
                 ++lineNumber;
             }

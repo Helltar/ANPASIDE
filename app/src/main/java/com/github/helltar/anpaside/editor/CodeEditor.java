@@ -201,7 +201,7 @@ public class CodeEditor {
     }
 
     private EditText getEditorWithTag(String tag) {
-        return (EditText) tabHost.getTabContentView().findViewWithTag(tag);
+        return tabHost.getTabContentView().findViewWithTag(tag);
     }
 
     private boolean isEditorActive() {
