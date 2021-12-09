@@ -21,6 +21,7 @@
     <string name="err.failed_create_archive">Failed to create an archive</string>
     <string name="err.file_not_found">File not found</string>
     <string name="err.create_dir">Unable to create directory</string>
+    <string name="err.no_app_for_run_jar">No applications found to run the JAR file</string>
 
     <!-- menu -->
 

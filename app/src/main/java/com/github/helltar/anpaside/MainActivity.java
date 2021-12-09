@@ -463,7 +463,7 @@ public class MainActivity extends Activity {
                         try {
                             startActionViewIntent(builder.getJarFilename());
                         } catch (Exception e) {
-                            Logger.addLog(e);
+                            Logger.addLog(R.string.err_no_app_for_run_jar);
                         }
                     }
                 });

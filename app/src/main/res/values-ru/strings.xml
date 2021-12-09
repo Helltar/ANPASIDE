@@ -54,10 +54,12 @@
 
     <!-- buttons -->
 
-    <string name="dlg.btn.create">Создать</string>
+    <string name="dlg.btn.create">ANPASIDE</string>
     <string name="dlg.btn.cancel">Отмена</string>
     <string name="dlg.btn.rewrite">Перезаписать</string>
     <string name="dlg.btn.yes">Да</string>
     <string name="dlg.btn.no">Нет</string>
+    <string name="app_name">ANPASIDE</string>
+    <string name="err.no_app_for_run_jar">Не найдено приложений для запуска JAR-файла</string>
 
 </resources>
