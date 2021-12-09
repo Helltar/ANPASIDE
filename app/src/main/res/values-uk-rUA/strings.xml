@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">ANPASIDE</string>
+    <string name="msg.saved">Збережено</string>
+    <string name="msg.no_open_project">Немає відкритого проєкта</string>
+    <string name="msg.install_start">Йде встановлення компілятора, почекайте</string>
+    <string name="msg.install_ok">Встановлення успішно завершено</string>
+    <string name="msg.build_successfully">Збірка успішно завершена</string>
+    <string name="err.project_name_least_chars">Назва проєкту повинна складатись мінімум із %d-х символів</string>
+    <string name="err.module_name_least_chars">Назва модулю повинна складатись мінімум із %d-х символів</string>
+    <string name="err.project_exists">Проєкт вже існує</string>
+    <string name="err.module_exists">Модуль з такою назвою вже існує</string>
+    <string name="err.del_old_module">Помилка під час видалення старого модуля</string>
+    <string name="err.failed_create_archive">Не вдалося створити архів</string>
+    <string name="err.file_not_found">Файл не знайдено</string>
+    <string name="err.create_dir">Не вдалося створити каталог</string>
+    <string name="err.no_app_for_run_jar">Не знайдено программ для запуску JAR-файла</string>
+    <string name="menu.create_project">Створити проєкт</string>
+    <string name="menu.create_module">Новий модуль</string>
+    <string name="menu.project_config">Настроки проєкта</string>
+    <string name="menu.file_open">Відкрити файл</string>
+    <string name="menu.file_save">Зберегти</string>
+    <string name="menu.settings">Настройки</string>
+    <string name="menu.about">Про застосунок</string>
+    <string name="menu.exit">Вихід</string>
+    <string name="pmenu.tab.close">Закрити</string>
+    <string name="dlg.title.new_project">Новий проєкт</string>
+    <string name="dlg.title.new_module">Новий модуль</string>
+    <string name="dlg.title.invalid_value">Неприйнятне значення</string>
+    <string name="dlg.subtitle.new_project">Внутрішня память: %s</string>
+    <string name="dlg.hint.project_name">Назва проєкту</string>
+    <string name="dlg.hint.projects_dir_name">Батьківський каталог</string>
+    <string name="dlg.hint.module_name">Имя модуля</string>
+    <string name="dlg.msg.save_modified_files">Зберегти змінені відкриті файли?</string>
+    <string name="text.editor.font.size">Розмір шрифту:</string>
+    <string name="text.editor.highlighter">Підсвітка синтаксису</string>
+    <string name="text.global.directory.libs">Глобальний каталог з бібліотеками:</string>
+    <string name="dlg.btn.create">Створити</string>
+    <string name="dlg.btn.cancel">Відміна</string>
+    <string name="dlg.btn.rewrite">Перезаписати</string>
+    <string name="dlg.btn.yes">Так</string>
+</resources>
