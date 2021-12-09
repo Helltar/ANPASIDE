@@ -460,7 +460,11 @@ public class MainActivity extends Activity {
 
                 new Handler(Looper.getMainLooper()).post(() -> {
                     if (result) {
-                        startActionViewIntent(builder.getJarFilename());
+                        try {
+                            startActionViewIntent(builder.getJarFilename());
+                        } catch (Exception e) {
+                            Logger.addLog(e);
+                        }
                     }
                 });
             }
