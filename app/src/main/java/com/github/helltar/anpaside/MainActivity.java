@@ -8,10 +8,12 @@ import static com.github.helltar.anpaside.Consts.DIR_SRC;
 import static com.github.helltar.anpaside.Consts.EXT_PAS;
 import static com.github.helltar.anpaside.Consts.EXT_PROJ;
 import static com.github.helltar.anpaside.Consts.MP3CC;
+import static com.github.helltar.anpaside.PermissionActivity.hasPermissions;
 import static com.github.helltar.anpaside.Utils.fileExists;
 import static com.github.helltar.anpaside.Utils.getPathFromUri;
 import static com.github.helltar.anpaside.logging.Logger.LMT_ERROR;
 import static com.github.helltar.anpaside.logging.Logger.LMT_INFO;
+import static com.github.helltar.anpaside.logging.Logger.addLog;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
@@ -20,6 +22,7 @@ import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -85,22 +88,32 @@ public class MainActivity extends Activity {
     }
 
     private void init() {
-        Logger.addLog(getString(R.string.app_name) + " " + getAppVersionName());
+        addLog(getString(R.string.app_name) + " " + getAppVersionName());
+
+        if (hasPermissions(this)) {
+            editor.openRecentFiles();
+            openFile(editor.editorConfig.getLastProject());
+        } else {
+            firstStart();
+        }
+    }
+
+    private void firstStart() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            Intent intent = new Intent(this, PermissionActivity.class);
+            startActivity(intent);
+        } else {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 0);
+        }
 
         if (!ideConfig.isAssetsInstall()) {
             installAssets();
         }
-
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
-            editor.openRecentFiles();
-            openFile(editor.editorConfig.getLastProject());
-        } else {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 0);
-        }
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                                           int[] grantResults) {
         if (requestCode == 0) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 editor.openRecentFiles();

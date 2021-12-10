@@ -64,7 +64,7 @@
     <string name="dlg.btn.no">No</string>
 
     <string name="manifest.mf" translatable="false">MANIFEST.MF</string>
-    
+
     <string name="about_text" translatable="false">
         Аuthor: Helltar
         \nLicense: MIT
@@ -124,6 +124,11 @@ MicroEdition-Profile: MIDP-%s.0"
 "bin/
 prebuild/"
     </string>
+    <string name="title_activity_permission">Write permission</string>
+    <!-- Strings used for fragments for navigation -->
+
+    <string name="permission_not_granted">Permission not granted</string>
+    <string name="request_permission">Request permission</string>
 
 </resources>
 
