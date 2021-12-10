@@ -129,6 +129,7 @@ prebuild/"
 
     <string name="permission_not_granted">Permission not granted</string>
     <string name="request_permission">Request permission</string>
+    <string name="permission_obtained">Permission obtained</string>
 
 </resources>
 

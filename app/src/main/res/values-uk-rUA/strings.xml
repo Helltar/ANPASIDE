@@ -42,4 +42,5 @@
     <string name="permission_not_granted">Немає доступу</string>
     <string name="request_permission">Запитати дозвіл</string>
     <string name="title_activity_permission">Право на доступ до файлів</string>
+    <string name="permission_obtained">Дозвіл отримано</string>
 </resources>

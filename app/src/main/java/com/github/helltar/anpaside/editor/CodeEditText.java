@@ -1,14 +1,17 @@
 package com.github.helltar.anpaside.editor;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.widget.EditText;
 
 import java.util.Objects;
 
-public class CodeEditText extends androidx.appcompat.widget.AppCompatEditText {
+@SuppressLint("AppCompatCustomView")
+public class CodeEditText extends EditText {
 
     private final Rect rect;
     private final Paint paint;

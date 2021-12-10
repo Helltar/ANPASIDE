@@ -1,68 +1,66 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-	xmlns:android="http://schemas.android.com/apk/res/android"
-	android:layout_height="fill_parent"
-	android:layout_width="fill_parent"
-	android:orientation="vertical">
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical">
 
-	<TabHost
-		android:id="@android:id/tabhost"
-		android:layout_width="match_parent"
-		android:layout_height="match_parent"
-		android:layout_weight="0.3">
+    <TabHost
+        android:id="@android:id/tabhost"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="0.3">
 
-		<LinearLayout
-			android:layout_width="match_parent"
-			android:layout_height="match_parent"
-			android:orientation="vertical">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
 
-			<HorizontalScrollView
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:fillViewport="true"
-				android:scrollbars="none">
+            <HorizontalScrollView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fillViewport="true"
+                android:scrollbars="none">
 
-				<TabWidget
-					android:id="@android:id/tabs"
-					android:layout_width="wrap_content"
-					android:layout_height="48dp"/>
+                <TabWidget
+                    android:id="@android:id/tabs"
+                    android:layout_width="wrap_content"
+                    android:layout_height="48dp" />
 
-			</HorizontalScrollView>
+            </HorizontalScrollView>
 
-			<FrameLayout
-				android:id="@android:id/tabcontent"
-				android:layout_height="match_parent"
-				android:layout_width="match_parent"
-				android:layout_marginLeft="4dp">
+            <FrameLayout
+                android:id="@android:id/tabcontent"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="4dp">
 
-			</FrameLayout>
+            </FrameLayout>
 
-		</LinearLayout>
+        </LinearLayout>
 
-	</TabHost>
+    </TabHost>
 
-	<View
-		android:background="?android:attr/dividerVertical"
-		android:layout_width="match_parent"
-		android:layout_height="1dp"/>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="?android:attr/dividerVertical" />
 
-	<ScrollView
-		android:layout_height="match_parent"
-		android:layout_width="match_parent"
-		android:layout_weight="1"
-		android:id="@+id/svLog"
-		android:layout_margin="12dp">
+    <ScrollView
+        android:id="@+id/svLog"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="12dp"
+        android:layout_weight="1">
 
-		<TextView
-			android:layout_height="match_parent"
-			android:textAppearance="?android:attr/textAppearanceSmall"
-			android:layout_width="match_parent"
-			android:id="@+id/tvLog"
-			android:typeface="monospace"
-			android:textColor="#A2A2A2"
-			android:textIsSelectable="true"/>
+        <TextView
+            android:id="@+id/tvLog"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:textColor="#A2A2A2"
+            android:textIsSelectable="true"
+            android:typeface="monospace" />
 
-	</ScrollView>
+    </ScrollView>
 
 </LinearLayout>
-

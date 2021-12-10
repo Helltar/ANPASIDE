@@ -63,5 +63,6 @@
     <string name="permission_not_granted">Разрешение не предоставлено</string>
     <string name="request_permission">Запросить разрешение</string>
     <string name="title_activity_permission">Право на доступ к файлам</string>
+    <string name="permission_obtained">Разрешение получено</string>
 
 </resources>

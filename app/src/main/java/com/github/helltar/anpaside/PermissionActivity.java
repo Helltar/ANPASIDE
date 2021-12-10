@@ -66,7 +66,7 @@ public class PermissionActivity extends Activity {
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         if (requestCode == 2) {
             if (hasPermissions(this)) {
-                Toast toast = Toast.makeText(this, "granted", Toast.LENGTH_SHORT);
+                Toast toast = Toast.makeText(this, R.string.permission_obtained, Toast.LENGTH_SHORT);
                 toast.setGravity(Gravity.BOTTOM, 0, 80);
                 toast.show();
                 finish();
