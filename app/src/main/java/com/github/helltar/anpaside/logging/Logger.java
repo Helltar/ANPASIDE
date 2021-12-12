@@ -27,7 +27,5 @@ public class Logger {
 
     public static void addLog(Exception e) {
         addGuiLog(e.getMessage(), LMT_ERROR);
-        RoboErrorReporter.reportError(MainApp.getContext(), e);
     }
 }
-

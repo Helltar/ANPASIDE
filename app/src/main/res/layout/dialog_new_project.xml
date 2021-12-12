@@ -7,13 +7,6 @@
 	android:padding="28dp">
 
 	<EditText
-		android:id="@+id/edtProjectsDir"
-		android:layout_height="wrap_content"
-		android:layout_width="match_parent"
-		android:hint="@string/dlg.hint.projects_dir_name"
-		android:minHeight="48dp"/>
-
-	<EditText
 		android:id="@+id/edtProjectName"
 		android:layout_height="wrap_content"
 		android:layout_width="match_parent"

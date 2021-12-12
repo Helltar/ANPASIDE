@@ -40,9 +40,7 @@
     <string name="dlg.title.new_project">Новый проект</string>
     <string name="dlg.title.new_module">Новый модуль</string>
     <string name="dlg.title.invalid_value">Недопустимое значение</string>
-    <string name="dlg.subtitle.new_project">Внутренняя память: %s</string>
     <string name="dlg.hint.project_name">Название проекта</string>
-    <string name="dlg.hint.projects_dir_name">Родительский каталог</string>
     <string name="dlg.hint.module_name">Имя модуля</string>
     <string name="dlg.msg.save_modified_files">Сохранить измененные открытые файлы?</string>
 
@@ -59,10 +57,5 @@
     <string name="dlg.btn.rewrite">Перезаписать</string>
     <string name="dlg.btn.yes">Да</string>
     <string name="dlg.btn.no">Нет</string>
-    <string name="err.no_app_for_run_jar">Не найдено приложений для запуска JAR-файла</string>
-    <string name="permission_not_granted">Разрешение не предоставлено</string>
-    <string name="request_permission">Запросить разрешение</string>
-    <string name="title_activity_permission">Право на доступ к файлам</string>
-    <string name="permission_obtained">Разрешение получено</string>
 
 </resources>

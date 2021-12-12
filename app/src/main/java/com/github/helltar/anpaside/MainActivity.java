@@ -8,23 +8,19 @@ import static com.github.helltar.anpaside.Consts.DIR_SRC;
 import static com.github.helltar.anpaside.Consts.EXT_PAS;
 import static com.github.helltar.anpaside.Consts.EXT_PROJ;
 import static com.github.helltar.anpaside.Consts.MP3CC;
-import static com.github.helltar.anpaside.PermissionActivity.hasPermissions;
 import static com.github.helltar.anpaside.Utils.fileExists;
 import static com.github.helltar.anpaside.Utils.getPathFromUri;
 import static com.github.helltar.anpaside.logging.Logger.LMT_ERROR;
 import static com.github.helltar.anpaside.logging.Logger.LMT_INFO;
 import static com.github.helltar.anpaside.logging.Logger.addLog;
 
-import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
 import android.text.Html;
@@ -39,9 +35,6 @@ import android.widget.ScrollView;
 import android.widget.TabHost;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 
 import com.github.helltar.anpaside.editor.CodeEditor;
 import com.github.helltar.anpaside.ide.IdeConfig;
@@ -90,43 +83,12 @@ public class MainActivity extends Activity {
     private void init() {
         addLog(getString(R.string.app_name) + " " + getAppVersionName());
 
-        if (hasPermissions(this)) {
-            editor.openRecentFiles();
-            openFile(editor.editorConfig.getLastProject());
-        } else {
-            firstStart();
-        }
-    }
-
-    private void firstStart() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            Intent intent = new Intent(this, PermissionActivity.class);
-            startActivity(intent);
-        } else {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 0);
-        }
-
         if (!ideConfig.isAssetsInstall()) {
             installAssets();
         }
-    }
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                                           int[] grantResults) {
-        if (requestCode == 0) {
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                editor.openRecentFiles();
-                openFile(editor.editorConfig.getLastProject());
-            } else {
-                new AlertDialog.Builder(this)
-                        .setTitle("Error")
-                        .setMessage("permission.WRITE_EXTERNAL_STORAGE error")
-                        .setPositiveButton("Exit",
-                                (dialog, whichButton) -> exitApp())
-                        .show();
-            }
-        }
+        editor.openRecentFiles();
+        openFile(editor.editorConfig.getLastProject());
     }
 
     public static void addGuiLog(String msg, int msgType) {
@@ -169,6 +131,7 @@ public class MainActivity extends Activity {
 
     private void showOpenFileDialog() {
         Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
         intent.setType("*/*");
         startActivityForResult(intent, 1);
     }
@@ -190,18 +153,18 @@ public class MainActivity extends Activity {
         }
     }
 
-    private void createProject(final String projDir, final String projName) {
-        final String sdcardPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/";
+    private void createProject(final String projName) {
+        final String sdcardPath = getExternalFilesDir(null) + "/" + DIR_MAIN + "/";
 
         if (projName.length() < 3) {
             showAlertMsg(R.string.dlg_title_invalid_value, String.format(getString(R.string.err_project_name_least_chars), 3));
             return;
         }
 
-        final String projectPath = sdcardPath + projDir + "/" + projName + "/";
+        final String projectPath = sdcardPath + projName + "/";
 
         if (!fileExists(projectPath)) {
-            if (pman.createProject(sdcardPath + projDir + "/", projName)) {
+            if (pman.createProject(sdcardPath, projName)) {
                 openFile(pman.getProjectConfigFilename());
             }
         } else {
@@ -211,7 +174,7 @@ public class MainActivity extends Activity {
                             (dialog, whichButton) -> {
                                 try {
                                     FileUtils.deleteDirectory(new File(projectPath));
-                                    if (pman.createProject(sdcardPath + projDir + "/", projName)) {
+                                    if (pman.createProject(sdcardPath, projName)) {
                                         openFile(pman.getProjectConfigFilename());
                                     }
                                 } catch (IOException ioe) {
@@ -277,18 +240,14 @@ public class MainActivity extends Activity {
     private void showNewProjectDialog() {
         View view = getViewById(R.layout.dialog_new_project);
 
-        final EditText edtProjectsDir = view.findViewById(R.id.edtProjectsDir);
         final EditText edtProjectName = view.findViewById(R.id.edtProjectName);
-
-        edtProjectsDir.setText(DIR_MAIN);
 
         new AlertDialog.Builder(this)
                 .setTitle(R.string.dlg_title_new_project)
                 .setView(view)
                 .setNegativeButton(R.string.dlg_btn_cancel, null)
                 .setPositiveButton(R.string.dlg_btn_create,
-                        (dialog, whichButton) -> createProject(edtProjectsDir.getText().toString(),
-                                edtProjectName.getText().toString()))
+                        (dialog, whichButton) -> createProject(edtProjectName.getText().toString()))
                 .show();
     }
 
@@ -476,7 +435,7 @@ public class MainActivity extends Activity {
                         try {
                             startActionViewIntent(builder.getJarFilename());
                         } catch (Exception e) {
-                            Logger.addLog(R.string.err_no_app_for_run_jar);
+                            addLog(e);
                         }
                     }
                 });

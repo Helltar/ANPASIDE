@@ -34,8 +34,9 @@ public class IdeConfig {
         getMainEditor().putBoolean(PREF_NAME_INSTALL, val).apply();
     }
 
+    // todo: android 11!
     public String getGlobalDirPath() {
-        return getSpMain().getString(PREF_NAME_GLOBAL_DIR_PATH, Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + DIR_MAIN + "/" + DIR_LIBS);
+        return getSpMain().getString(PREF_NAME_GLOBAL_DIR_PATH, "");
     }
 
     public void setGlobalDirPath(String path) {

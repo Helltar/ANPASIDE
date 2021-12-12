@@ -13,7 +13,6 @@
     <string name="err.failed_create_archive">Не вдалося створити архів</string>
     <string name="err.file_not_found">Файл не знайдено</string>
     <string name="err.create_dir">Не вдалося створити каталог</string>
-    <string name="err.no_app_for_run_jar">Не знайдено программ для запуску JAR-файла</string>
     <string name="menu.create_project">Створити проєкт</string>
     <string name="menu.create_module">Новий модуль</string>
     <string name="menu.project_config">Настроки проєкта</string>
@@ -26,9 +25,7 @@
     <string name="dlg.title.new_project">Новий проєкт</string>
     <string name="dlg.title.new_module">Новий модуль</string>
     <string name="dlg.title.invalid_value">Неприйнятне значення</string>
-    <string name="dlg.subtitle.new_project">Внутрішня память: %s</string>
     <string name="dlg.hint.project_name">Назва проєкту</string>
-    <string name="dlg.hint.projects_dir_name">Батьківський каталог</string>
     <string name="dlg.hint.module_name">Имя модуля</string>
     <string name="dlg.msg.save_modified_files">Зберегти змінені відкриті файли?</string>
     <string name="text.editor.font.size">Розмір шрифту:</string>
@@ -39,8 +36,4 @@
     <string name="dlg.btn.rewrite">Перезаписати</string>
     <string name="dlg.btn.yes">Так</string>
     <string name="dlg.btn.no">Ні</string>
-    <string name="permission_not_granted">Немає доступу</string>
-    <string name="request_permission">Запитати дозвіл</string>
-    <string name="title_activity_permission">Право на доступ до файлів</string>
-    <string name="permission_obtained">Дозвіл отримано</string>
 </resources>
