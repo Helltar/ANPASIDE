@@ -10,7 +10,7 @@ public class SettingsActivity extends Activity {
 
     private EditText edtFontSize;
     private CheckBox cbHighlighter;
-    private EditText edtGlobLibsPath;
+    //private EditText edtGlobLibsPath;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -19,17 +19,17 @@ public class SettingsActivity extends Activity {
 
         edtFontSize = findViewById(R.id.edtEditorFontSize);
         cbHighlighter = findViewById(R.id.cbHighlighter);
-        edtGlobLibsPath = findViewById(R.id.edtGlobalDirPath);
+        //edtGlobLibsPath = findViewById(R.id.edtGlobalDirPath);
 
         edtFontSize.setText(String.valueOf(MainActivity.editor.editorConfig.getFontSize()));
         cbHighlighter.setChecked(MainActivity.editor.editorConfig.getHighlighterEnabled());
-        edtGlobLibsPath.setText(MainActivity.ideConfig.getGlobalDirPath());
+        //edtGlobLibsPath.setText(MainActivity.ideConfig.getGlobalDirPath());
     }
 
     public void onBtnSaveClick(View v) {
         MainActivity.editor.setFontSize(Integer.parseInt(edtFontSize.getText().toString()));
         MainActivity.editor.setHighlighterEnabled(cbHighlighter.isChecked());
-
+        /*
         String path = edtGlobLibsPath.getText().toString();
 
         if (!path.endsWith("/")) {
@@ -37,7 +37,7 @@ public class SettingsActivity extends Activity {
         }
 
         MainActivity.ideConfig.setGlobalDirPath(path);
-
+        */
         finish();
     }
 }

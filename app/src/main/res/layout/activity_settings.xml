@@ -27,22 +27,23 @@
 	<TextView
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
+		android:layout_marginTop="10dp"
 		android:text="@string/text.global.directory.libs"
-		android:layout_marginTop="10dp"/>
+		android:visibility="gone" />
 
 	<EditText
+		android:id="@+id/edtGlobalDirPath"
 		android:layout_width="match_parent"
-		android:ems="10"
 		android:layout_height="wrap_content"
-		android:id="@+id/edtGlobalDirPath"/>
+		android:ems="10"
+		android:visibility="gone" />
 
 	<Button
+		android:id="@+id/btnSave"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
-		android:text="@string/menu.file_save"
-		android:id="@+id/btnSave"
 		android:onClick="onBtnSaveClick"
-		android:layout_marginTop="10dp"/>
+		android:text="@string/menu.file_save" />
 
 </LinearLayout>
 
