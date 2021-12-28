@@ -27,7 +27,7 @@
     <string name="menu.create_project">Create project</string>
     <string name="menu.create_module">New module</string>
     <string name="menu.project_config">Project config</string>
-    <string name="menu.file_open">Open file</string>
+    <string name="menu.open_project">Open project</string>
     <string name="menu.file_save">Save</string>
     <string name="menu.settings">Settings</string>
     <string name="menu.about">About</string>

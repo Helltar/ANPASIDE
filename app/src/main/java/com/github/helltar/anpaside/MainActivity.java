@@ -61,10 +61,14 @@ public class MainActivity extends Activity {
     private static TextView tvLog;
     public static ScrollView svLog;
 
+    private static MainActivity instance;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        instance = this;
 
         tvLog = findViewById(R.id.tvLog);
         svLog = findViewById(R.id.svLog);
@@ -78,6 +82,10 @@ public class MainActivity extends Activity {
         ideConfig = new IdeConfig(this);
 
         init();
+    }
+
+    public static MainActivity getInstance() {
+        return instance;
     }
 
     private void init() {
@@ -130,10 +138,8 @@ public class MainActivity extends Activity {
     }
 
     private void showOpenFileDialog() {
-        Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
-        intent.addCategory(Intent.CATEGORY_OPENABLE);
-        intent.setType("*/*");
-        startActivityForResult(intent, 1);
+        Intent intent = new Intent(this, ProjectsListActivity.class);
+        startActivity(intent);
     }
 
     private void startActionViewIntent(String filename) {
@@ -216,7 +222,7 @@ public class MainActivity extends Activity {
         }
     }
 
-    private boolean openFile(String filename) {
+    public boolean openFile(String filename) {
         if (fileExists(filename, true)) {
             if (isProjectFile(filename) && pman.openProject(filename)) {
                 editor.editorConfig.setLastProject(filename);

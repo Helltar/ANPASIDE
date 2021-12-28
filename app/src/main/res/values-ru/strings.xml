@@ -25,7 +25,7 @@
     <string name="menu.create_project">Создать проект</string>
     <string name="menu.create_module">Новый модуль</string>
     <string name="menu.project_config">Настройки проекта</string>
-    <string name="menu.file_open">Открыть файл</string>
+    <string name="menu.open_project">Открыть проект</string>
     <string name="menu.file_save">Сохранить</string>
     <string name="menu.settings">Настройки</string>
     <string name="menu.about">О программе</string>

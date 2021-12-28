@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.github.helltar.anpaside">
 
@@ -12,6 +11,14 @@
         android:theme="@style/AppTheme">
 
         <activity
+            android:name=".ProjectsListActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".SettingsActivity"
+            android:label="@string/menu.settings" />
+
+        <activity
             android:name=".MainActivity"
             android:configChanges="orientation|screenSize|keyboardHidden"
             android:exported="true"
@@ -21,15 +28,10 @@
 
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-
         </activity>
-
-        <activity
-            android:name=".SettingsActivity"
-            android:label="@string/menu.settings" />
-
     </application>
 
 </manifest>
