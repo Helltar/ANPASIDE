@@ -5,7 +5,6 @@ import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.text.Editable;
-import android.text.InputType;
 import android.text.TextWatcher;
 import android.view.Gravity;
 import android.view.KeyEvent;
@@ -22,12 +21,14 @@ import android.widget.Toast;
 
 import com.github.helltar.anpaside.MainActivity;
 import com.github.helltar.anpaside.R;
+import com.github.helltar.anpaside.Utils;
 import com.github.helltar.anpaside.logging.Logger;
 
 import org.apache.commons.io.FileUtils;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.LinkedList;
 
 public class CodeEditor {
@@ -59,7 +60,7 @@ public class CodeEditor {
         String text;
 
         try {
-            text = FileUtils.readFileToString(new File(filename));
+            text = FileUtils.readFileToString(new File(filename), Charset.defaultCharset());
         } catch (IOException ioe) {
             Logger.addLog(ioe);
             return false;
@@ -101,7 +102,7 @@ public class CodeEditor {
     private final TextWatcher textWatcher = new TextWatcher() {
         @Override
         public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            MainActivity.svLog.setVisibility(View.GONE);
+            MainActivity.getInstance().svLog.setVisibility(View.GONE);
         }
 
         @Override
@@ -178,24 +179,20 @@ public class CodeEditor {
 
     public boolean saveAllFiles(boolean showMsg) {
         if (isEditorActive()) {
-            try {
-                for (int i = 0; i < filenameList.size(); i++) {
-                    FileUtils.writeStringToFile(new File(filenameList.get(i)),
-                            getEditorWithTag(filenameList.get(i)).getText().toString());
-                }
-
-                isFilesModified = false;
-
-                if (showMsg) {
-                    Toast toast = Toast.makeText(context, context.getString(R.string.msg_saved), Toast.LENGTH_SHORT);
-                    toast.setGravity(Gravity.BOTTOM, 0, 80);
-                    toast.show();
-                }
-
-                return true;
-            } catch (IOException ioe) {
-                Logger.addLog(ioe);
+            for (int i = 0; i < filenameList.size(); i++) {
+                Utils.createTextFile(filenameList.get(i),
+                        getEditorWithTag(filenameList.get(i)).getText().toString());
             }
+
+            isFilesModified = false;
+
+            if (showMsg) {
+                Toast toast = Toast.makeText(context, context.getString(R.string.msg_saved), Toast.LENGTH_SHORT);
+                toast.setGravity(Gravity.BOTTOM, 0, 80);
+                toast.show();
+            }
+
+            return true;
         }
 
         return false;
