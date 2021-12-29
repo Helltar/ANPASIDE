@@ -1,5 +1,7 @@
 package com.github.helltar.anpaside;
 
+import android.os.Environment;
+
 public class Consts {
 
     public static final String DATA_PKG_PATH = MainApp.getContext().getApplicationInfo().dataDir + "/";
@@ -11,12 +13,17 @@ public class Consts {
     public static final String ASSET_DIR_FILES = "files";
     public static final String ASSET_DIR_STUBS = "stubs";
 
-    public static final String DIR_MAIN = "projects";
+    public static final String DIR_PROJECTS = "projects/";
     public static final String DIR_BIN = "bin/";
     public static final String DIR_SRC = "src/";
     public static final String DIR_LIBS = "libs/";
     public static final String DIR_RES = "res/";
     public static final String DIR_PREBUILD = "prebuild/";
+
+    public static final String WORK_DIR_PATH =
+            Environment.getExternalStoragePublicDirectory(
+                    Environment.DIRECTORY_DOCUMENTS) + "/" +
+                    getString(R.string.app_name) + "/";
 
     public static final String EXT_PROJ = ".aproj";
     public static final String EXT_PAS = ".pas";
