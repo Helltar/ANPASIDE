@@ -3,23 +3,27 @@ package com.github.helltar.anpaside;
 import static com.github.helltar.anpaside.Consts.ASSET_DIR_STUBS;
 import static com.github.helltar.anpaside.Consts.DATA_LIB_PATH;
 import static com.github.helltar.anpaside.Consts.DATA_PKG_PATH;
-import static com.github.helltar.anpaside.Consts.DIR_MAIN;
+import static com.github.helltar.anpaside.Consts.DIR_PROJECTS;
 import static com.github.helltar.anpaside.Consts.DIR_SRC;
 import static com.github.helltar.anpaside.Consts.EXT_PAS;
 import static com.github.helltar.anpaside.Consts.EXT_PROJ;
 import static com.github.helltar.anpaside.Consts.MP3CC;
+import static com.github.helltar.anpaside.Consts.WORK_DIR_PATH;
 import static com.github.helltar.anpaside.Utils.fileExists;
-import static com.github.helltar.anpaside.Utils.getPathFromUri;
+import static com.github.helltar.anpaside.Utils.getFileNameOnly;
 import static com.github.helltar.anpaside.logging.Logger.LMT_ERROR;
 import static com.github.helltar.anpaside.logging.Logger.LMT_INFO;
 import static com.github.helltar.anpaside.logging.Logger.addLog;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -35,6 +39,9 @@ import android.widget.ScrollView;
 import android.widget.TabHost;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 import com.github.helltar.anpaside.editor.CodeEditor;
 import com.github.helltar.anpaside.ide.IdeConfig;
@@ -54,12 +61,12 @@ import java.util.concurrent.Executors;
 
 public class MainActivity extends Activity {
 
-    public static CodeEditor editor;
-    public static IdeConfig ideConfig;
+    protected CodeEditor editor;
+    private IdeConfig ideConfig;
     private final ProjectManager pman = new ProjectManager();
 
-    private static TextView tvLog;
-    public static ScrollView svLog;
+    private TextView tvLog;
+    public ScrollView svLog;
 
     private static MainActivity instance;
 
@@ -91,15 +98,56 @@ public class MainActivity extends Activity {
     private void init() {
         addLog(getString(R.string.app_name) + " " + getAppVersionName());
 
+        if (ideConfig.isAssetsInstall()) {
+            if (hasPermissions(this)) {
+                editor.openRecentFiles();
+                openFile(editor.editorConfig.getLastProject());
+            } else {
+                firstStart();
+            }
+        } else {
+            firstStart();
+        }
+    }
+
+    private void firstStart() {
+        if (!(Build.VERSION.SDK_INT >= Build.VERSION_CODES.R)) {
+            ActivityCompat.requestPermissions(this, new String[]{
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE}, 0);
+        }
+
         if (!ideConfig.isAssetsInstall()) {
             installAssets();
         }
-
-        editor.openRecentFiles();
-        openFile(editor.editorConfig.getLastProject());
     }
 
-    public static void addGuiLog(String msg, int msgType) {
+    private boolean hasPermissions(Context context) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            return true;
+        } else {
+            return ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                    == PackageManager.PERMISSION_GRANTED;
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        if (requestCode == 0) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                editor.openRecentFiles();
+                openFile(editor.editorConfig.getLastProject());
+            } else {
+                new AlertDialog.Builder(this)
+                        .setTitle("Error")
+                        .setMessage("permission.WRITE_EXTERNAL_STORAGE error")
+                        .setPositiveButton("Exit",
+                                (dialog, whichButton) -> exitApp())
+                        .show();
+            }
+        }
+    }
+
+    public void addGuiLog(String msg, int msgType) {
         if (msg.isEmpty()) {
             return;
         }
@@ -138,12 +186,14 @@ public class MainActivity extends Activity {
     }
 
     private void showOpenFileDialog() {
-        Intent intent = new Intent(this, ProjectsListActivity.class);
-        startActivity(intent);
+        Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+        intent.setType("*/*");
+        startActivityForResult(intent, 1);
     }
 
     private void startActionViewIntent(String filename) {
         File file = new File(filename);
+
         String type = MimeTypeMap.getSingleton().getMimeTypeFromExtension(MimeTypeMap.getFileExtensionFromUrl(file.getName()));
 
         Intent intent = new Intent(Intent.ACTION_VIEW);
@@ -155,22 +205,27 @@ public class MainActivity extends Activity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode == RESULT_OK) {
-            openFile(getPathFromUri(this, data.getData()));
+            if (data != null) {
+                // TODO: :|
+                openFile(WORK_DIR_PATH + DIR_PROJECTS +
+                        getFileNameOnly(data.getData().getPath()) +
+                        "/" + new File(data.getData().getPath()).getName());
+            }
         }
     }
 
     private void createProject(final String projName) {
-        final String sdcardPath = getExternalFilesDir(null) + "/" + DIR_MAIN + "/";
+        String path = WORK_DIR_PATH + DIR_PROJECTS;
 
         if (projName.length() < 3) {
             showAlertMsg(R.string.dlg_title_invalid_value, String.format(getString(R.string.err_project_name_least_chars), 3));
             return;
         }
 
-        final String projectPath = sdcardPath + projName + "/";
+        final String projectPath = path + projName + "/";
 
         if (!fileExists(projectPath)) {
-            if (pman.createProject(sdcardPath, projName)) {
+            if (pman.createProject(path, projName)) {
                 openFile(pman.getProjectConfigFilename());
             }
         } else {
@@ -180,7 +235,7 @@ public class MainActivity extends Activity {
                             (dialog, whichButton) -> {
                                 try {
                                     FileUtils.deleteDirectory(new File(projectPath));
-                                    if (pman.createProject(sdcardPath, projName)) {
+                                    if (pman.createProject(path, projName)) {
                                         openFile(pman.getProjectConfigFilename());
                                     }
                                 } catch (IOException ioe) {
@@ -222,17 +277,17 @@ public class MainActivity extends Activity {
         }
     }
 
-    public boolean openFile(String filename) {
-        if (fileExists(filename, true)) {
-            if (isProjectFile(filename) && pman.openProject(filename)) {
-                editor.editorConfig.setLastProject(filename);
-                filename = pman.getMainModuleFilename();
+    public void openFile(String filename) {
+        if (!filename.isEmpty()) {
+            if (isProjectFile(filename)) {
+                if (pman.openProject(filename)) {
+                    editor.editorConfig.setLastProject(filename);
+                    filename = pman.getMainModuleFilename();
+                }
             }
 
-            return editor.openFile(filename);
+            editor.openFile(filename);
         }
-
-        return false;
     }
 
     private boolean isProjectFile(String filename) {

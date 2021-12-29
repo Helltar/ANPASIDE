@@ -10,7 +10,7 @@ public class Logger {
     public static final int LMT_ERROR = 2;
 
     private static void addGuiLog(String msg, int msgType) {
-        MainActivity.addGuiLog(msg, msgType);
+        MainActivity.getInstance().addGuiLog(msg, msgType);
     }
 
     public static void addLog(String msg) {
