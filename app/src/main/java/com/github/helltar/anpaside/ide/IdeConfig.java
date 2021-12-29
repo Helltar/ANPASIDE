@@ -1,11 +1,10 @@
 package com.github.helltar.anpaside.ide;
 
 import static com.github.helltar.anpaside.Consts.DIR_LIBS;
-import static com.github.helltar.anpaside.Consts.DIR_MAIN;
+import static com.github.helltar.anpaside.Consts.WORK_DIR_PATH;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.os.Environment;
 
 public class IdeConfig {
 
@@ -34,9 +33,8 @@ public class IdeConfig {
         getMainEditor().putBoolean(PREF_NAME_INSTALL, val).apply();
     }
 
-    // todo: android 11!
     public String getGlobalDirPath() {
-        return getSpMain().getString(PREF_NAME_GLOBAL_DIR_PATH, "");
+        return getSpMain().getString(PREF_NAME_GLOBAL_DIR_PATH, WORK_DIR_PATH + DIR_LIBS);
     }
 
     public void setGlobalDirPath(String path) {
