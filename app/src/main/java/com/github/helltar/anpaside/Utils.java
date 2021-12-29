@@ -4,12 +4,6 @@ import static com.github.helltar.anpaside.Consts.LANG_ERR_CREATE_DIR;
 import static com.github.helltar.anpaside.Consts.LANG_ERR_FILE_NOT_FOUND;
 import static com.github.helltar.anpaside.logging.Logger.LMT_ERROR;
 
-import android.content.Context;
-import android.database.Cursor;
-import android.net.Uri;
-import android.os.Environment;
-import android.provider.DocumentsContract;
-
 import com.github.helltar.anpaside.logging.Logger;
 
 import org.apache.commons.io.FileUtils;
@@ -19,6 +13,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.charset.Charset;
 
 public class Utils {
 
@@ -75,7 +70,7 @@ public class Utils {
 
     public static boolean createTextFile(String filename, String text) {
         try {
-            FileUtils.writeStringToFile(new File(filename), text);
+            FileUtils.writeStringToFile(new File(filename), text, Charset.defaultCharset());
             return true;
         } catch (IOException ioe) {
             Logger.addLog(ioe);
@@ -107,50 +102,5 @@ public class Utils {
         }
 
         return new ProcessResult(result, output.toString());
-    }
-
-    public static String getPathFromUri(final Context context, final Uri uri) {
-        if (DocumentsContract.isDocumentUri(context, uri)) {
-            if (isExternalStorageDocument(uri)) {
-                final String docId = DocumentsContract.getDocumentId(uri);
-                final String[] split = docId.split(":");
-                final String type = split[0];
-
-                if ("primary".equalsIgnoreCase(type)) {
-                    return Environment.getExternalStorageDirectory() + "/" + split[1];
-                }
-            }
-        } else if ("content".equalsIgnoreCase(uri.getScheme())) {
-            return getDataColumn(context, uri);
-        } else if ("file".equalsIgnoreCase(uri.getScheme())) {
-            return uri.getPath();
-        }
-
-        return uri.toString();
-    }
-
-    private static String getDataColumn(Context context, Uri uri) {
-        Cursor cursor = null;
-        final String column = "_data";
-        final String[] projection = {column};
-
-        try {
-            cursor = context.getContentResolver().query(uri, projection, null, null, null);
-
-            if (cursor != null && cursor.moveToFirst()) {
-                final int index = cursor.getColumnIndexOrThrow(column);
-                return cursor.getString(index);
-            }
-        } finally {
-            if (cursor != null) {
-                cursor.close();
-            }
-        }
-
-        return uri.toString();
-    }
-
-    private static boolean isExternalStorageDocument(Uri uri) {
-        return "com.android.externalstorage.documents".equals(uri.getAuthority());
     }
 }
