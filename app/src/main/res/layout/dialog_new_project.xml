@@ -13,5 +13,14 @@
 		android:hint="@string/dlg.hint.project_name"
 		android:minHeight="48dp"/>
 
+	<TextView
+		android:id="@+id/tvHomeDir"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:padding="4dp"
+		android:text="TextView"
+		android:textAppearance="@android:style/TextAppearance.Material.Small"
+		android:textSize="12sp" />
+
 </LinearLayout>
 

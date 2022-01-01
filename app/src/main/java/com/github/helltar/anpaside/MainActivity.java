@@ -11,6 +11,7 @@ import static com.github.helltar.anpaside.Consts.MP3CC;
 import static com.github.helltar.anpaside.Consts.WORK_DIR_PATH;
 import static com.github.helltar.anpaside.Utils.fileExists;
 import static com.github.helltar.anpaside.Utils.getFileNameOnly;
+import static com.github.helltar.anpaside.Utils.getPathFromUri;
 import static com.github.helltar.anpaside.logging.Logger.LMT_ERROR;
 import static com.github.helltar.anpaside.logging.Logger.LMT_INFO;
 import static com.github.helltar.anpaside.logging.Logger.addLog;
@@ -207,9 +208,13 @@ public class MainActivity extends Activity {
         if (resultCode == RESULT_OK) {
             if (data != null) {
                 // TODO: :|
-                openFile(WORK_DIR_PATH + DIR_PROJECTS +
-                        getFileNameOnly(data.getData().getPath()) +
-                        "/" + new File(data.getData().getPath()).getName());
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                    openFile(WORK_DIR_PATH + DIR_PROJECTS +
+                            getFileNameOnly(data.getData().getPath()) +
+                            "/" + new File(data.getData().getPath()).getName());
+                } else {
+                    openFile(getPathFromUri(this, data.getData()));
+                }
             }
         }
     }
@@ -229,7 +234,7 @@ public class MainActivity extends Activity {
                 openFile(pman.getProjectConfigFilename());
             }
         } else {
-            new AlertDialog.Builder(MainActivity.this)
+            new AlertDialog.Builder(this)
                     .setMessage(R.string.err_project_exists)
                     .setPositiveButton(R.string.dlg_btn_rewrite,
                             (dialog, whichButton) -> {
@@ -302,6 +307,8 @@ public class MainActivity extends Activity {
         View view = getViewById(R.layout.dialog_new_project);
 
         final EditText edtProjectName = view.findViewById(R.id.edtProjectName);
+        TextView tvHomeDir = view.findViewById(R.id.tvHomeDir);
+        tvHomeDir.setText(WORK_DIR_PATH);
 
         new AlertDialog.Builder(this)
                 .setTitle(R.string.dlg_title_new_project)
