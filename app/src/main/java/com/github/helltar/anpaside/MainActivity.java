@@ -34,7 +34,6 @@ import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.webkit.MimeTypeMap;
 import android.widget.EditText;
 import android.widget.ScrollView;
 import android.widget.TabHost;
@@ -195,10 +194,8 @@ public class MainActivity extends Activity {
     private void startActionViewIntent(String filename) {
         File file = new File(filename);
 
-        String type = MimeTypeMap.getSingleton().getMimeTypeFromExtension(MimeTypeMap.getFileExtensionFromUrl(file.getName()));
-
         Intent intent = new Intent(Intent.ACTION_VIEW);
-        intent.setDataAndType(Uri.fromFile(file), type);
+        intent.setDataAndType(Uri.fromFile(file), "application/java-archive");
 
         startActivity(intent);
     }
