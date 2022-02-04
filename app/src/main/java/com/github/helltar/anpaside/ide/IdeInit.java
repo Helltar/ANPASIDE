@@ -8,10 +8,11 @@ import android.content.res.AssetManager;
 
 import com.github.helltar.anpaside.logging.Logger;
 
-import org.apache.commons.io.FileUtils;
-
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 public class IdeInit {
 
@@ -44,7 +45,18 @@ public class IdeInit {
                     copyAssets(assetDir + "/" + asset);
                 }
             } else {
-                FileUtils.copyInputStreamToFile(assetManager.open(assetDir), new File(DATA_PKG_PATH + assetDir));
+                InputStream in = assetManager.open(assetDir);
+                OutputStream out = new FileOutputStream(DATA_PKG_PATH + assetDir);
+
+                byte[] buf = new byte[1024];
+                int len;
+
+                while ((len = in.read(buf)) > 0) {
+                    out.write(buf, 0, len);
+                }
+
+                in.close();
+                out.close();
             }
 
             return true;
