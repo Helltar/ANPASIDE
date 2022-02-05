@@ -11,6 +11,7 @@ public class EditorConfig {
     private final String LAST_PROJECT = "last_project";
     private final String FONT_SIZE = "font_size";
     private final String HIGHLIGHTER_ENABLED = "highlighter_enabled";
+    private final String WORDWRAP = "wordwrap";
 
     public EditorConfig(Context context) {
         this.context = context;
@@ -50,5 +51,13 @@ public class EditorConfig {
 
     public void setHighlighterEnabled(boolean he) {
         getSpMain().edit().putBoolean(HIGHLIGHTER_ENABLED, he).apply();
+    }
+
+    public boolean getWordwrapEnabled() {
+        return getSpMain().getBoolean(WORDWRAP, true);
+    }
+
+    public void setWordwrapEnabled(boolean we) {
+        getSpMain().edit().putBoolean(WORDWRAP, we).apply();
     }
 }

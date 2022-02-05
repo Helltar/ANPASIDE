@@ -36,4 +36,6 @@
     <string name="dlg.btn.rewrite">Перезаписати</string>
     <string name="dlg.btn.yes">Так</string>
     <string name="dlg.btn.no">Ні</string>
+    <string name="j2meloader">Для запуску програм встановiть J2ME Loader</string>
+    <string name="text.editor.wordwrap">Перенесення рядків</string>
 </resources>

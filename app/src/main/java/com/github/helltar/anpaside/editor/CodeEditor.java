@@ -1,10 +1,10 @@
 package com.github.helltar.anpaside.editor;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.text.Editable;
+import android.text.InputType;
 import android.text.TextWatcher;
 import android.view.Gravity;
 import android.view.KeyEvent;
@@ -19,6 +19,8 @@ import android.widget.TabHost.TabSpec;
 import android.widget.TextView.BufferType;
 import android.widget.Toast;
 
+import androidx.core.content.ContextCompat;
+
 import com.github.helltar.anpaside.MainActivity;
 import com.github.helltar.anpaside.R;
 import com.github.helltar.anpaside.Utils;
@@ -28,7 +30,6 @@ import org.apache.commons.io.FileUtils;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.charset.Charset;
 import java.util.LinkedList;
 
 public class CodeEditor {
@@ -50,7 +51,6 @@ public class CodeEditor {
         editorConfig = new EditorConfig(context);
     }
 
-    @SuppressLint("ResourceAsColor")
     public boolean openFile(String filename) {
         if (isFileOpen(filename)) {
             tabHost.setCurrentTabByTag(filename);
@@ -60,7 +60,7 @@ public class CodeEditor {
         String text;
 
         try {
-            text = FileUtils.readFileToString(new File(filename), Charset.defaultCharset());
+            text = FileUtils.readFileToString(new File(filename));
         } catch (IOException ioe) {
             Logger.addLog(ioe);
             return false;
@@ -70,14 +70,19 @@ public class CodeEditor {
 
         edtText.setTag(filename);
 
-        edtText.setBackgroundColor(android.R.color.transparent);
+        edtText.setBackgroundColor(ContextCompat.getColor(context, R.color.c_23));
         edtText.setGravity(Gravity.TOP);
-        edtText.setHorizontallyScrolling(true);
+        edtText.setHorizontallyScrolling(editorConfig.getWordwrapEnabled());
 
         edtText.setTextSize(editorConfig.getFontSize());
         edtText.setTextColor(fontColor);
         edtText.setTypeface(fontTypeface);
         edtText.setText(text, BufferType.SPANNABLE);
+
+        edtText.setInputType(
+                InputType.TYPE_CLASS_TEXT
+                        | InputType.TYPE_TEXT_FLAG_MULTI_LINE
+                        | InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
 
         edtText.setOnKeyListener(keyListener);
         edtText.addTextChangedListener(textWatcher);
@@ -273,6 +278,14 @@ public class CodeEditor {
 
         for (int i = 0; i < filenameList.size(); i++) {
             getEditorWithTag(filenameList.get(i)).setTextSize(size);
+        }
+    }
+
+    public void setWordwrap(boolean ww) {
+        editorConfig.setWordwrapEnabled(ww);
+
+        for (int i = 0; i < filenameList.size(); i++) {
+            getEditorWithTag(filenameList.get(i)).setHorizontallyScrolling(ww);
         }
     }
 }

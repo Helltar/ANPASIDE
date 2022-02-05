@@ -17,8 +17,6 @@ import static com.github.helltar.anpaside.logging.Logger.LMT_INFO;
 import static com.github.helltar.anpaside.logging.Logger.addLog;
 
 import android.Manifest;
-import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -40,6 +38,8 @@ import android.widget.TabHost;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
@@ -57,9 +57,10 @@ import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 import java.util.concurrent.Executors;
 
-public class MainActivity extends Activity {
+public class MainActivity extends AppCompatActivity {
 
     protected CodeEditor editor;
     private IdeConfig ideConfig;
@@ -74,6 +75,8 @@ public class MainActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
 
         instance = this;
 
@@ -96,8 +99,6 @@ public class MainActivity extends Activity {
     }
 
     private void init() {
-        addLog(getString(R.string.app_name) + " " + getAppVersionName());
-
         if (ideConfig.isAssetsInstall()) {
             if (hasPermissions(this)) {
                 editor.openRecentFiles();
@@ -108,6 +109,8 @@ public class MainActivity extends Activity {
         } else {
             firstStart();
         }
+
+        addLog(getString(R.string.app_name) + " " + getAppVersionName());
     }
 
     private void firstStart() {
@@ -127,23 +130,6 @@ public class MainActivity extends Activity {
         } else {
             return ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE)
                     == PackageManager.PERMISSION_GRANTED;
-        }
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        if (requestCode == 0) {
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                editor.openRecentFiles();
-                openFile(editor.editorConfig.getLastProject());
-            } else {
-                new AlertDialog.Builder(this)
-                        .setTitle("Error")
-                        .setMessage("permission.WRITE_EXTERNAL_STORAGE error")
-                        .setPositiveButton("Exit",
-                                (dialog, whichButton) -> exitApp())
-                        .show();
-            }
         }
     }
 
@@ -167,8 +153,8 @@ public class MainActivity extends Activity {
             lines.append("\t\t\t\t\t\t\t\t\t- ").append(msgLines[i]).append("<br>");
         }
 
-        @SuppressLint("SimpleDateFormat") final Spanned text = Html.fromHtml("<font color='#555555'>"
-                + new SimpleDateFormat("HH:mm:ss").format(new Date())
+        final Spanned text = Html.fromHtml("<font color='#555555'>"
+                + new SimpleDateFormat("HH:mm:ss", Locale.US).format(new Date())
                 + "</font> "
                 + "<font color='" + fontColor + "'>"
                 + msgLines[0].replace("\n", "<br>") + "</font><br>"
@@ -197,11 +183,33 @@ public class MainActivity extends Activity {
         Intent intent = new Intent(Intent.ACTION_VIEW);
         intent.setDataAndType(Uri.fromFile(file), "application/java-archive");
 
-        startActivity(intent);
+        try {
+            startActivity(intent);
+        } catch (RuntimeException e) {
+            new AlertDialog.Builder(this)
+                    .setTitle("J2ME emulator")
+                    .setView(getViewById(R.layout.dialog_j2meloader))
+                    .setNegativeButton("Google Play",
+                            (dialog, whichButton) -> {
+                                try {
+                                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=ru.playsoftware.j2meloader")));
+                                } catch (android.content.ActivityNotFoundException anfe) {
+                                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=ru.playsoftware.j2meloader")));
+                                }
+                            })
+                    .setPositiveButton("F-Droid",
+                            (dialog, whichButton) -> {
+                                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://f-droid.org/packages/ru.playsoftware.j2meloader/")));
+                            })
+                    .setNeutralButton(R.string.dlg_btn_cancel, null)
+                    .show();
+        }
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
         if (resultCode == RESULT_OK) {
             if (data != null) {
                 // TODO: :|
@@ -360,7 +368,7 @@ public class MainActivity extends Activity {
 
     private void showAbout() {
         new AlertDialog.Builder(this)
-                .setTitle(R.string.app_name)
+                .setTitle(getString(R.string.app_name) + " - " + getAppVersionName() + "." + BuildConfig.VERSION_CODE)
                 .setView(getViewById(R.layout.dialog_about))
                 .setNegativeButton("ОК", null)
                 .show();
@@ -379,16 +387,12 @@ public class MainActivity extends Activity {
     }
 
     private String getAppVersionName() {
-        try {
-            return getPackageManager().getPackageInfo(getPackageName(), 0).versionName;
-        } catch (PackageManager.NameNotFoundException e) {
-            return "null";
-        }
+        return BuildConfig.VERSION_NAME;
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.activity_main, menu);
+        getMenuInflater().inflate(R.menu.menu_main, menu);
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -400,7 +404,6 @@ public class MainActivity extends Activity {
         return super.onPrepareOptionsMenu(menu);
     }
 
-    @SuppressLint("NonConstantResourceId")
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {

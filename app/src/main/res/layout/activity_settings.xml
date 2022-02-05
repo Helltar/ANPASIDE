@@ -1,49 +1,70 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-	xmlns:android="http://schemas.android.com/apk/res/android"
-	android:layout_width="fill_parent"
-	android:layout_height="fill_parent"
-	android:orientation="vertical"
-	android:padding="10dp">
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".SettingsActivity">
 
-	<TextView
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:text="@string/text.editor.font.size"/>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:padding="24dp">
 
-	<EditText
-		android:layout_width="match_parent"
-		android:inputType="number"
-		android:layout_height="wrap_content"
-		android:ems="10"
-		android:id="@+id/edtEditorFontSize"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/text.editor.font.size" />
 
-	<CheckBox
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:text="@string/text.editor.highlighter"
-		android:id="@+id/cbHighlighter"/>
+        <EditText
+            android:id="@+id/edtEditorFontSize"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:inputType="number" />
 
-	<TextView
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:layout_marginTop="10dp"
-		android:text="@string/text.global.directory.libs"
-		android:visibility="gone" />
+        <CheckBox
+            android:id="@+id/cbHighlighter"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:shadowColor="#630505"
+            android:text="@string/text.editor.highlighter"
+            android:textColor="#FFFFFF"
+            android:textColorHighlight="#A60606" />
 
-	<EditText
-		android:id="@+id/edtGlobalDirPath"
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:ems="10"
-		android:visibility="gone" />
+        <CheckBox
+            android:id="@+id/cbWordwrap"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:shadowColor="#630505"
+            android:text="@string/text.editor.wordwrap"
+            android:textColor="#FFFFFF"
+            android:textColorHighlight="#A60606" />
 
-	<Button
-		android:id="@+id/btnSave"
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:onClick="onBtnSaveClick"
-		android:text="@string/menu.file_save" />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="@string/text.global.directory.libs"
+            android:visibility="gone" />
 
-</LinearLayout>
+        <EditText
+            android:id="@+id/edtGlobalDirPath"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:visibility="gone" />
 
+        <Button
+            android:id="@+id/btnSave"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:onClick="onBtnSaveClick"
+            android:text="@string/menu.file_save" />
+
+    </LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

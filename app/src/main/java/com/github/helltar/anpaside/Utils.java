@@ -19,7 +19,6 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.nio.charset.Charset;
 
 public class Utils {
 
@@ -76,7 +75,7 @@ public class Utils {
 
     public static boolean createTextFile(String filename, String text) {
         try {
-            FileUtils.writeStringToFile(new File(filename), text, Charset.defaultCharset());
+            FileUtils.writeStringToFile(new File(filename), text);
             return true;
         } catch (IOException ioe) {
             Logger.addLog(ioe);

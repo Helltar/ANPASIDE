@@ -50,6 +50,7 @@
 
     <string name="text.editor.font.size">Font size:</string>
     <string name="text.editor.highlighter">Syntax highlighting</string>
+    <string name="text.editor.wordwrap">Wordwrap</string>
     <string name="text.global.directory.libs">Global libs directory path:</string>
 
     <!-- buttons -->
@@ -63,10 +64,13 @@
     <string name="manifest.mf" translatable="false">MANIFEST.MF</string>
 
     <string name="about_text" translatable="false">
-        Аuthor: Helltar
-        \nLicense: MIT
-        \nhttps://github.com/helltar/anpaside
+        Helltar
+        \n\nhttps://helltar.com
+        \n\nhttps://github.com/helltar/anpaside
+        \n\nhttps://helltar.com/projects/anpaside/privacy-policy.html
     </string>
+
+    <string name="j2meloader">To run applications you need to install the J2ME Loader</string>
 
     <!-- templates -->
 
@@ -97,11 +101,11 @@ interface
 
 implementation
 
-// add unit functions and procedures here
+// add functions and procedures here
 
 initialization
 
-// add initialization code here
+// add init. code here
 
 end."
     </string>
