@@ -1,0 +1,48 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.github.helltar.anpaside.MainActivity">
+
+    <item
+        android:id="@+id/miRun"
+        android:icon="@drawable/ic_run"
+        android:title="Run"
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/miCreateProject"
+        android:title="@string/menu.create_project" />
+
+    <item
+        android:id="@+id/miCreateModule"
+        android:title="@string/menu.create_module" />
+
+    <item
+        android:id="@+id/miProjectConfig"
+        android:title="@string/menu.project_config" />
+
+    <item
+        android:id="@+id/miFileOpen"
+        android:title="@string/menu.open_project" />
+
+    <item
+        android:id="@+id/miFileSave"
+        android:title="@string/menu.file_save" />
+
+
+    <item android:title="@string/app_name">
+        <menu>
+            <item
+                android:id="@+id/miSettings"
+                android:title="@string/menu.settings" />
+
+            <item
+                android:id="@+id/miAbout"
+                android:title="@string/menu.about" />
+
+            <item
+                android:id="@+id/miExit"
+                android:title="@string/menu.exit" />
+        </menu>
+    </item>
+</menu>
