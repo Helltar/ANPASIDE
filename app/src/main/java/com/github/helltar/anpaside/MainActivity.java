@@ -75,10 +75,10 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
 
         instance = this;
 
@@ -101,6 +101,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void init() {
+        addLog(getString(R.string.app_name) + " " + getAppVersionName());
+
         if (ideConfig.isAssetsInstall()) {
             if (hasPermissions(this)) {
                 editor.openRecentFiles();
@@ -111,8 +113,6 @@ public class MainActivity extends AppCompatActivity {
         } else {
             firstStart();
         }
-
-        addLog(getString(R.string.app_name) + " " + getAppVersionName());
     }
 
     private void firstStart() {
@@ -500,7 +500,7 @@ public class MainActivity extends AppCompatActivity {
     private void installAssets() {
         Logger.addLog(getString(R.string.msg_install_start));
 
-        if (new IdeInit(MainApp.getContext().getAssets()).install()) {
+        if (new IdeInit(getAssets()).install()) {
             ideConfig.setInstState(true);
             Logger.addLog(getString(R.string.msg_install_ok), LMT_INFO);
         }
