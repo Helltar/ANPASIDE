@@ -38,6 +38,8 @@ import android.widget.TabHost;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.app.ActivityCompat;
@@ -64,7 +66,7 @@ public class MainActivity extends AppCompatActivity {
 
     protected CodeEditor editor;
     private IdeConfig ideConfig;
-    private final ProjectManager pman = new ProjectManager();
+    private final ProjectManager projManager = new ProjectManager();
 
     private TextView tvLog;
     public ScrollView svLog;
@@ -171,10 +173,24 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    private final ActivityResultLauncher<Intent> activityResultLaunch = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            result -> {
+                if (result.getResultCode() == RESULT_OK) {
+                    if (result.getData() != null) {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                            openFile(WORK_DIR_PATH + DIR_PROJECTS +
+                                    getFileNameOnly(result.getData().getData().getPath()) +
+                                    "/" + new File(result.getData().getData().getPath()).getName());
+                        } else {
+                            openFile(getPathFromUri(MainActivity.this, result.getData().getData()));
+                        }
+                    }
+                }
+            });
+
     private void showOpenFileDialog() {
-        Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
-        intent.setType("*/*");
-        startActivityForResult(intent, 1);
+        activityResultLaunch.launch(new Intent(Intent.ACTION_OPEN_DOCUMENT).setType("*/*"));
     }
 
     private void startActionViewIntent(String filename) {
@@ -186,42 +202,31 @@ public class MainActivity extends AppCompatActivity {
         try {
             startActivity(intent);
         } catch (RuntimeException e) {
-            new AlertDialog.Builder(this)
-                    .setTitle("J2ME emulator")
-                    .setView(getViewById(R.layout.dialog_j2meloader))
-                    .setNegativeButton("Google Play",
-                            (dialog, whichButton) -> {
-                                try {
-                                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=ru.playsoftware.j2meloader")));
-                                } catch (android.content.ActivityNotFoundException anfe) {
-                                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=ru.playsoftware.j2meloader")));
-                                }
-                            })
-                    .setPositiveButton("F-Droid",
-                            (dialog, whichButton) -> {
-                                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://f-droid.org/packages/ru.playsoftware.j2meloader/")));
-                            })
-                    .setNeutralButton(R.string.dlg_btn_cancel, null)
-                    .show();
+            j2meloaderDialog();
         }
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
+    private void j2meloaderDialog() {
+        final String id = "ru.playsoftware.j2meloader";
 
-        if (resultCode == RESULT_OK) {
-            if (data != null) {
-                // TODO: :|
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                    openFile(WORK_DIR_PATH + DIR_PROJECTS +
-                            getFileNameOnly(data.getData().getPath()) +
-                            "/" + new File(data.getData().getPath()).getName());
-                } else {
-                    openFile(getPathFromUri(this, data.getData()));
-                }
-            }
-        }
+        new AlertDialog.Builder(this)
+                .setTitle("J2ME emulator")
+                .setView(getViewById(R.layout.dialog_j2meloader))
+                .setNegativeButton("Google Play",
+                        (dialog, whichButton) -> {
+                            try {
+                                startActivity(new Intent(Intent.ACTION_VIEW,
+                                        Uri.parse("market://details?id=" + id)));
+                            } catch (android.content.ActivityNotFoundException anfe) {
+                                startActivity(new Intent(Intent.ACTION_VIEW,
+                                        Uri.parse("https://play.google.com/store/apps/details?id=" + id)));
+                            }
+                        })
+                .setPositiveButton("F-Droid",
+                        (dialog, whichButton) -> startActivity(new Intent(Intent.ACTION_VIEW,
+                                Uri.parse("https://f-droid.org/packages/" + id))))
+                .setNeutralButton(R.string.dlg_btn_cancel, null)
+                .show();
     }
 
     private void createProject(final String projName) {
@@ -235,8 +240,8 @@ public class MainActivity extends AppCompatActivity {
         final String projectPath = path + projName + "/";
 
         if (!fileExists(projectPath)) {
-            if (pman.createProject(path, projName)) {
-                openFile(pman.getProjectConfigFilename());
+            if (projManager.createProject(path, projName)) {
+                openFile(projManager.getProjectConfigFilename());
             }
         } else {
             new AlertDialog.Builder(this)
@@ -245,8 +250,8 @@ public class MainActivity extends AppCompatActivity {
                             (dialog, whichButton) -> {
                                 try {
                                     FileUtils.deleteDirectory(new File(projectPath));
-                                    if (pman.createProject(path, projName)) {
-                                        openFile(pman.getProjectConfigFilename());
+                                    if (projManager.createProject(path, projName)) {
+                                        openFile(projManager.getProjectConfigFilename());
                                     }
                                 } catch (IOException ioe) {
                                     Logger.addLog(ioe);
@@ -263,10 +268,10 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
 
-        final String filename = pman.getProjectPath() + DIR_SRC + moduleName + EXT_PAS;
+        final String filename = projManager.getProjectPath() + DIR_SRC + moduleName + EXT_PAS;
 
         if (!fileExists(filename)) {
-            if (pman.createModule(filename)) {
+            if (projManager.createModule(filename)) {
                 openFile(filename);
             }
         } else {
@@ -276,7 +281,7 @@ public class MainActivity extends AppCompatActivity {
                     .setPositiveButton(R.string.dlg_btn_rewrite,
                             (dialog, whichButton) -> {
                                 if (new File(filename).delete()) {
-                                    if (pman.createModule(filename)) {
+                                    if (projManager.createModule(filename)) {
                                         openFile(filename);
                                     }
                                 } else {
@@ -290,9 +295,9 @@ public class MainActivity extends AppCompatActivity {
     public void openFile(String filename) {
         if (!filename.isEmpty()) {
             if (isProjectFile(filename)) {
-                if (pman.openProject(filename)) {
+                if (projManager.openProject(filename)) {
                     editor.editorConfig.setLastProject(filename);
-                    filename = pman.getMainModuleFilename();
+                    filename = projManager.getMainModuleFilename();
                 }
             }
 
@@ -331,9 +336,9 @@ public class MainActivity extends AppCompatActivity {
         final EditText edtMidletVendor = view.findViewById(R.id.edtMidletVendor);
         final EditText edtMidletVersion = view.findViewById(R.id.edtMidletVersion);
 
-        edtMidletName.setText(pman.getMidletName());
-        edtMidletVendor.setText(pman.getMidletVendor());
-        edtMidletVersion.setText(pman.getMidletVersion());
+        edtMidletName.setText(projManager.getMidletName());
+        edtMidletVendor.setText(projManager.getMidletVendor());
+        edtMidletVersion.setText(projManager.getMidletVersion());
 
         new AlertDialog.Builder(this)
                 .setTitle(R.string.manifest_mf)
@@ -341,10 +346,10 @@ public class MainActivity extends AppCompatActivity {
                 .setNegativeButton(R.string.dlg_btn_cancel, null)
                 .setPositiveButton(R.string.menu_file_save, (dialog, whichButton) -> {
                     try {
-                        pman.setMidletName(edtMidletName.getText().toString());
-                        pman.setMidletVendor(edtMidletVendor.getText().toString());
-                        pman.setVersion(edtMidletVersion.getText().toString());
-                        pman.save(pman.getProjectConfigFilename());
+                        projManager.setMidletName(edtMidletName.getText().toString());
+                        projManager.setMidletVendor(edtMidletVendor.getText().toString());
+                        projManager.setVersion(edtMidletVersion.getText().toString());
+                        projManager.save(projManager.getProjectConfigFilename());
                     } catch (IOException e) {
                         Logger.addLog(e);
                     }
@@ -398,69 +403,50 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-        menu.findItem(R.id.miCreateModule).setEnabled(pman.isProjectOpen());
+        menu.findItem(R.id.miCreateModule).setEnabled(projManager.isProjectOpen());
         menu.findItem(R.id.miFileSave).setEnabled(CodeEditor.isFilesModified);
-        menu.findItem(R.id.miProjectConfig).setEnabled(pman.isProjectOpen());
+        menu.findItem(R.id.miProjectConfig).setEnabled(projManager.isProjectOpen());
         return super.onPrepareOptionsMenu(menu);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
+        int id = item.getItemId();
 
-            case R.id.miRun:
-                if (pman.isProjectOpen()) {
-                    if (editor.saveAllFiles()) {
-                        buildProject();
-                    }
-                } else {
-                    Toast toast = Toast.makeText(this, R.string.msg_no_open_project, Toast.LENGTH_SHORT);
-                    toast.setGravity(Gravity.BOTTOM, 0, 80);
-                    toast.show();
+        if (id == R.id.miRun) {
+            if (projManager.isProjectOpen()) {
+                if (editor.saveAllFiles()) {
+                    buildProject();
                 }
-
-                return true;
-
-            case R.id.miCreateProject:
-                showNewProjectDialog();
-                return true;
-
-            case R.id.miCreateModule:
-                showNewModuleDialog();
-                return true;
-
-            case R.id.miProjectConfig:
-                showProjectConfigDialog();
-                return true;
-
-            case R.id.miFileOpen:
-                showOpenFileDialog();
-                return true;
-
-            case R.id.miFileSave:
-                editor.saveAllFiles(true);
-                return true;
-
-            case R.id.miSettings:
-                Intent intent = new Intent(this, SettingsActivity.class);
-                startActivity(intent);
-                return true;
-
-            case R.id.miAbout:
-                showAbout();
-                return true;
-
-            case R.id.miExit:
-                if (CodeEditor.isFilesModified) {
-                    showExitDialog();
-                } else {
-                    exitApp();
-                }
-                return true;
-
-            default:
-                return super.onOptionsItemSelected(item);
+            } else {
+                Toast toast = Toast.makeText(this, R.string.msg_no_open_project, Toast.LENGTH_SHORT);
+                toast.setGravity(Gravity.BOTTOM, 0, 80);
+                toast.show();
+            }
+        } else if (id == R.id.miCreateProject) {
+            showNewProjectDialog();
+        } else if (id == R.id.miCreateModule) {
+            showNewModuleDialog();
+        } else if (id == R.id.miProjectConfig) {
+            showProjectConfigDialog();
+        } else if (id == R.id.miFileOpen) {
+            showOpenFileDialog();
+        } else if (id == R.id.miFileSave) {
+            editor.saveAllFiles(true);
+        } else if (id == R.id.miSettings) {
+            Intent intent = new Intent(this, SettingsActivity.class);
+            startActivity(intent);
+        } else if (id == R.id.miAbout) {
+            showAbout();
+        } else if (id == R.id.miExit) {
+            if (CodeEditor.isFilesModified) {
+                showExitDialog();
+            } else {
+                exitApp();
+            }
         }
+
+        return super.onOptionsItemSelected(item);
     }
 
     private void showExitDialog() {
@@ -491,7 +477,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void run() {
                 builder = new ProjectBuilder(
-                        pman.getProjectConfigFilename(),
+                        projManager.getProjectConfigFilename(),
                         DATA_LIB_PATH + MP3CC,
                         DATA_PKG_PATH + ASSET_DIR_STUBS + "/",
                         ideConfig.getGlobalDirPath());

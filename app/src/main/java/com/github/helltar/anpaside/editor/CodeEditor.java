@@ -1,5 +1,6 @@
 package com.github.helltar.anpaside.editor;
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Typeface;
@@ -21,7 +22,6 @@ import android.widget.Toast;
 
 import androidx.core.content.ContextCompat;
 
-import com.github.helltar.anpaside.MainActivity;
 import com.github.helltar.anpaside.R;
 import com.github.helltar.anpaside.Utils;
 import com.github.helltar.anpaside.logging.Logger;
@@ -107,7 +107,8 @@ public class CodeEditor {
     private final TextWatcher textWatcher = new TextWatcher() {
         @Override
         public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            MainActivity.getInstance().svLog.setVisibility(View.GONE);
+            ScrollView sv = (ScrollView) ((Activity) context).findViewById(R.id.svLog);
+            sv.setVisibility(View.GONE);
         }
 
         @Override
