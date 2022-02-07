@@ -32,3 +32,5 @@ google-services.json
 *.hprof
 
 ic_launcher-playstore.png
+app/src/main/jniLibs/x86/
+app/src/main/jniLibs/x86_64/
