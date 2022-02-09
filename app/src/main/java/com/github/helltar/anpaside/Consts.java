@@ -25,6 +25,8 @@ public class Consts {
                     Environment.DIRECTORY_DOCUMENTS) + "/" +
                     getString(R.string.app_name) + "/";
 
+    public static final String PROJECTS_DIR_PATH = WORK_DIR_PATH + DIR_PROJECTS;
+
     public static final String EXT_PROJ = ".aproj";
     public static final String EXT_PAS = ".pas";
     public static final String EXT_JAR = ".jar";

@@ -23,11 +23,13 @@ public class ProjectsList {
         ArrayList<ProjectsList> result = new ArrayList<ProjectsList>();
 
         try {
-            File folder = new File(Consts.WORK_DIR_PATH + Consts.DIR_PROJECTS);
+            File folder = new File(Consts.PROJECTS_DIR_PATH);
             File[] filesInFolder = folder.listFiles();
 
             for (File file : filesInFolder) {
-                result.add(new ProjectsList(file.getName()));
+                if (new File(Consts.PROJECTS_DIR_PATH + file.getName() + "/" + file.getName() + Consts.EXT_PROJ).exists()) {
+                    result.add(new ProjectsList(file.getName()));
+                }
             }
         } catch (RuntimeException e) {
             // Logger.addLog(e);

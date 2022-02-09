@@ -33,9 +33,11 @@ public class ProjectsListAdapter extends RecyclerView.Adapter<ProjectsListAdapte
 
             if (position != RecyclerView.NO_POSITION) {
                 MainActivity.projectFilename =
-                        Consts.WORK_DIR_PATH + Consts.DIR_PROJECTS
-                                + tvProjectName.getText() + "/"
-                                + tvProjectName.getText() + Consts.EXT_PROJ;
+                        Consts.PROJECTS_DIR_PATH
+                                + tvProjectName.getText()
+                                + "/"
+                                + tvProjectName.getText()
+                                + Consts.EXT_PROJ;
 
                 ProjectsListActivity.activity.finish();
             }
