@@ -35,7 +35,6 @@ public class CodeEditor {
     private final TabHost tabHost;
     public EditorConfig editorConfig;
 
-    private String btnTabCloseName = "Close";
     private final Typeface fontTypeface = Typeface.MONOSPACE;
 
     public static boolean isFilesModified = false;
@@ -162,8 +161,7 @@ public class CodeEditor {
 
     private void showPopupMenu(View v, final String tag) {
         PopupMenu pm = new PopupMenu(context, v);
-
-        pm.getMenu().add(btnTabCloseName);
+        pm.getMenu().add(R.string.pmenu_tab_close);
         pm.setOnMenuItemClickListener(item -> {
             closeFile(tag);
             return true;
@@ -251,10 +249,6 @@ public class CodeEditor {
 
     private boolean isFileOpen(String filename) {
         return filenameList.contains(filename);
-    }
-
-    public void setBtnTabCloseName(String name) {
-        btnTabCloseName = name;
     }
 
     public void setHighlighterEnabled(boolean he) {

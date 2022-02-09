@@ -78,8 +78,6 @@ public class MainActivity extends AppCompatActivity {
         tabHost.setup();
 
         editor = new CodeEditor(this, tabHost);
-        editor.setBtnTabCloseName(getString(R.string.pmenu_tab_close));
-
         ideConfig = new IdeConfig(this);
 
         init();
