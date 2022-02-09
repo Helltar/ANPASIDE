@@ -10,8 +10,6 @@ import static com.github.helltar.anpaside.Consts.EXT_PROJ;
 import static com.github.helltar.anpaside.Consts.MP3CC;
 import static com.github.helltar.anpaside.Consts.WORK_DIR_PATH;
 import static com.github.helltar.anpaside.Utils.fileExists;
-import static com.github.helltar.anpaside.Utils.getFileNameOnly;
-import static com.github.helltar.anpaside.Utils.getPathFromUri;
 import static com.github.helltar.anpaside.logging.Logger.LMT_ERROR;
 import static com.github.helltar.anpaside.logging.Logger.LMT_INFO;
 import static com.github.helltar.anpaside.logging.Logger.addLog;
@@ -38,8 +36,6 @@ import android.widget.TabHost;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.app.ActivityCompat;
@@ -72,6 +68,7 @@ public class MainActivity extends AppCompatActivity {
     public ScrollView svLog;
 
     private static MainActivity instance;
+    public static String projectFilename = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -94,6 +91,15 @@ public class MainActivity extends AppCompatActivity {
         ideConfig = new IdeConfig(this);
 
         init();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        if (projManager.isProjectOpen()) {
+            openFile(projectFilename);
+        }
     }
 
     public static MainActivity getInstance() {
@@ -171,26 +177,6 @@ public class MainActivity extends AppCompatActivity {
             svLog.fullScroll(ScrollView.FOCUS_DOWN);
             svLog.setVisibility(View.VISIBLE);
         });
-    }
-
-    private final ActivityResultLauncher<Intent> activityResultLaunch = registerForActivityResult(
-            new ActivityResultContracts.StartActivityForResult(),
-            result -> {
-                if (result.getResultCode() == RESULT_OK) {
-                    if (result.getData() != null) {
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                            openFile(WORK_DIR_PATH + DIR_PROJECTS +
-                                    getFileNameOnly(result.getData().getData().getPath()) +
-                                    "/" + new File(result.getData().getData().getPath()).getName());
-                        } else {
-                            openFile(getPathFromUri(MainActivity.this, result.getData().getData()));
-                        }
-                    }
-                }
-            });
-
-    private void showOpenFileDialog() {
-        activityResultLaunch.launch(new Intent(Intent.ACTION_OPEN_DOCUMENT).setType("*/*"));
     }
 
     private void startActionViewIntent(String filename) {
@@ -406,6 +392,7 @@ public class MainActivity extends AppCompatActivity {
         menu.findItem(R.id.miCreateModule).setEnabled(projManager.isProjectOpen());
         menu.findItem(R.id.miFileSave).setEnabled(CodeEditor.isFilesModified);
         menu.findItem(R.id.miProjectConfig).setEnabled(projManager.isProjectOpen());
+        menu.findItem(R.id.miFileOpen).setEnabled(ProjectsList.isProjectsListEmpty());
         return super.onPrepareOptionsMenu(menu);
     }
 
@@ -430,12 +417,11 @@ public class MainActivity extends AppCompatActivity {
         } else if (id == R.id.miProjectConfig) {
             showProjectConfigDialog();
         } else if (id == R.id.miFileOpen) {
-            showOpenFileDialog();
+            startActivity(new Intent(this, ProjectsListActivity.class));
         } else if (id == R.id.miFileSave) {
             editor.saveAllFiles(true);
         } else if (id == R.id.miSettings) {
-            Intent intent = new Intent(this, SettingsActivity.class);
-            startActivity(intent);
+            startActivity(new Intent(this, SettingsActivity.class));
         } else if (id == R.id.miAbout) {
             showAbout();
         } else if (id == R.id.miExit) {

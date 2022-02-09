@@ -59,5 +59,6 @@
     <string name="dlg.btn.no">Нет</string>
     <string name="j2meloader">Для запуска приложений установите J2ME Loader</string>
     <string name="text.editor.wordwrap">Перенос строк</string>
+    <string name="lbl.projects">Проекты</string>
 
 </resources>

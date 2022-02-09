@@ -62,6 +62,7 @@
     <string name="dlg.btn.no">No</string>
 
     <string name="manifest.mf" translatable="false">MANIFEST.MF</string>
+    <string name="lbl.projects">Projects</string>
 
     <string name="about_text" translatable="false">
         Helltar

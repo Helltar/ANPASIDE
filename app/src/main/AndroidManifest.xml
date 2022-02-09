@@ -14,11 +14,14 @@
         android:label="@string/app_name"
         android:requestLegacyExternalStorage="true"
         android:theme="@style/Theme.MyApplication">
-
+        <activity
+            android:name=".ProjectsListActivity"
+            android:exported="false"
+            android:label="@string/lbl.projects" />
         <activity
             android:name=".SettingsActivity"
+            android:exported="false"
             android:label="@string/menu.settings" />
-
         <activity
             android:name=".MainActivity"
             android:configChanges="orientation|screenSize|keyboardHidden"
@@ -26,6 +29,7 @@
             android:launchMode="singleTask">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
