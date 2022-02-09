@@ -10,10 +10,10 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.github.helltar.anpaside.Consts;
-import com.github.helltar.anpaside.MainActivity;
 import com.github.helltar.anpaside.ProjectsList;
-import com.github.helltar.anpaside.ProjectsListActivity;
 import com.github.helltar.anpaside.R;
+import com.github.helltar.anpaside.activities.MainActivity;
+import com.github.helltar.anpaside.activities.ProjectsListActivity;
 
 import java.util.List;
 

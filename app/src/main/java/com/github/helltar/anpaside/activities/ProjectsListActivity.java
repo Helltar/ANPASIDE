@@ -1,4 +1,4 @@
-package com.github.helltar.anpaside;
+package com.github.helltar.anpaside.activities;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -8,6 +8,8 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.github.helltar.anpaside.ProjectsList;
+import com.github.helltar.anpaside.R;
 import com.github.helltar.anpaside.adapters.ProjectsListAdapter;
 
 import java.util.ArrayList;

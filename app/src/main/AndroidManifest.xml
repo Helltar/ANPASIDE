@@ -15,15 +15,15 @@
         android:requestLegacyExternalStorage="true"
         android:theme="@style/Theme.MyApplication">
         <activity
-            android:name=".ProjectsListActivity"
+            android:name=".activities.ProjectsListActivity"
             android:exported="false"
             android:label="@string/lbl.projects" />
         <activity
-            android:name=".SettingsActivity"
+            android:name=".activities.SettingsActivity"
             android:exported="false"
             android:label="@string/menu.settings" />
         <activity
-            android:name=".MainActivity"
+            android:name=".activities.MainActivity"
             android:configChanges="orientation|screenSize|keyboardHidden"
             android:exported="true"
             android:launchMode="singleTask">

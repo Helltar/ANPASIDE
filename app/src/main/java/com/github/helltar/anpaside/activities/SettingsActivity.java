@@ -1,4 +1,4 @@
-package com.github.helltar.anpaside;
+package com.github.helltar.anpaside.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -8,6 +8,7 @@ import android.widget.EditText;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.github.helltar.anpaside.R;
 import com.github.helltar.anpaside.editor.EditorConfig;
 
 public class SettingsActivity extends AppCompatActivity {

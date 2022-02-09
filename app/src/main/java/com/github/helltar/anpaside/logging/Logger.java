@@ -3,8 +3,8 @@ package com.github.helltar.anpaside.logging;
 import android.text.Html;
 import android.text.Spanned;
 
-import com.github.helltar.anpaside.MainActivity;
 import com.github.helltar.anpaside.MainApp;
+import com.github.helltar.anpaside.activities.MainActivity;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;

@@ -1,4 +1,4 @@
-package com.github.helltar.anpaside;
+package com.github.helltar.anpaside.activities;
 
 import static com.github.helltar.anpaside.Consts.ASSET_DIR_STUBS;
 import static com.github.helltar.anpaside.Consts.DATA_LIB_PATH;
@@ -41,6 +41,9 @@ import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
+import com.github.helltar.anpaside.BuildConfig;
+import com.github.helltar.anpaside.ProjectsList;
+import com.github.helltar.anpaside.R;
 import com.github.helltar.anpaside.editor.CodeEditor;
 import com.github.helltar.anpaside.editor.EditorConfig;
 import com.github.helltar.anpaside.ide.IdeConfig;
