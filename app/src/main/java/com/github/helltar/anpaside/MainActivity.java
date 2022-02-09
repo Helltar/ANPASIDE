@@ -240,7 +240,7 @@ public class MainActivity extends AppCompatActivity {
                                         openFile(projManager.getProjectConfigFilename());
                                     }
                                 } catch (IOException ioe) {
-                                    Logger.addLog(ioe);
+                                    addLog(ioe);
                                 }
                             })
                     .setNegativeButton(R.string.dlg_btn_cancel, null)
@@ -271,7 +271,7 @@ public class MainActivity extends AppCompatActivity {
                                         openFile(filename);
                                     }
                                 } else {
-                                    Logger.addLog(getString(R.string.err_del_old_module) + ": " + filename, LMT_ERROR);
+                                    addLog(getString(R.string.err_del_old_module) + ": " + filename, LMT_ERROR);
                                 }
                             })
                     .show();
@@ -337,7 +337,7 @@ public class MainActivity extends AppCompatActivity {
                         projManager.setVersion(edtMidletVersion.getText().toString());
                         projManager.save(projManager.getProjectConfigFilename());
                     } catch (IOException e) {
-                        Logger.addLog(e);
+                        addLog(e);
                     }
                 })
                 .show();
@@ -490,7 +490,7 @@ public class MainActivity extends AppCompatActivity {
 
         if (new IdeInit(getAssets()).install()) {
             ideConfig.setInstState(true);
-            Logger.addLog(getString(R.string.msg_install_ok), LMT_INFO);
+            addLog(getString(R.string.msg_install_ok), LMT_INFO);
         }
     }
 }

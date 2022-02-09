@@ -5,7 +5,7 @@ import java.util.ArrayList;
 
 public class ProjectsList {
 
-    private String name;
+    private final String name;
 
     public ProjectsList(String name) {
         this.name = name;
@@ -20,19 +20,18 @@ public class ProjectsList {
     }
 
     public static ArrayList<ProjectsList> createProjectsList() {
-        ArrayList<ProjectsList> result = new ArrayList<ProjectsList>();
+        ArrayList<ProjectsList> result = new ArrayList<>();
 
-        try {
-            File folder = new File(Consts.PROJECTS_DIR_PATH);
-            File[] filesInFolder = folder.listFiles();
+        File folder = new File(Consts.PROJECTS_DIR_PATH);
+        File[] filesInFolder = folder.listFiles();
 
+        if (filesInFolder != null) {
             for (File file : filesInFolder) {
-                if (new File(Consts.PROJECTS_DIR_PATH + file.getName() + "/" + file.getName() + Consts.EXT_PROJ).exists()) {
+                if (new File(Consts.PROJECTS_DIR_PATH + file.getName() + "/"
+                        + file.getName() + Consts.EXT_PROJ).exists()) {
                     result.add(new ProjectsList(file.getName()));
                 }
             }
-        } catch (RuntimeException e) {
-            // Logger.addLog(e);
         }
 
         return result;

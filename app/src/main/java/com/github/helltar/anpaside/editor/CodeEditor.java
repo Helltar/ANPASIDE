@@ -2,7 +2,6 @@ package com.github.helltar.anpaside.editor;
 
 import android.app.Activity;
 import android.content.Context;
-import android.graphics.Color;
 import android.graphics.Typeface;
 import android.text.Editable;
 import android.text.InputType;
@@ -17,7 +16,7 @@ import android.widget.ScrollView;
 import android.widget.TabHost;
 import android.widget.TabHost.TabContentFactory;
 import android.widget.TabHost.TabSpec;
-import android.widget.TextView.BufferType;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.core.content.ContextCompat;
@@ -39,7 +38,6 @@ public class CodeEditor {
     public EditorConfig editorConfig;
 
     private String btnTabCloseName = "Close";
-    private final int fontColor = Color.rgb(220, 220, 220);
     private final Typeface fontTypeface = Typeface.MONOSPACE;
 
     public static boolean isFilesModified = false;
@@ -51,33 +49,32 @@ public class CodeEditor {
         editorConfig = new EditorConfig(context);
     }
 
-    public boolean openFile(String filename) {
+    public void openFile(String filename) {
         if (isFileOpen(filename)) {
             tabHost.setCurrentTabByTag(filename);
-            return true;
+        } else {
+            try {
+                String text = FileUtils.readFileToString(new File(filename));
+                createEditText(filename, text);
+            } catch (IOException ioe) {
+                Logger.addLog(ioe);
+            }
         }
+    }
 
-        String text;
-
-        try {
-            text = FileUtils.readFileToString(new File(filename));
-        } catch (IOException ioe) {
-            Logger.addLog(ioe);
-            return false;
-        }
-
+    private void createEditText(String filename, String text) {
         final EditText edtText = new CodeEditText(context);
 
         edtText.setTag(filename);
 
-        edtText.setBackgroundColor(ContextCompat.getColor(context, R.color.c_23));
+        edtText.setBackgroundColor(context.getColor(R.color.c_23));
         edtText.setGravity(Gravity.TOP);
         edtText.setHorizontallyScrolling(editorConfig.getWordwrapEnabled());
 
         edtText.setTextSize(editorConfig.getFontSize());
-        edtText.setTextColor(fontColor);
+        edtText.setTextColor(context.getColor(R.color.font_color));
         edtText.setTypeface(fontTypeface);
-        edtText.setText(text, BufferType.SPANNABLE);
+        edtText.setText(text, TextView.BufferType.SPANNABLE);
 
         edtText.setInputType(
                 InputType.TYPE_CLASS_TEXT
@@ -100,8 +97,6 @@ public class CodeEditor {
         });
 
         edtText.requestFocus();
-
-        return true;
     }
 
     private final TextWatcher textWatcher = new TextWatcher() {

@@ -6,22 +6,23 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
 
 public class ProjectsListAdapter extends RecyclerView.Adapter<ProjectsListAdapter.ViewHolder> {
 
-    private List<ProjectsList> projectsList;
+    private final List<ProjectsList> projectsList;
 
     public ProjectsListAdapter(List<ProjectsList> contacts) {
         projectsList = contacts;
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         public TextView tvProjectName;
 
-        public ViewHolder(Context context, View itemView) {
+        public ViewHolder(View itemView) {
             super(itemView);
             this.tvProjectName = (TextView) itemView.findViewById(R.id.tvProjectName);
             itemView.setOnClickListener(this);
@@ -44,13 +45,13 @@ public class ProjectsListAdapter extends RecyclerView.Adapter<ProjectsListAdapte
         }
     }
 
+    @NonNull
     @Override
     public ProjectsListAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         Context context = parent.getContext();
         LayoutInflater inflater = LayoutInflater.from(context);
         View contactView = inflater.inflate(R.layout.item_project, parent, false);
-        ViewHolder viewHolder = new ViewHolder(context, contactView);
-        return viewHolder;
+        return new ViewHolder(contactView);
     }
 
     @Override

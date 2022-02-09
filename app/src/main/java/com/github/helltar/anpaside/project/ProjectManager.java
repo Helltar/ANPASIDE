@@ -1,11 +1,27 @@
 package com.github.helltar.anpaside.project;
 
+import static com.github.helltar.anpaside.Consts.ASSET_DIR_FILES;
+import static com.github.helltar.anpaside.Consts.DATA_PKG_PATH;
+import static com.github.helltar.anpaside.Consts.DIR_BIN;
+import static com.github.helltar.anpaside.Consts.DIR_LIBS;
+import static com.github.helltar.anpaside.Consts.DIR_PREBUILD;
+import static com.github.helltar.anpaside.Consts.DIR_RES;
+import static com.github.helltar.anpaside.Consts.DIR_SRC;
+import static com.github.helltar.anpaside.Consts.EXT_PAS;
+import static com.github.helltar.anpaside.Consts.EXT_PROJ;
+import static com.github.helltar.anpaside.Consts.TPL_GITIGNORE;
+import static com.github.helltar.anpaside.Consts.TPL_HELLOWORLD;
+import static com.github.helltar.anpaside.Consts.TPL_MODULE;
+import static com.github.helltar.anpaside.Utils.copyFileToDir;
+import static com.github.helltar.anpaside.Utils.createTextFile;
+import static com.github.helltar.anpaside.Utils.getFileNameOnly;
+import static com.github.helltar.anpaside.Utils.mkdir;
+
 import com.github.helltar.anpaside.logging.Logger;
-import java.io.IOException;
+
 import org.apache.commons.io.FilenameUtils;
 
-import static com.github.helltar.anpaside.Consts.*;
-import static com.github.helltar.anpaside.Utils.*;
+import java.io.IOException;
 
 public class ProjectManager extends ProjectConfig {
 
@@ -95,8 +111,8 @@ public class ProjectManager extends ProjectConfig {
         return getVersion();
     }
 
-    private boolean createGitIgnore(String path) {
-        return createTextFile(path + ".gitignore", TPL_GITIGNORE);
+    private void createGitIgnore(String path) {
+        createTextFile(path + ".gitignore", TPL_GITIGNORE);
     }
 
     private boolean createHW(String filename) {
