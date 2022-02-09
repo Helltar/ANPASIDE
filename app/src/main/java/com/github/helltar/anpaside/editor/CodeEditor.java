@@ -19,8 +19,6 @@ import android.widget.TabHost.TabSpec;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.core.content.ContextCompat;
-
 import com.github.helltar.anpaside.R;
 import com.github.helltar.anpaside.Utils;
 import com.github.helltar.anpaside.logging.Logger;

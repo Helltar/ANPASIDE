@@ -9,9 +9,9 @@ public class EditorConfig {
 
     private final String RECENT_FILENAMES = "recent_filenames";
     private final String LAST_PROJECT = "last_project";
-    private final String FONT_SIZE = "font_size";
-    private final String HIGHLIGHTER_ENABLED = "highlighter_enabled";
-    private final String WORDWRAP = "wordwrap";
+    public final String FONT_SIZE = "font_size";
+    public final String HIGHLIGHTER_ENABLED = "highlighter_enabled";
+    public final String WORDWRAP = "wordwrap";
 
     public EditorConfig(Context context) {
         this.context = context;

@@ -1,21 +1,40 @@
 package com.github.helltar.anpaside.project;
 
+import static com.github.helltar.anpaside.Consts.DIR_BIN;
+import static com.github.helltar.anpaside.Consts.DIR_PREBUILD;
+import static com.github.helltar.anpaside.Consts.DIR_RES;
+import static com.github.helltar.anpaside.Consts.DIR_SRC;
+import static com.github.helltar.anpaside.Consts.EXT_CLASS;
+import static com.github.helltar.anpaside.Consts.EXT_JAR;
+import static com.github.helltar.anpaside.Consts.EXT_PAS;
+import static com.github.helltar.anpaside.Consts.FW_CLASS;
+import static com.github.helltar.anpaside.Consts.LANG_ERR_FAILED_CREATE_ARCHIVE;
+import static com.github.helltar.anpaside.Consts.LANG_MSG_BUILD_SUCCESSFULLY;
+import static com.github.helltar.anpaside.Consts.TPL_MANIFEST;
+import static com.github.helltar.anpaside.Utils.copyFileToDir;
+import static com.github.helltar.anpaside.Utils.createTextFile;
+import static com.github.helltar.anpaside.Utils.fileExists;
+import static com.github.helltar.anpaside.Utils.getFileSize;
+import static com.github.helltar.anpaside.Utils.mkdir;
+import static com.github.helltar.anpaside.Utils.runProc;
+import static com.github.helltar.anpaside.logging.Logger.LMT_ERROR;
+import static com.github.helltar.anpaside.logging.Logger.LMT_INFO;
+
 import com.github.helltar.anpaside.ProcessResult;
 import com.github.helltar.anpaside.logging.Logger;
+
+import net.lingala.zip4j.core.ZipFile;
+import net.lingala.zip4j.exception.ZipException;
+import net.lingala.zip4j.model.ZipParameters;
+import net.lingala.zip4j.util.Zip4jConstants;
+
+import org.apache.commons.io.FileUtils;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import net.lingala.zip4j.core.ZipFile;
-import net.lingala.zip4j.exception.ZipException;
-import net.lingala.zip4j.model.ZipParameters;
-import net.lingala.zip4j.util.Zip4jConstants;
-import org.apache.commons.io.FileUtils;
-
-import static com.github.helltar.anpaside.logging.Logger.*;
-import static com.github.helltar.anpaside.Utils.*;
-import static com.github.helltar.anpaside.Consts.*;
 
 public class ProjectBuilder extends ProjectManager {
 
@@ -37,13 +56,13 @@ public class ProjectBuilder extends ProjectManager {
 
     private ProcessResult runCompiler(String filename, boolean detectUnits) {
         String args =
-            mp3cc
-            + " -s " + filename
-            + " -o " + projPrebuildDir
-            + " -l " + globLibsDir
-            + " -p " + getProjLibsDir()
-            + " -m " + getMathType()
-            + " c " + getCanvasType();
+                mp3cc
+                        + " -s " + filename
+                        + " -o " + projPrebuildDir
+                        + " -l " + globLibsDir
+                        + " -p " + getProjLibsDir()
+                        + " -m " + getMathType()
+                        + " c " + getCanvasType();
 
         if (detectUnits) {
             args += " -d";
@@ -139,12 +158,12 @@ public class ProjectBuilder extends ProjectManager {
         String jarFilename = getJarFilename();
 
         if (prebulid()
-            && compile(getMainModuleFilename())
-            && createZip(projPrebuildDir, jarFilename)
-            && addResToZip(getProjectPath() + DIR_RES, jarFilename)) {
-            Logger.addLog(LANG_MSG_BUILD_SUCCESSFULLY + "\n" 
-                          + DIR_BIN + getMidletName() + EXT_JAR + "\n"
-                          + getFileSize(jarFilename) + " KB", LMT_INFO);
+                && compile(getMainModuleFilename())
+                && createZip(projPrebuildDir, jarFilename)
+                && addResToZip(getProjectPath() + DIR_RES, jarFilename)) {
+            Logger.addLog(LANG_MSG_BUILD_SUCCESSFULLY + "\n"
+                    + DIR_BIN + getMidletName() + EXT_JAR + "\n"
+                    + getFileSize(jarFilename) + " KB", LMT_INFO);
 
             return true;
         }
@@ -190,11 +209,11 @@ public class ProjectBuilder extends ProjectManager {
         }
 
         return cleanOutput.toString()
-            .replace("[Pascal Error]", "")
-            .replace("^1", "Lib: ")
-            .replace("^2", "")
-            .replace("^3", "")
-            .trim();
+                .replace("[Pascal Error]", "")
+                .replace("^1", "Lib: ")
+                .replace("^2", "")
+                .replace("^3", "")
+                .trim();
     }
 
     private boolean createManifest(String path) {
@@ -202,10 +221,10 @@ public class ProjectBuilder extends ProjectManager {
         int cldc = midp == 2 ? 1 : 0;
 
         return createTextFile(path + "/MANIFEST.MF",
-                              String.format(TPL_MANIFEST,
-                                            getMidletName(), getMidletVendor(),
-                                            getMidletName(), getMidletVersion(),
-                                            cldc, midp));
+                String.format(TPL_MANIFEST,
+                        getMidletName(), getMidletVendor(),
+                        getMidletName(), getMidletVersion(),
+                        cldc, midp));
     }
 
     private boolean addResToZip(String resDir, String zipFilename) {
@@ -224,7 +243,7 @@ public class ProjectBuilder extends ProjectManager {
         ZipParameters param = new ZipParameters();
 
         param.setCompressionMethod(Zip4jConstants.COMP_DEFLATE);
-        param.setCompressionLevel(Zip4jConstants.DEFLATE_LEVEL_ULTRA); 
+        param.setCompressionLevel(Zip4jConstants.DEFLATE_LEVEL_ULTRA);
         param.setIncludeRootFolder(false);
 
         if (isAddToArchive) {
@@ -236,8 +255,8 @@ public class ProjectBuilder extends ProjectManager {
             return true;
         } catch (ZipException ze) {
             Logger.addLog(
-                LANG_ERR_FAILED_CREATE_ARCHIVE + ": " + dirPath + " (" + ze.getMessage() + ")",
-                LMT_ERROR);
+                    LANG_ERR_FAILED_CREATE_ARCHIVE + ": " + dirPath + " (" + ze.getMessage() + ")",
+                    LMT_ERROR);
         }
 
         return false;

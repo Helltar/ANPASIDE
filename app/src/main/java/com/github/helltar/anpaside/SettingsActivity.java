@@ -1,5 +1,6 @@
 package com.github.helltar.anpaside;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.CheckBox;
@@ -7,7 +8,11 @@ import android.widget.EditText;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.github.helltar.anpaside.editor.EditorConfig;
+
 public class SettingsActivity extends AppCompatActivity {
+
+    private final EditorConfig editorConfig = new EditorConfig(this);
 
     private EditText edtFontSize;
     private CheckBox cbHighlighter;
@@ -24,16 +29,21 @@ public class SettingsActivity extends AppCompatActivity {
         cbWordwrap = findViewById(R.id.cbWordwrap);
         //edtGlobLibsPath = findViewById(R.id.edtGlobalDirPath);
 
-        edtFontSize.setText(String.valueOf(MainActivity.getInstance().editor.editorConfig.getFontSize()));
-        cbHighlighter.setChecked(MainActivity.getInstance().editor.editorConfig.getHighlighterEnabled());
-        cbWordwrap.setChecked(!MainActivity.getInstance().editor.editorConfig.getWordwrapEnabled());
+        edtFontSize.setText(String.valueOf(editorConfig.getFontSize()));
+        cbHighlighter.setChecked(editorConfig.getHighlighterEnabled());
+        cbWordwrap.setChecked(!editorConfig.getWordwrapEnabled());
         //edtGlobLibsPath.setText(MainActivity.ideConfig.getGlobalDirPath());
     }
 
     public void onBtnSaveClick(View v) {
-        MainActivity.getInstance().editor.setFontSize(Integer.parseInt(edtFontSize.getText().toString()));
-        MainActivity.getInstance().editor.setHighlighterEnabled(cbHighlighter.isChecked());
-        MainActivity.getInstance().editor.setWordwrap(!cbWordwrap.isChecked());
+        Intent data = new Intent();
+
+        data.putExtra(editorConfig.FONT_SIZE, Integer.parseInt(edtFontSize.getText().toString()));
+        data.putExtra(editorConfig.HIGHLIGHTER_ENABLED, cbHighlighter.isChecked());
+        data.putExtra(editorConfig.WORDWRAP, !cbWordwrap.isChecked());
+
+        setResult(1, data);
+
         /*
         String path = edtGlobLibsPath.getText().toString();
 

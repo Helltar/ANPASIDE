@@ -12,7 +12,6 @@ import static com.github.helltar.anpaside.Consts.WORK_DIR_PATH;
 import static com.github.helltar.anpaside.Utils.fileExists;
 import static com.github.helltar.anpaside.logging.Logger.LMT_ERROR;
 import static com.github.helltar.anpaside.logging.Logger.LMT_INFO;
-import static com.github.helltar.anpaside.logging.Logger.addLog;
 
 import android.Manifest;
 import android.app.AlertDialog;
@@ -24,7 +23,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.text.Html;
 import android.text.Spanned;
 import android.view.Gravity;
 import android.view.Menu;
@@ -36,12 +34,15 @@ import android.widget.TabHost;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import com.github.helltar.anpaside.editor.CodeEditor;
+import com.github.helltar.anpaside.editor.EditorConfig;
 import com.github.helltar.anpaside.ide.IdeConfig;
 import com.github.helltar.anpaside.ide.IdeInit;
 import com.github.helltar.anpaside.logging.Logger;
@@ -53,9 +54,6 @@ import org.apache.commons.io.FilenameUtils;
 
 import java.io.File;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
 import java.util.concurrent.Executors;
 
 public class MainActivity extends AppCompatActivity {
@@ -64,10 +62,7 @@ public class MainActivity extends AppCompatActivity {
     private IdeConfig ideConfig;
     private final ProjectManager projManager = new ProjectManager();
 
-    private TextView tvLog;
-    public ScrollView svLog;
-
-    private static MainActivity instance;
+    private static MainActivity activity;
     public static String projectFilename = "";
 
     @Override
@@ -77,10 +72,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        instance = this;
-
-        tvLog = findViewById(R.id.tvLog);
-        svLog = findViewById(R.id.svLog);
+        activity = this;
 
         TabHost tabHost = findViewById(android.R.id.tabhost);
         tabHost.setup();
@@ -102,12 +94,22 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public static MainActivity getInstance() {
-        return instance;
-    }
+    private final ActivityResultLauncher<Intent> activityResultLaunch = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            result -> {
+                if (result.getResultCode() == 1) {
+                    if (result.getData() != null) {
+                        Bundle extras = result.getData().getExtras();
+                        EditorConfig editorConfig = new EditorConfig(this);
+                        editor.setFontSize(extras.getInt(editorConfig.FONT_SIZE));
+                        editor.setHighlighterEnabled(extras.getBoolean(editorConfig.HIGHLIGHTER_ENABLED));
+                        editor.setWordwrap(extras.getBoolean(editorConfig.WORDWRAP));
+                    }
+                }
+            });
 
     private void init() {
-        addLog(getString(R.string.app_name) + " " + getAppVersionName());
+        Logger.addLog(getString(R.string.app_name) + " " + getAppVersionName());
 
         if (ideConfig.isAssetsInstall()) {
             if (hasPermissions(this)) {
@@ -141,32 +143,9 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void addGuiLog(String msg, int msgType) {
-        if (msg.isEmpty()) {
-            return;
-        }
-
-        String fontColor = "#aaaaaa";
-
-        if (msgType == LMT_INFO) {
-            fontColor = "#00aa00";
-        } else if (msgType == LMT_ERROR) {
-            fontColor = "#ee0000";
-        }
-
-        String[] msgLines = msg.split("\n");
-        StringBuilder lines = new StringBuilder();
-
-        for (int i = 1; i < msgLines.length; i++) {
-            lines.append("\t\t\t\t\t\t\t\t\t- ").append(msgLines[i]).append("<br>");
-        }
-
-        final Spanned text = Html.fromHtml("<font color='#555555'>"
-                + new SimpleDateFormat("HH:mm:ss", Locale.US).format(new Date())
-                + "</font> "
-                + "<font color='" + fontColor + "'>"
-                + msgLines[0].replace("\n", "<br>") + "</font><br>"
-                + lines);
+    public static void addGuiLog(Spanned text) {
+        TextView tvLog = activity.findViewById(R.id.tvLog);
+        ScrollView svLog = activity.findViewById(R.id.svLog);
 
         new Handler(Looper.getMainLooper()).post(() -> {
             if (tvLog.getText().length() > 1024) {
@@ -240,7 +219,7 @@ public class MainActivity extends AppCompatActivity {
                                         openFile(projManager.getProjectConfigFilename());
                                     }
                                 } catch (IOException ioe) {
-                                    addLog(ioe);
+                                    Logger.addLog(ioe);
                                 }
                             })
                     .setNegativeButton(R.string.dlg_btn_cancel, null)
@@ -271,7 +250,7 @@ public class MainActivity extends AppCompatActivity {
                                         openFile(filename);
                                     }
                                 } else {
-                                    addLog(getString(R.string.err_del_old_module) + ": " + filename, LMT_ERROR);
+                                    Logger.addLog(getString(R.string.err_del_old_module) + ": " + filename, LMT_ERROR);
                                 }
                             })
                     .show();
@@ -337,7 +316,7 @@ public class MainActivity extends AppCompatActivity {
                         projManager.setVersion(edtMidletVersion.getText().toString());
                         projManager.save(projManager.getProjectConfigFilename());
                     } catch (IOException e) {
-                        addLog(e);
+                        Logger.addLog(e);
                     }
                 })
                 .show();
@@ -421,7 +400,7 @@ public class MainActivity extends AppCompatActivity {
         } else if (id == R.id.miFileSave) {
             editor.saveAllFiles(true);
         } else if (id == R.id.miSettings) {
-            startActivity(new Intent(this, SettingsActivity.class));
+            activityResultLaunch.launch(new Intent(this, SettingsActivity.class));
         } else if (id == R.id.miDocs) {
             startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://helltar.com/mpascal/docs/")));
         } else if (id == R.id.miAbout) {
@@ -477,7 +456,7 @@ public class MainActivity extends AppCompatActivity {
                         try {
                             startActionViewIntent(builder.getJarFilename());
                         } catch (Exception e) {
-                            addLog(e);
+                            Logger.addLog(e);
                         }
                     }
                 });
@@ -490,7 +469,7 @@ public class MainActivity extends AppCompatActivity {
 
         if (new IdeInit(getAssets()).install()) {
             ideConfig.setInstState(true);
-            addLog(getString(R.string.msg_install_ok), LMT_INFO);
+            Logger.addLog(getString(R.string.msg_install_ok), LMT_INFO);
         }
     }
 }
