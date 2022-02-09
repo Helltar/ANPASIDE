@@ -7,5 +7,5 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
 
-    <color name="font_color">#DCDCDC</color>
+    <color name="editor_font_color">#DCDCDC</color>
 </resources>

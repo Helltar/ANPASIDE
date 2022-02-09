@@ -69,7 +69,7 @@ public class CodeEditor {
         edtText.setHorizontallyScrolling(editorConfig.getWordwrapEnabled());
 
         edtText.setTextSize(editorConfig.getFontSize());
-        edtText.setTextColor(context.getColor(R.color.font_color));
+        edtText.setTextColor(context.getColor(R.color.editor_font_color));
         edtText.setTypeface(fontTypeface);
         edtText.setText(text, TextView.BufferType.SPANNABLE);
 
