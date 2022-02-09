@@ -1,4 +1,4 @@
-package com.github.helltar.anpaside;
+package com.github.helltar.anpaside.adapters;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -8,6 +8,12 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.github.helltar.anpaside.Consts;
+import com.github.helltar.anpaside.MainActivity;
+import com.github.helltar.anpaside.ProjectsList;
+import com.github.helltar.anpaside.ProjectsListActivity;
+import com.github.helltar.anpaside.R;
 
 import java.util.List;
 

@@ -8,6 +8,8 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.github.helltar.anpaside.adapters.ProjectsListAdapter;
+
 import java.util.ArrayList;
 
 public class ProjectsListActivity extends AppCompatActivity {
