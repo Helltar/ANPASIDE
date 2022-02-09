@@ -39,4 +39,5 @@
     <string name="j2meloader">Для запуску програм встановiть J2ME Loader</string>
     <string name="text.editor.wordwrap">Перенесення рядків</string>
     <string name="lbl.projects">Проєкти</string>
+    <string name="menu.documentation">Документація</string>
 </resources>

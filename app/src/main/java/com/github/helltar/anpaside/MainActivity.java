@@ -422,6 +422,8 @@ public class MainActivity extends AppCompatActivity {
             editor.saveAllFiles(true);
         } else if (id == R.id.miSettings) {
             startActivity(new Intent(this, SettingsActivity.class));
+        } else if (id == R.id.miDocs) {
+            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://helltar.com/mpascal/docs/")));
         } else if (id == R.id.miAbout) {
             showAbout();
         } else if (id == R.id.miExit) {

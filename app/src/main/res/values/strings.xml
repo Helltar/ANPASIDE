@@ -30,6 +30,7 @@
     <string name="menu.open_project">Open project</string>
     <string name="menu.file_save">Save</string>
     <string name="menu.settings">Settings</string>
+    <string name="menu.documentation">MIDletPascal Help</string>
     <string name="menu.about">About</string>
     <string name="menu.exit">Exit</string>
 

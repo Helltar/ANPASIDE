@@ -37,6 +37,10 @@
                 android:title="@string/menu.settings" />
 
             <item
+                android:id="@+id/miDocs"
+                android:title="@string/menu.documentation" />
+
+            <item
                 android:id="@+id/miAbout"
                 android:title="@string/menu.about" />
 
