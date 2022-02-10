@@ -54,8 +54,7 @@ public class ProjectsListAdapter extends RecyclerView.Adapter<ProjectsListAdapte
     @NonNull
     @Override
     public ProjectsListAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        Context context = parent.getContext();
-        LayoutInflater inflater = LayoutInflater.from(context);
+        LayoutInflater inflater = LayoutInflater.from(parent.getContext());
         View contactView = inflater.inflate(R.layout.item_project, parent, false);
         return new ViewHolder(contactView);
     }
