@@ -12,6 +12,7 @@ import static com.github.helltar.anpaside.Consts.EXT_PROJ;
 import static com.github.helltar.anpaside.Consts.TPL_GITIGNORE;
 import static com.github.helltar.anpaside.Consts.TPL_HELLOWORLD;
 import static com.github.helltar.anpaside.Consts.TPL_MODULE;
+import static com.github.helltar.anpaside.Consts.WORK_DIR_PATH;
 import static com.github.helltar.anpaside.Utils.copyFileToDir;
 import static com.github.helltar.anpaside.Utils.createTextFile;
 import static com.github.helltar.anpaside.Utils.getFileNameOnly;
@@ -50,11 +51,15 @@ public class ProjectManager extends ProjectConfig {
         projectPath = path + name + "/";
         projectConfigFilename = projectPath + name + EXT_PROJ;
 
-        if (mkProjectDirs(projectPath)
-            && createConfigFile(projectConfigFilename, name)
-            && createHW(projectPath + DIR_SRC + name.toLowerCase() + EXT_PAS)) {
-            createGitIgnore(projectPath);
-            copyFileToDir(DATA_PKG_PATH + ASSET_DIR_FILES + "/icon.png", projectPath + DIR_RES);
+        if (mkProjectDirs(projectPath)) {
+            if (createConfigFile(projectConfigFilename, name)) {
+                if (createHW(projectPath + DIR_SRC + name.toLowerCase() + EXT_PAS)) {
+                    createGitIgnore(projectPath);
+                    copyFileToDir(DATA_PKG_PATH + ASSET_DIR_FILES + "/icon.png", projectPath + DIR_RES);
+                    mkdir(WORK_DIR_PATH + DIR_LIBS); // global libs
+                }
+            }
+
             return true;
         }
 
