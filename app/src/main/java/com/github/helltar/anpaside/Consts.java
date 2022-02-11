@@ -4,6 +4,8 @@ import android.os.Environment;
 
 public class Consts {
 
+    public static final int RCODE_SETTINGS = 1; // ActivityForResult
+
     public static final String DATA_PKG_PATH = MainApp.getContext().getApplicationInfo().dataDir + "/";
     public static final String DATA_LIB_PATH = MainApp.getContext().getApplicationInfo().nativeLibraryDir + "/";
 

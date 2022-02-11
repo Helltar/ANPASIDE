@@ -8,6 +8,7 @@ import static com.github.helltar.anpaside.Consts.DIR_SRC;
 import static com.github.helltar.anpaside.Consts.EXT_PAS;
 import static com.github.helltar.anpaside.Consts.EXT_PROJ;
 import static com.github.helltar.anpaside.Consts.MP3CC;
+import static com.github.helltar.anpaside.Consts.RCODE_SETTINGS;
 import static com.github.helltar.anpaside.Consts.WORK_DIR_PATH;
 import static com.github.helltar.anpaside.Utils.fileExists;
 import static com.github.helltar.anpaside.logging.Logger.LMT_ERROR;
@@ -98,7 +99,7 @@ public class MainActivity extends AppCompatActivity {
     private final ActivityResultLauncher<Intent> activityResultLaunch = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             result -> {
-                if (result.getResultCode() == 1) {
+                if (result.getResultCode() == RCODE_SETTINGS) {
                     if (result.getData() != null) {
                         Bundle extras = result.getData().getExtras();
                         EditorConfig editorConfig = new EditorConfig(this);

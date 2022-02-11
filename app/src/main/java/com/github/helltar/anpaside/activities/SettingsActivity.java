@@ -1,5 +1,7 @@
 package com.github.helltar.anpaside.activities;
 
+import static com.github.helltar.anpaside.Consts.RCODE_SETTINGS;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -43,7 +45,7 @@ public class SettingsActivity extends AppCompatActivity {
         data.putExtra(editorConfig.HIGHLIGHTER_ENABLED, cbHighlighter.isChecked());
         data.putExtra(editorConfig.WORDWRAP, !cbWordwrap.isChecked());
 
-        setResult(1, data);
+        setResult(RCODE_SETTINGS, data);
 
         /*
         String path = edtGlobLibsPath.getText().toString();
