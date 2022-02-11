@@ -20,7 +20,6 @@ public class SettingsActivity extends AppCompatActivity {
     private EditText edtFontSize;
     private CheckBox cbHighlighter;
     private CheckBox cbWordwrap;
-    //private EditText edtGlobLibsPath;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,12 +29,10 @@ public class SettingsActivity extends AppCompatActivity {
         edtFontSize = findViewById(R.id.edtEditorFontSize);
         cbHighlighter = findViewById(R.id.cbHighlighter);
         cbWordwrap = findViewById(R.id.cbWordwrap);
-        //edtGlobLibsPath = findViewById(R.id.edtGlobalDirPath);
 
         edtFontSize.setText(String.valueOf(editorConfig.getFontSize()));
         cbHighlighter.setChecked(editorConfig.getHighlighterEnabled());
         cbWordwrap.setChecked(!editorConfig.getWordwrapEnabled());
-        //edtGlobLibsPath.setText(MainActivity.ideConfig.getGlobalDirPath());
     }
 
     public void onBtnSaveClick(View v) {
@@ -47,15 +44,6 @@ public class SettingsActivity extends AppCompatActivity {
 
         setResult(RCODE_SETTINGS, data);
 
-        /*
-        String path = edtGlobLibsPath.getText().toString();
-
-        if (!path.endsWith("/")) {
-            path += "/";
-        }
-
-        MainActivity.ideConfig.setGlobalDirPath(path);
-        */
         finish();
     }
 }

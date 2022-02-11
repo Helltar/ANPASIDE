@@ -44,20 +44,6 @@
             android:textColor="#FFFFFF"
             android:textColorHighlight="#A60606" />
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:text="@string/text.global.directory.libs"
-            android:visibility="gone" />
-
-        <EditText
-            android:id="@+id/edtGlobalDirPath"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:ems="10"
-            android:visibility="gone" />
-
         <Button
             android:id="@+id/btnSave"
             android:layout_width="match_parent"
