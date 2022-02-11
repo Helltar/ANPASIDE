@@ -1,5 +1,10 @@
 package com.github.helltar.anpaside.logging;
 
+import static com.github.helltar.anpaside.Consts.COLOR_LOGGER_DATE;
+import static com.github.helltar.anpaside.Consts.COLOR_LOGGER_ERROR;
+import static com.github.helltar.anpaside.Consts.COLOR_LOGGER_FONT;
+import static com.github.helltar.anpaside.Consts.COLOR_LOGGER_INFO;
+
 import android.text.Html;
 import android.text.Spanned;
 
@@ -21,12 +26,12 @@ public class Logger {
             return;
         }
 
-        String fontColor = "#aaaaaa";
+        String fontColor = COLOR_LOGGER_FONT;
 
         if (msgType == LMT_INFO) {
-            fontColor = "#00aa00";
+            fontColor = COLOR_LOGGER_INFO;
         } else if (msgType == LMT_ERROR) {
-            fontColor = "#ee0000";
+            fontColor = COLOR_LOGGER_ERROR;
         }
 
         String[] msgLines = msg.split("\n");
@@ -36,7 +41,7 @@ public class Logger {
             lines.append("\t\t\t\t\t\t\t\t\t- ").append(msgLines[i]).append("<br>");
         }
 
-        final Spanned text = Html.fromHtml("<font color='#555555'>"
+        final Spanned text = Html.fromHtml("<font color='" + COLOR_LOGGER_DATE + "'>"
                 + new SimpleDateFormat("HH:mm:ss", Locale.US).format(new Date())
                 + "</font> "
                 + "<font color='" + fontColor + "'>"
