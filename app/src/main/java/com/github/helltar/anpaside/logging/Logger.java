@@ -17,7 +17,7 @@ import java.util.Objects;
 
 public class Logger {
 
-    public static final int LMT_TEXT = 0;
+    private static final int LMT_TEXT = 0;
     public static final int LMT_INFO = 1;
     public static final int LMT_ERROR = 2;
 
