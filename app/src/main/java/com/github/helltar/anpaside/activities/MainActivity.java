@@ -145,7 +145,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public static void addGuiLog(Spanned text) {
+    public static void addLogToGUI(Spanned text) {
         TextView tvLog = activity.findViewById(R.id.tvLog);
         ScrollView svLog = activity.findViewById(R.id.svLog);
 

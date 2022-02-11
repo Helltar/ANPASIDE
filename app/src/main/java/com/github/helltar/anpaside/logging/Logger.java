@@ -8,12 +8,12 @@ import static com.github.helltar.anpaside.Consts.COLOR_LOGGER_INFO;
 import android.text.Html;
 import android.text.Spanned;
 
-import com.github.helltar.anpaside.MainApp;
 import com.github.helltar.anpaside.activities.MainActivity;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
+import java.util.Objects;
 
 public class Logger {
 
@@ -21,7 +21,7 @@ public class Logger {
     public static final int LMT_INFO = 1;
     public static final int LMT_ERROR = 2;
 
-    private static void addGuiLog(String msg, int msgType) {
+    private static void addLogToGUI(String msg, int msgType) {
         if (msg.isEmpty()) {
             return;
         }
@@ -48,22 +48,18 @@ public class Logger {
                 + msgLines[0].replace("\n", "<br>") + "</font><br>"
                 + lines);
 
-        MainActivity.addGuiLog(text);
+        MainActivity.addLogToGUI(text);
     }
 
     public static void addLog(String msg) {
-        addGuiLog(msg, LMT_TEXT);
-    }
-
-    public static void addLog(int resId) {
-        addGuiLog(MainApp.getStr(resId), LMT_TEXT);
+        addLogToGUI(msg, LMT_TEXT);
     }
 
     public static void addLog(String msg, int msgType) {
-        addGuiLog(msg, msgType);
+        addLogToGUI(msg, msgType);
     }
 
     public static void addLog(Exception e) {
-        addGuiLog(e.getMessage(), LMT_ERROR);
+        addLogToGUI(Objects.requireNonNull(e.getMessage(), "null"), LMT_ERROR);
     }
 }
