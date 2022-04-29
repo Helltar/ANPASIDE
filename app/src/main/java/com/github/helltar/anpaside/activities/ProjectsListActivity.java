@@ -2,12 +2,15 @@ package com.github.helltar.anpaside.activities;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.os.Environment;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.github.helltar.anpaside.Consts;
 import com.github.helltar.anpaside.ProjectsList;
 import com.github.helltar.anpaside.R;
 import com.github.helltar.anpaside.adapters.ProjectsListAdapter;
@@ -24,6 +27,10 @@ public class ProjectsListActivity extends AppCompatActivity {
         setContentView(R.layout.activity_projects);
 
         activity = this;
+
+        ((TextView) findViewById(R.id.tvWorkDirPath)).setText("/" + Environment.DIRECTORY_DOCUMENTS
+                                                                    + "/" + getString(R.string.app_name)
+                                                                    + "/" + Consts.DIR_PROJECTS);
 
         RecyclerView rvProjects = (RecyclerView) findViewById(R.id.rvProjects);
 
