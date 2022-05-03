@@ -5,7 +5,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="24dp"
+    android:paddingLeft="24dp"
+    android:paddingTop="24dp"
+    android:paddingRight="24dp"
     tools:context=".ProjectsListActivity">
 
     <androidx.recyclerview.widget.RecyclerView
@@ -21,6 +23,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_weight="0.9"
+        android:paddingLeft="24dp"
         android:paddingTop="24dp"
         android:text="/Documents/ANPASIDE/projects/"
         android:textAppearance="@style/TextAppearance.AppCompat.Small" />
