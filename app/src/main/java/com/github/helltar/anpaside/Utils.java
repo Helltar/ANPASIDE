@@ -13,8 +13,19 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.Objects;
 
 public class Utils {
+
+    public static void rmrf(File file) {
+        if (file.isDirectory()) {
+            for (File child : Objects.requireNonNull(file.listFiles())) {
+                rmrf(child);
+            }
+        }
+
+        file.delete();
+    }
 
     public static boolean mkdir(String dirName) {
         if (new File(dirName).mkdirs() | fileExists(dirName)) {

@@ -9,6 +9,7 @@ import static com.github.helltar.anpaside.Consts.EXT_PAS;
 import static com.github.helltar.anpaside.Consts.EXT_PROJ;
 import static com.github.helltar.anpaside.Consts.MP3CC;
 import static com.github.helltar.anpaside.Consts.RCODE_SETTINGS;
+import static com.github.helltar.anpaside.Consts.TEMP_DIR_PATH;
 import static com.github.helltar.anpaside.Consts.WORK_DIR_PATH;
 import static com.github.helltar.anpaside.Utils.fileExists;
 import static com.github.helltar.anpaside.logging.Logger.LMT_ERROR;
@@ -41,10 +42,12 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.core.content.FileProvider;
 
 import com.github.helltar.anpaside.BuildConfig;
 import com.github.helltar.anpaside.ProjectsList;
 import com.github.helltar.anpaside.R;
+import com.github.helltar.anpaside.Utils;
 import com.github.helltar.anpaside.editor.CodeEditor;
 import com.github.helltar.anpaside.editor.EditorConfig;
 import com.github.helltar.anpaside.ide.IdeConfig;
@@ -94,6 +97,8 @@ public class MainActivity extends AppCompatActivity {
         if (projManager.isProjectOpen()) {
             openFile(projectFilename);
         }
+
+        Utils.rmrf(new File(TEMP_DIR_PATH));
     }
 
     private final ActivityResultLauncher<Intent> activityResultLaunch = registerForActivityResult(
@@ -161,10 +166,15 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void startActionViewIntent(String filename) {
+        Utils.copyFileToDir(filename, TEMP_DIR_PATH);
+        filename = TEMP_DIR_PATH + new File(filename).getName();
+
         File file = new File(filename);
 
         Intent intent = new Intent(Intent.ACTION_VIEW);
-        intent.setDataAndType(Uri.fromFile(file), "application/java-archive");
+        intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        Uri uri = FileProvider.getUriForFile(this, BuildConfig.APPLICATION_ID, file);
+        intent.setDataAndType(uri, "application/java-archive");
 
         try {
             startActivity(intent);

@@ -27,12 +27,10 @@ public class Consts {
     public static final String DIR_RES = "res/";
     public static final String DIR_PREBUILD = "prebuild/";
 
-    public static final String WORK_DIR_PATH =
-            Environment.getExternalStoragePublicDirectory(
-                    Environment.DIRECTORY_DOCUMENTS) + "/" +
-                    getString(R.string.app_name) + "/";
+    public static final String WORK_DIR_PATH = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS) + "/" + getString(R.string.app_name) + "/";
 
     public static final String PROJECTS_DIR_PATH = WORK_DIR_PATH + DIR_PROJECTS;
+    public static final String TEMP_DIR_PATH = MainApp.getContext().getExternalFilesDir(null) + "/temp/";
 
     public static final String EXT_PROJ = ".aproj";
     public static final String EXT_PAS = ".pas";
