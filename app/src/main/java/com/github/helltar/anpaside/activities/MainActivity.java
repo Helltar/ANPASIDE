@@ -3,25 +3,19 @@ package com.github.helltar.anpaside.activities;
 import static com.github.helltar.anpaside.Consts.ASSET_DIR_STUBS;
 import static com.github.helltar.anpaside.Consts.DATA_LIB_PATH;
 import static com.github.helltar.anpaside.Consts.DATA_PKG_PATH;
-import static com.github.helltar.anpaside.Consts.DIR_PROJECTS;
 import static com.github.helltar.anpaside.Consts.DIR_SRC;
 import static com.github.helltar.anpaside.Consts.EXT_PAS;
 import static com.github.helltar.anpaside.Consts.EXT_PROJ;
 import static com.github.helltar.anpaside.Consts.MP3CC;
+import static com.github.helltar.anpaside.Consts.PROJECTS_DIR_PATH;
 import static com.github.helltar.anpaside.Consts.RCODE_SETTINGS;
-import static com.github.helltar.anpaside.Consts.TEMP_DIR_PATH;
-import static com.github.helltar.anpaside.Consts.WORK_DIR_PATH;
 import static com.github.helltar.anpaside.Utils.fileExists;
 import static com.github.helltar.anpaside.logging.Logger.LMT_ERROR;
 import static com.github.helltar.anpaside.logging.Logger.LMT_INFO;
 
-import android.Manifest;
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -40,14 +34,11 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 
 import com.github.helltar.anpaside.BuildConfig;
 import com.github.helltar.anpaside.ProjectsList;
 import com.github.helltar.anpaside.R;
-import com.github.helltar.anpaside.Utils;
 import com.github.helltar.anpaside.editor.CodeEditor;
 import com.github.helltar.anpaside.editor.EditorConfig;
 import com.github.helltar.anpaside.ide.IdeConfig;
@@ -97,8 +88,6 @@ public class MainActivity extends AppCompatActivity {
         if (projManager.isProjectOpen()) {
             openFile(projectFilename);
         }
-
-        Utils.rmrf(new File(TEMP_DIR_PATH));
     }
 
     private final ActivityResultLauncher<Intent> activityResultLaunch = registerForActivityResult(
@@ -119,28 +108,31 @@ public class MainActivity extends AppCompatActivity {
         Logger.addLog(getString(R.string.app_name) + " " + getAppVersionName());
 
         if (ideConfig.isAssetsInstall()) {
-            if (hasPermissions(this)) {
-                editor.openRecentFiles();
-                openFile(editor.editorConfig.getLastProject());
-            } else {
-                firstStart();
-            }
+            // if (hasPermissions(this)) {
+            editor.openRecentFiles();
+            openFile(editor.editorConfig.getLastProject());
+            //  } else {
+            //    firstStart();
+            // }
         } else {
             firstStart();
         }
     }
 
     private void firstStart() {
+        /*
         if (!(Build.VERSION.SDK_INT >= Build.VERSION_CODES.R)) {
             ActivityCompat.requestPermissions(this, new String[]{
                     Manifest.permission.WRITE_EXTERNAL_STORAGE}, 0);
         }
+        */
 
         if (!ideConfig.isAssetsInstall()) {
             installAssets();
         }
     }
 
+    /*
     private boolean hasPermissions(Context context) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             return true;
@@ -149,6 +141,7 @@ public class MainActivity extends AppCompatActivity {
                     == PackageManager.PERMISSION_GRANTED;
         }
     }
+    */
 
     public static void addLogToGUI(Spanned text) {
         TextView tvLog = activity.findViewById(R.id.tvLog);
@@ -166,9 +159,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void startActionViewIntent(String filename) {
-        Utils.copyFileToDir(filename, TEMP_DIR_PATH);
-        filename = TEMP_DIR_PATH + new File(filename).getName();
-
         File file = new File(filename);
 
         Intent intent = new Intent(Intent.ACTION_VIEW);
@@ -207,7 +197,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void createProject(final String projName) {
-        String path = WORK_DIR_PATH + DIR_PROJECTS;
+        String path = PROJECTS_DIR_PATH;
 
         if (projName.length() < 3) {
             showAlertMsg(R.string.dlg_title_invalid_value, String.format(getString(R.string.err_project_name_least_chars), 3));
@@ -295,7 +285,7 @@ public class MainActivity extends AppCompatActivity {
 
         final EditText edtProjectName = view.findViewById(R.id.edtProjectName);
         TextView tvHomeDir = view.findViewById(R.id.tvHomeDir);
-        tvHomeDir.setText(WORK_DIR_PATH);
+        tvHomeDir.setText(PROJECTS_DIR_PATH);
 
         new AlertDialog.Builder(this)
                 .setTitle(R.string.dlg_title_new_project)

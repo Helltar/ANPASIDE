@@ -2,7 +2,6 @@ package com.github.helltar.anpaside.activities;
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.os.Environment;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -28,9 +27,7 @@ public class ProjectsListActivity extends AppCompatActivity {
 
         activity = this;
 
-        ((TextView) findViewById(R.id.tvWorkDirPath)).setText("/" + Environment.DIRECTORY_DOCUMENTS
-                                                                    + "/" + getString(R.string.app_name)
-                                                                    + "/" + Consts.DIR_PROJECTS);
+        ((TextView) findViewById(R.id.tvWorkDirPath)).setText(Consts.PROJECTS_DIR_PATH);
 
         RecyclerView rvProjects = (RecyclerView) findViewById(R.id.rvProjects);
 
