@@ -132,6 +132,15 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private void installAssets() {
+        Logger.addLog(getString(R.string.msg_install_start));
+
+        if (new IdeInit(getAssets()).install()) {
+            ideConfig.setInstState(true);
+            Logger.addLog(getString(R.string.msg_install_ok), LMT_INFO);
+        }
+    }
+
     /*
     private boolean hasPermissions(Context context) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
@@ -377,6 +386,34 @@ public class MainActivity extends AppCompatActivity {
         return super.onPrepareOptionsMenu(menu);
     }
 
+    private void buildProject() {
+        Executors.newSingleThreadExecutor().execute(new Runnable() {
+            boolean result = false;
+            ProjectBuilder builder;
+
+            @Override
+            public void run() {
+                builder = new ProjectBuilder(
+                        projManager.getProjectConfigFilename(),
+                        DATA_LIB_PATH + MP3CC,
+                        DATA_PKG_PATH + ASSET_DIR_STUBS + "/",
+                        ideConfig.getGlobalDirPath());
+
+                result = builder.build();
+
+                new Handler(Looper.getMainLooper()).post(() -> {
+                    if (result) {
+                        try {
+                            startActionViewIntent(builder.getJarFilename());
+                        } catch (Exception e) {
+                            Logger.addLog(e);
+                        }
+                    }
+                });
+            }
+        });
+    }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
@@ -436,42 +473,5 @@ public class MainActivity extends AppCompatActivity {
     private void exitApp() {
         finish();
         System.exit(0);
-    }
-
-    private void buildProject() {
-        Executors.newSingleThreadExecutor().execute(new Runnable() {
-            boolean result = false;
-            ProjectBuilder builder;
-
-            @Override
-            public void run() {
-                builder = new ProjectBuilder(
-                        projManager.getProjectConfigFilename(),
-                        DATA_LIB_PATH + MP3CC,
-                        DATA_PKG_PATH + ASSET_DIR_STUBS + "/",
-                        ideConfig.getGlobalDirPath());
-
-                result = builder.build();
-
-                new Handler(Looper.getMainLooper()).post(() -> {
-                    if (result) {
-                        try {
-                            startActionViewIntent(builder.getJarFilename());
-                        } catch (Exception e) {
-                            Logger.addLog(e);
-                        }
-                    }
-                });
-            }
-        });
-    }
-
-    private void installAssets() {
-        Logger.addLog(getString(R.string.msg_install_start));
-
-        if (new IdeInit(getAssets()).install()) {
-            ideConfig.setInstState(true);
-            Logger.addLog(getString(R.string.msg_install_ok), LMT_INFO);
-        }
     }
 }
