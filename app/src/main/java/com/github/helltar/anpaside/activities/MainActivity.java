@@ -108,25 +108,14 @@ public class MainActivity extends AppCompatActivity {
         Logger.addLog(getString(R.string.app_name) + " " + getAppVersionName());
 
         if (ideConfig.isAssetsInstall()) {
-            // if (hasPermissions(this)) {
             editor.openRecentFiles();
             openFile(editor.editorConfig.getLastProject());
-            //  } else {
-            //    firstStart();
-            // }
         } else {
             firstStart();
         }
     }
 
     private void firstStart() {
-        /*
-        if (!(Build.VERSION.SDK_INT >= Build.VERSION_CODES.R)) {
-            ActivityCompat.requestPermissions(this, new String[]{
-                    Manifest.permission.WRITE_EXTERNAL_STORAGE}, 0);
-        }
-        */
-
         if (!ideConfig.isAssetsInstall()) {
             installAssets();
         }
@@ -140,17 +129,6 @@ public class MainActivity extends AppCompatActivity {
             Logger.addLog(getString(R.string.msg_install_ok), LMT_INFO);
         }
     }
-
-    /*
-    private boolean hasPermissions(Context context) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            return true;
-        } else {
-            return ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                    == PackageManager.PERMISSION_GRANTED;
-        }
-    }
-    */
 
     public static void addLogToGUI(Spanned text) {
         TextView tvLog = activity.findViewById(R.id.tvLog);
