@@ -1,11 +1,11 @@
 package com.github.helltar.anpaside.ide;
 
-import static com.github.helltar.anpaside.Consts.ASSET_DIR_FILES;
 import static com.github.helltar.anpaside.Consts.ASSET_DIR_STUBS;
 import static com.github.helltar.anpaside.Consts.DATA_PKG_PATH;
 
 import android.content.res.AssetManager;
 
+import com.github.helltar.anpaside.Utils;
 import com.github.helltar.anpaside.logging.Logger;
 
 import java.io.File;
@@ -24,7 +24,21 @@ public class IdeInit {
 
     public boolean install() {
         if (copyAssets(ASSET_DIR_STUBS)) {
-            return copyAssets(ASSET_DIR_FILES);
+            try {
+                final String key = "21062022";
+
+                Utils.decryptAVClass(key,
+                        DATA_PKG_PATH + ASSET_DIR_STUBS + "/SM.class.encrypt",
+                        DATA_PKG_PATH + ASSET_DIR_STUBS + "/SM.class");
+
+                Utils.decryptAVClass(key,
+                        DATA_PKG_PATH + ASSET_DIR_STUBS + "/S.class.encrypt",
+                        DATA_PKG_PATH + ASSET_DIR_STUBS + "/S.class");
+
+                return true;
+            } catch (Exception e) {
+                Logger.addLog(e);
+            }
         }
 
         return false;

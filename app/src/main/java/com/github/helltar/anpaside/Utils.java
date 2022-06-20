@@ -11,9 +11,15 @@ import org.apache.commons.io.FilenameUtils;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Objects;
+
+import javax.crypto.Cipher;
+import javax.crypto.spec.IvParameterSpec;
+import javax.crypto.spec.SecretKeySpec;
 
 public class Utils {
 
@@ -112,5 +118,26 @@ public class Utils {
         }
 
         return new ProcessResult(result, output.toString());
+    }
+
+    public static void decryptAVClass(String secretKey, String fileInputPath, String fileOutPath) throws Exception {
+        SecretKeySpec key = new SecretKeySpec(secretKey.getBytes(), "DES");
+        Cipher cipher = Cipher.getInstance("DES/CBC/PKCS5Padding");
+        byte[] b = {1, 2, 3, 4, 5, 6, 7, 8};
+        cipher.init(Cipher.DECRYPT_MODE, key, new IvParameterSpec(b));
+
+        File f = new File(fileInputPath);
+        FileInputStream inputStream = new FileInputStream(f);
+        byte[] inputBytes = new byte[(int) f.length()];
+        inputStream.read(inputBytes);
+
+        byte[] outputBytes = cipher.doFinal(inputBytes);
+
+        File fileEncryptOut = new File(fileOutPath);
+        FileOutputStream outputStream = new FileOutputStream(fileEncryptOut);
+        outputStream.write(outputBytes);
+
+        inputStream.close();
+        outputStream.close();
     }
 }
