@@ -7,7 +7,7 @@ android {
 
     defaultConfig {
         applicationId "com.github.helltar.anpaside"
-        versionCode 22
+        versionCode 23
         versionName '1.5'
         targetSdkVersion 33
         minSdk 23
