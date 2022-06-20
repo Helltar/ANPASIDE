@@ -1,5 +1,6 @@
 package com.github.helltar.anpaside.ide;
 
+import static com.github.helltar.anpaside.Consts.ASSET_DIR_FILES;
 import static com.github.helltar.anpaside.Consts.ASSET_DIR_STUBS;
 import static com.github.helltar.anpaside.Consts.DATA_PKG_PATH;
 
@@ -35,7 +36,7 @@ public class IdeInit {
                         DATA_PKG_PATH + ASSET_DIR_STUBS + "/S.class.encrypt",
                         DATA_PKG_PATH + ASSET_DIR_STUBS + "/S.class");
 
-                return true;
+                return copyAssets(ASSET_DIR_FILES);
             } catch (Exception e) {
                 Logger.addLog(e);
             }
