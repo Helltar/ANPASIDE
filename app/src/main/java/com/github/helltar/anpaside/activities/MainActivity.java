@@ -1,5 +1,6 @@
 package com.github.helltar.anpaside.activities;
 
+import static com.github.helltar.anpaside.Consts.ASSETS_STATUS;
 import static com.github.helltar.anpaside.Consts.ASSET_DIR_STUBS;
 import static com.github.helltar.anpaside.Consts.DATA_LIB_PATH;
 import static com.github.helltar.anpaside.Consts.DATA_PKG_PATH;
@@ -108,15 +109,15 @@ public class MainActivity extends AppCompatActivity {
         Logger.addLog(getString(R.string.app_name) + " " + getAppVersionName());
 
         if (ideConfig.isAssetsInstall()) {
+            if (!ideConfig.isAssetsUpdate(ASSETS_STATUS)) {
+                if (new IdeInit(getAssets()).updateAssets()) {
+                    ideConfig.setUpdateAssetsState(ASSETS_STATUS);
+                }
+            }
+
             editor.openRecentFiles();
             openFile(editor.editorConfig.getLastProject());
         } else {
-            firstStart();
-        }
-    }
-
-    private void firstStart() {
-        if (!ideConfig.isAssetsInstall()) {
             installAssets();
         }
     }
@@ -126,6 +127,7 @@ public class MainActivity extends AppCompatActivity {
 
         if (new IdeInit(getAssets()).install()) {
             ideConfig.setInstState(true);
+            ideConfig.setUpdateAssetsState(ASSETS_STATUS);
             Logger.addLog(getString(R.string.msg_install_ok), LMT_INFO);
         }
     }

@@ -45,6 +45,10 @@ public class IdeInit {
         return false;
     }
 
+    public boolean updateAssets() {
+        return install();
+    }
+
     private boolean copyAssets(String assetDir) {
         try {
             String[] assets = assetManager.list(assetDir);

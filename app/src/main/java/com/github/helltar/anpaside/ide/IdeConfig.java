@@ -9,6 +9,7 @@ import android.content.SharedPreferences;
 public class IdeConfig {
 
     private final String PREF_NAME_INSTALL = "install";
+    private final String PREF_NAME_UPDATE = "update_assets";
     private final String PREF_NAME_GLOBAL_DIR_PATH = "global_libs_dir";
 
     private final Context context;
@@ -33,6 +34,14 @@ public class IdeConfig {
         getMainEditor().putBoolean(PREF_NAME_INSTALL, val).apply();
     }
 
+    private int getUpdateAssetsState() {
+        return getSpMain().getInt(PREF_NAME_UPDATE, 0);
+    }
+
+    public void setUpdateAssetsState(int val) {
+        getMainEditor().putInt(PREF_NAME_UPDATE, val).apply();
+    }
+
     public String getGlobalDirPath() {
         return getSpMain().getString(PREF_NAME_GLOBAL_DIR_PATH, WORK_DIR_PATH + DIR_LIBS);
     }
@@ -43,5 +52,9 @@ public class IdeConfig {
 
     public boolean isAssetsInstall() {
         return getInstState();
+    }
+
+    public boolean isAssetsUpdate(int i) {
+        return getUpdateAssetsState() == i;
     }
 }

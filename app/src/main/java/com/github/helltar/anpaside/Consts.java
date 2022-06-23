@@ -17,6 +17,7 @@ public class Consts {
 
     public static final String ASSET_DIR_FILES = "files";
     public static final String ASSET_DIR_STUBS = "stubs";
+    public static final int ASSETS_STATUS = 1;
 
     public static final String DIR_PROJECTS = "projects/";
     public static final String DIR_BIN = "bin/";
