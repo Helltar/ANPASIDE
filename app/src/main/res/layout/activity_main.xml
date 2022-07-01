@@ -8,6 +8,7 @@
 
     <LinearLayout
         android:id="@+id/lyEditor"
+        android:background="@color/c_23"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:orientation="vertical"
@@ -58,7 +59,7 @@
         android:layout_height="100dp"
         android:paddingStart="16dp"
         android:paddingTop="8dp"
-        android:paddingEnd="0dp"
+        android:paddingEnd="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
