@@ -40,10 +40,10 @@ public class SettingsActivity extends AppCompatActivity {
 
         int fontSize = Integer.parseInt(edtFontSize.getText().toString());
 
-        if (fontSize < 4) {
-            fontSize = 4;
-        } else if (fontSize > 64) {
-            fontSize = 64;
+        if (fontSize < 8) {
+            fontSize = 8;
+        } else if (fontSize > 24) {
+            fontSize = 24;
         }
 
         data.putExtra(editorConfig.FONT_SIZE, fontSize);
