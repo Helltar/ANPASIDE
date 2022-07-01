@@ -60,7 +60,7 @@ public class CodeEditor {
     }
 
     private void createEditText(String filename, String text) {
-        final EditText edtText = new CodeEditText(context);
+        final EditText edtText = new CodeEditText(context, editorConfig.getFontSize());
 
         edtText.setTag(filename);
 
@@ -203,7 +203,7 @@ public class CodeEditor {
         return !filenameList.isEmpty();
     }
 
-    ////////// костыль begin
+    // ._. begin
 
     private void closeFile(String filename) {
         saveAllFiles();
@@ -223,7 +223,7 @@ public class CodeEditor {
         }
     }
 
-    ////////// end
+    // end
 
     public void openRecentFiles() {
         String recentFilenames = editorConfig.getRecentFilenames();

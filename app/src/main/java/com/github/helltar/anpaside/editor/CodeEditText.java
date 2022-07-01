@@ -13,8 +13,9 @@ public class CodeEditText extends androidx.appcompat.widget.AppCompatEditText {
     private final Rect rect;
     private final Paint paint;
     private final Context context;
+    private final int fontSize;
 
-    public CodeEditText(Context context) {
+    public CodeEditText(Context context, int fontSize) {
         super(context);
 
         this.context = context;
@@ -24,8 +25,10 @@ public class CodeEditText extends androidx.appcompat.widget.AppCompatEditText {
 
         paint.setStyle(Paint.Style.FILL);
         paint.setColor(Color.rgb(80, 80, 80));
-        paint.setTextSize(pxToDp(14));
+        paint.setTextSize(pxToDp(fontSize));
         paint.setAntiAlias(true);
+
+        this.fontSize = fontSize;
     }
 
     private int pxToDp(int px) {
@@ -52,13 +55,13 @@ public class CodeEditText extends androidx.appcompat.widget.AppCompatEditText {
         }
 
         if (lineCount < 100) {
-            setPadding(pxToDp(30), getPaddingTop(), getPaddingRight(), getPaddingBottom());
+            setPadding(pxToDp(10 + fontSize), getPaddingTop(), getPaddingRight(), getPaddingBottom());
         } else if (lineCount < 1000) {
-            setPadding(pxToDp(40), getPaddingTop(), getPaddingRight(), getPaddingBottom());
+            setPadding(pxToDp(25 + fontSize), getPaddingTop(), getPaddingRight(), getPaddingBottom());
         } else if (lineCount < 10000) {
-            setPadding(pxToDp(45), getPaddingTop(), getPaddingRight(), getPaddingBottom());
+            setPadding(pxToDp(35 + fontSize), getPaddingTop(), getPaddingRight(), getPaddingBottom());
         } else if (lineCount < 100000) {
-            setPadding(pxToDp(50), getPaddingTop(), getPaddingRight(), getPaddingBottom());
+            setPadding(pxToDp(45 + fontSize), getPaddingTop(), getPaddingRight(), getPaddingBottom());
         }
 
         super.onDraw(canvas);
