@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    tools:context=".activities.MainActivity">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -26,13 +27,12 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_margin="4dp"
-                    android:fillViewport="true"
                     android:scrollbars="none">
 
                     <TabWidget
                         android:id="@android:id/tabs"
                         android:layout_width="wrap_content"
-                        android:layout_height="48dp" />
+                        android:layout_height="32dp" />
 
                 </HorizontalScrollView>
 
@@ -40,7 +40,7 @@
                     android:id="@android:id/tabcontent"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_marginLeft="4dp">
+                    android:layout_marginStart="4dp">
 
                 </FrameLayout>
 
@@ -63,11 +63,12 @@
             <TextView
                 android:id="@+id/tvLog"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:layout_height="wrap_content"
+                android:textAppearance="@style/TextAppearance.AppCompat.Small"
                 android:textColor="#A2A2A2"
                 android:textIsSelectable="true"
-                android:typeface="monospace" />
+                android:typeface="monospace"
+                tools:ignore="TouchTargetSizeCheck" />
 
         </ScrollView>
 
