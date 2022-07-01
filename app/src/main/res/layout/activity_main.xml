@@ -58,6 +58,7 @@
         android:layout_height="100dp"
         android:paddingStart="16dp"
         android:paddingTop="8dp"
+        android:paddingEnd="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -66,7 +67,7 @@
         <TextView
             android:id="@+id/tvLog"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:textAppearance="@style/TextAppearance.AppCompat.Small"
             android:textColor="#A2A2A2"
             android:textIsSelectable="true"
