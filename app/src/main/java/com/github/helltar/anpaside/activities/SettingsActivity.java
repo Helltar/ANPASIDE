@@ -38,7 +38,15 @@ public class SettingsActivity extends AppCompatActivity {
     public void onBtnSaveClick(View v) {
         Intent data = new Intent();
 
-        data.putExtra(editorConfig.FONT_SIZE, Integer.parseInt(edtFontSize.getText().toString()));
+        int fontSize = Integer.parseInt(edtFontSize.getText().toString());
+
+        if (fontSize < 4) {
+            fontSize = 4;
+        } else if (fontSize > 64) {
+            fontSize = 64;
+        }
+
+        data.putExtra(editorConfig.FONT_SIZE, fontSize);
         data.putExtra(editorConfig.HIGHLIGHTER_ENABLED, cbHighlighter.isChecked());
         data.putExtra(editorConfig.WORDWRAP, !cbWordwrap.isChecked());
 
