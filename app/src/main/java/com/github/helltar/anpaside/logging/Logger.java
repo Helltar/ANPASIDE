@@ -1,6 +1,5 @@
 package com.github.helltar.anpaside.logging;
 
-import static com.github.helltar.anpaside.Consts.COLOR_LOGGER_DATE;
 import static com.github.helltar.anpaside.Consts.COLOR_LOGGER_ERROR;
 import static com.github.helltar.anpaside.Consts.COLOR_LOGGER_FONT;
 import static com.github.helltar.anpaside.Consts.COLOR_LOGGER_INFO;
@@ -10,9 +9,6 @@ import android.text.Spanned;
 
 import com.github.helltar.anpaside.activities.MainActivity;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
 import java.util.Objects;
 
 public class Logger {
@@ -38,15 +34,14 @@ public class Logger {
         StringBuilder lines = new StringBuilder();
 
         for (int i = 1; i < msgLines.length; i++) {
-            lines.append("\t\t\t\t\t\t\t\t\t- ").append(msgLines[i]).append("<br>");
+            lines.append("- ").append(msgLines[i]).append("<br>");
         }
 
-        final Spanned text = Html.fromHtml("<font color='" + COLOR_LOGGER_DATE + "'>"
-                + new SimpleDateFormat("HH:mm:ss", Locale.US).format(new Date())
-                + "</font> "
-                + "<font color='" + fontColor + "'>"
-                + msgLines[0].replace("\n", "<br>") + "</font><br>"
-                + lines);
+        // <font color='" + COLOR_LOGGER_DATE + "'>" + new SimpleDateFormat("HH:mm:ss", Locale.US).format(new Date()) + "</font>
+        final Spanned text =
+                Html.fromHtml("<font color='" + fontColor + "'>"
+                        + msgLines[0].replace("\n", "<br>") + "</font><br>"
+                        + lines);
 
         MainActivity.addLogToGUI(text);
     }
