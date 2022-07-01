@@ -7,16 +7,19 @@
     tools:context=".activities.MainActivity">
 
     <LinearLayout
+        android:id="@+id/lyEditor"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@color/c_23"
-        android:orientation="vertical">
+        android:layout_height="0dp"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toTopOf="@id/svLog"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
         <TabHost
             android:id="@android:id/tabhost"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="0.3">
+            android:layout_height="match_parent">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -26,7 +29,6 @@
                 <HorizontalScrollView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_margin="4dp"
                     android:scrollbars="none">
 
                     <TabWidget
@@ -48,30 +50,29 @@
 
         </TabHost>
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="@android:drawable/divider_horizontal_dark" />
+    </LinearLayout>
 
-        <ScrollView
-            android:id="@+id/svLog"
+    <ScrollView
+        android:id="@+id/svLog"
+        android:layout_width="0dp"
+        android:layout_height="100dp"
+        android:paddingStart="16dp"
+        android:paddingTop="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/lyEditor">
+
+        <TextView
+            android:id="@+id/tvLog"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_margin="12dp"
-            android:layout_weight="1">
+            android:textAppearance="@style/TextAppearance.AppCompat.Small"
+            android:textColor="#A2A2A2"
+            android:textIsSelectable="true"
+            android:typeface="monospace"
+            tools:text="@tools:sample/lorem/random" />
 
-            <TextView
-                android:id="@+id/tvLog"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textAppearance="@style/TextAppearance.AppCompat.Small"
-                android:textColor="#A2A2A2"
-                android:textIsSelectable="true"
-                android:typeface="monospace"
-                tools:ignore="TouchTargetSizeCheck" />
-
-        </ScrollView>
-
-    </LinearLayout>
+    </ScrollView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
