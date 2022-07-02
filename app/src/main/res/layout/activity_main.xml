@@ -73,7 +73,8 @@
             android:textColor="#A2A2A2"
             android:textIsSelectable="true"
             android:typeface="monospace"
-            tools:text="@tools:sample/lorem/random" />
+            tools:ignore="TouchTargetSizeCheck"
+            tools:text="@tools:sample/lorem" />
 
     </ScrollView>
 
