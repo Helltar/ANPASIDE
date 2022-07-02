@@ -74,11 +74,11 @@ public class ProjectBuilder extends ProjectManager {
     public boolean compile(final String filename) {
         ProcessResult compilerProc = runCompiler(filename, true);
 
-        if (!compilerProc.started) {
+        if (!compilerProc.getStarted()) {
             return false;
         }
 
-        String output = compilerProc.output;
+        String output = compilerProc.getOutput();
 
         Matcher m = Pattern.compile("\\^0(.*?)\n").matcher(output);
 
@@ -100,11 +100,11 @@ public class ProjectBuilder extends ProjectManager {
         // compile parent
         compilerProc = runCompiler(filename, false);
 
-        if (!compilerProc.started) {
+        if (!compilerProc.getStarted()) {
             return false;
         }
 
-        output = compilerProc.output;
+        output = compilerProc.getOutput();
 
         // clear not needed info
         String cleanOutput = deleteCharacters(output);
