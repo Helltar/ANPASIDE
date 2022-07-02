@@ -97,7 +97,7 @@ public class ProjectBuilder extends ProjectManager {
             }
         }
 
-        // компиляция родителя
+        // compile parent
         compilerProc = runCompiler(filename, false);
 
         if (!compilerProc.started) {
@@ -106,7 +106,7 @@ public class ProjectBuilder extends ProjectManager {
 
         output = compilerProc.output;
 
-        // очистка ненужной информации
+        // clear not needed info
         String cleanOutput = deleteCharacters(output);
 
         if (!isErr(output)) {
@@ -130,9 +130,9 @@ public class ProjectBuilder extends ProjectManager {
         while (m.find()) {
             String libName = "Lib_" + m.group(1) + EXT_CLASS;
 
-            // пробуем найти библиотеку в libs каталоге проекта
+            // find lib in project libs dir.
             if (!copyFileToDir(getProjLibsDir() + libName, projPrebuildDir, false)) {
-                // если нет берем из глобального
+                // global libs dir.
                 if (!copyFileToDir(globLibsDir + libName, projPrebuildDir, true)) {
                     return false;
                 }

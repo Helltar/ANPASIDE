@@ -7,7 +7,6 @@ public class Consts {
     public static final String COLOR_LOGGER_FONT = "#aaaaaa";
     public static final String COLOR_LOGGER_INFO = "#00aa00";
     public static final String COLOR_LOGGER_ERROR = "#ee0000";
-    public static final String COLOR_LOGGER_DATE = "#555555";
 
     public static final String DATA_PKG_PATH = MainApp.getContext().getApplicationInfo().dataDir + "/";
     public static final String DATA_LIB_PATH = MainApp.getContext().getApplicationInfo().nativeLibraryDir + "/";
