@@ -6,29 +6,35 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 
+import androidx.annotation.NonNull;
+
 import java.util.Objects;
 
 public class CodeEditText extends androidx.appcompat.widget.AppCompatEditText {
 
-    private final Rect rect;
-    private final Paint paint;
+    private final Rect rect = new Rect();
+    private final Paint paint = new Paint();
     private final Context context;
-    private final int fontSize;
+    private int lineCountFontSize = 14;
 
-    public CodeEditText(Context context, int fontSize) {
+    public CodeEditText(@NonNull Context context, int lineCountFontSize) {
         super(context);
-
         this.context = context;
+        this.lineCountFontSize = lineCountFontSize;
+        initPaint();
+    }
 
-        paint = new Paint();
-        rect = new Rect();
+    public CodeEditText(@NonNull Context context) {
+        super(context);
+        this.context = context;
+        initPaint();
+    }
 
-        paint.setStyle(Paint.Style.FILL);
-        paint.setColor(Color.rgb(80, 80, 80));
-        paint.setTextSize(pxToDp(fontSize));
+    private void initPaint() {
         paint.setAntiAlias(true);
-
-        this.fontSize = fontSize;
+        paint.setColor(Color.rgb(80, 80, 80));
+        paint.setStyle(Paint.Style.FILL);
+        paint.setTextSize(pxToDp(lineCountFontSize));
     }
 
     private int pxToDp(int px) {
@@ -38,6 +44,8 @@ public class CodeEditText extends androidx.appcompat.widget.AppCompatEditText {
 
     @Override
     protected void onDraw(Canvas canvas) {
+        super.onDraw(canvas);
+
         int baseline;
         int lineCount = getLineCount();
         int lineNumber = 1;
@@ -55,15 +63,13 @@ public class CodeEditText extends androidx.appcompat.widget.AppCompatEditText {
         }
 
         if (lineCount < 100) {
-            setPadding(pxToDp(10 + fontSize), getPaddingTop(), getPaddingRight(), getPaddingBottom());
+            setPadding(pxToDp(10 + lineCountFontSize), getPaddingTop(), getPaddingRight(), getPaddingBottom());
         } else if (lineCount < 1000) {
-            setPadding(pxToDp(25 + fontSize), getPaddingTop(), getPaddingRight(), getPaddingBottom());
+            setPadding(pxToDp(25 + lineCountFontSize), getPaddingTop(), getPaddingRight(), getPaddingBottom());
         } else if (lineCount < 10000) {
-            setPadding(pxToDp(35 + fontSize), getPaddingTop(), getPaddingRight(), getPaddingBottom());
+            setPadding(pxToDp(35 + lineCountFontSize), getPaddingTop(), getPaddingRight(), getPaddingBottom());
         } else if (lineCount < 100000) {
-            setPadding(pxToDp(45 + fontSize), getPaddingTop(), getPaddingRight(), getPaddingBottom());
+            setPadding(pxToDp(45 + lineCountFontSize), getPaddingTop(), getPaddingRight(), getPaddingBottom());
         }
-
-        super.onDraw(canvas);
     }
 }

@@ -15,7 +15,6 @@ import android.widget.PopupMenu;
 import android.widget.ScrollView;
 import android.widget.TabHost;
 import android.widget.TabHost.TabContentFactory;
-import android.widget.TabHost.TabSpec;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -28,6 +27,7 @@ import org.apache.commons.io.FileUtils;
 import java.io.File;
 import java.io.IOException;
 import java.util.LinkedList;
+import java.util.Objects;
 
 public class CodeEditor {
 
@@ -59,15 +59,31 @@ public class CodeEditor {
         }
     }
 
+    private final TextWatcher textWatcher = new TextWatcher() {
+        @Override
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            ((Activity) context).findViewById(R.id.svLog).setVisibility(View.GONE);
+        }
+
+        @Override
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+            isFilesModified = true;
+        }
+
+        @Override
+        public void afterTextChanged(Editable s) {
+            highlights(s);
+        }
+    };
+
     private void createEditText(String filename, String text) {
-        final EditText edtText = new CodeEditText(context, editorConfig.getFontSize());
+        var edtText = new CodeEditText(context, editorConfig.getFontSize());
 
         edtText.setTag(filename);
 
         edtText.setBackgroundColor(context.getColor(R.color.c_23));
         edtText.setGravity(Gravity.TOP);
         edtText.setHorizontallyScrolling(editorConfig.getWordwrapEnabled());
-
         edtText.setTextSize(editorConfig.getFontSize());
         edtText.setTextColor(context.getColor(R.color.editor_font_color));
         edtText.setTypeface(fontTypeface);
@@ -95,24 +111,6 @@ public class CodeEditor {
 
         edtText.requestFocus();
     }
-
-    private final TextWatcher textWatcher = new TextWatcher() {
-        @Override
-        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            ScrollView sv = (ScrollView) ((Activity) context).findViewById(R.id.svLog);
-            sv.setVisibility(View.GONE);
-        }
-
-        @Override
-        public void onTextChanged(CharSequence s, int start, int before, int count) {
-            isFilesModified = true;
-        }
-
-        @Override
-        public void afterTextChanged(Editable s) {
-            highlights(s);
-        }
-    };
 
     private final OnKeyListener keyListener = (v, keyCode, keyEvent) -> {
         if (keyEvent.getAction() == KeyEvent.ACTION_DOWN) {
@@ -143,7 +141,7 @@ public class CodeEditor {
     }
 
     private void createTabs(String tag, String title, TabContentFactory tabContent) {
-        final TabSpec tabSpec = tabHost.newTabSpec(tag);
+        final var tabSpec = tabHost.newTabSpec(tag);
 
         tabSpec.setIndicator(title);
         tabSpec.setContent(tabContent);
@@ -160,13 +158,12 @@ public class CodeEditor {
     }
 
     private void showPopupMenu(View v, final String tag) {
-        PopupMenu pm = new PopupMenu(context, v);
+        var pm = new PopupMenu(context, v);
         pm.getMenu().add(R.string.pmenu_tab_close);
         pm.setOnMenuItemClickListener(item -> {
             closeFile(tag);
             return true;
         });
-
         pm.show();
     }
 
@@ -175,27 +172,28 @@ public class CodeEditor {
     }
 
     public boolean saveAllFiles(boolean showMsg) {
-        if (isEditorActive()) {
-            for (int i = 0; i < filenameList.size(); i++) {
-                Utils.createTextFile(filenameList.get(i),
-                        getEditorWithTag(filenameList.get(i)).getText().toString());
-            }
-
-            isFilesModified = false;
-
-            if (showMsg) {
-                Toast toast = Toast.makeText(context, context.getString(R.string.msg_saved), Toast.LENGTH_SHORT);
-                toast.setGravity(Gravity.BOTTOM, 0, 80);
-                toast.show();
-            }
-
-            return true;
+        if (!isEditorActive()) {
+            return false;
         }
 
-        return false;
+        for (int i = 0; i < filenameList.size(); i++) {
+            Utils.createTextFile(filenameList.get(i),
+                    Objects.requireNonNull(
+                            getEditorWithTag(filenameList.get(i)).getText()).toString());
+        }
+
+        isFilesModified = false;
+
+        if (showMsg) {
+            var toast = Toast.makeText(context, context.getString(R.string.msg_saved), Toast.LENGTH_SHORT);
+            toast.setGravity(Gravity.BOTTOM, 0, 80);
+            toast.show();
+        }
+
+        return true;
     }
 
-    private EditText getEditorWithTag(String tag) {
+    private CodeEditText getEditorWithTag(String tag) {
         return tabHost.getTabContentView().findViewWithTag(tag);
     }
 
