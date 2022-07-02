@@ -9,4 +9,4 @@ Mobile IDE that using the [MIDletPascal](http://wikipedia.org/wiki/MIDletPascal)
 <a href='https://apt.izzysoft.de/fdroid/index/apk/com.github.helltar.anpaside'><img alt='Get it on IzzyOnDroid' src='https://gitlab.com/IzzyOnDroid/repo/-/raw/master/assets/IzzyOnDroid.png' height='75'/></a>
 
 ---
-<img src="https://helltar.com/projects/anpaside/screenshots/Screenshot_20220205_002019.png" width="30%"> <img src="https://helltar.com/projects/anpaside/screenshots/Screenshot_20220205_002125.png" width="30%"> <img src="https://helltar.com/projects/anpaside/screenshots/Screenshot_20220205_002039.png" width="30%">
+<img src="https://helltar.com/projects/anpaside/screenshots/Screenshot_20220702_191748.png" width="30%"> <img src="https://helltar.com/projects/anpaside/screenshots/Screenshot_20220702_191825.png" width="30%"> <img src="https://helltar.com/projects/anpaside/screenshots/Screenshot_20220702_194122.png" width="30%"> <img src="https://helltar.com/projects/anpaside/screenshots/Screenshot_20220702_193908.png" width="30%">
