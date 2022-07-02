@@ -57,7 +57,7 @@
         android:id="@+id/svLog"
         android:layout_width="0dp"
         android:layout_height="100dp"
-        android:paddingStart="16dp"
+        android:paddingStart="8dp"
         android:paddingTop="8dp"
         android:paddingEnd="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
