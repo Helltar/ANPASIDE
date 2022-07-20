@@ -73,7 +73,6 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:layout_marginLeft="8dp"
-            android:background="@color/c_23"
             android:textAppearance="@style/TextAppearance.AppCompat.Small"
             android:textColor="#A2A2A2"
             android:textIsSelectable="true"

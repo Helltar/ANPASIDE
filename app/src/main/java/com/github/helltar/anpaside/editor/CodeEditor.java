@@ -3,7 +3,6 @@ package com.github.helltar.anpaside.editor;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Typeface;
-import android.os.Build;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
@@ -18,6 +17,8 @@ import android.widget.TabHost;
 import android.widget.TabHost.TabContentFactory;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.core.content.ContextCompat;
 
 import com.github.helltar.anpaside.R;
 import com.github.helltar.anpaside.Utils;
@@ -81,11 +82,8 @@ public class CodeEditor {
         var edtText = new CodeEditText(context, editorConfig.getFontSize());
 
         edtText.setTag(filename);
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            edtText.setTextColor(context.getColor(R.color.editor_font_color));
-        }
-
+        edtText.setTextColor(ContextCompat.getColor(context, R.color.editor_font_color));
+        edtText.setBackgroundColor(ContextCompat.getColor(context, R.color.c_23));
         edtText.setGravity(Gravity.TOP);
         edtText.setHorizontallyScrolling(editorConfig.getWordwrapEnabled());
         edtText.setTextSize(editorConfig.getFontSize());
