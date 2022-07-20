@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
     <style name="DialogTheme">
         <item name="android:background">@color/c_23</item>
     </style>
-
 </resources>

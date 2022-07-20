@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/c_23"
     tools:context=".activities.SettingsActivity">
 
     <LinearLayout
@@ -30,7 +31,7 @@
             android:layout_marginTop="12dp"
             android:shadowColor="#630505"
             android:text="@string/text.editor.highlighter"
-            android:textColor="#FFFFFF"/>
+            android:textColor="#FFFFFF" />
 
         <CheckBox
             android:id="@+id/cbWordwrap"
@@ -39,7 +40,7 @@
             android:layout_marginTop="12dp"
             android:shadowColor="#630505"
             android:text="@string/text.editor.wordwrap"
-            android:textColor="#FFFFFF"/>
+            android:textColor="#FFFFFF" />
 
         <Button
             android:id="@+id/btnSave"

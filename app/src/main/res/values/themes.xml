@@ -3,7 +3,7 @@
         <item name="colorPrimary">@color/c_28</item>
         <item name="colorPrimaryVariant">@color/c_23</item>
         <item name="colorSecondary">@color/c_33</item>
-        <item name="android:statusBarColor">@color/c_23</item>
+        <item name="android:statusBarColor" tools:targetApi="lollipop">@color/c_23</item>
     </style>
 
     <style name="Theme.MyApplication.NoActionBar">

@@ -12,7 +12,7 @@ android {
         versionCode 25
         versionName '1.5'
         targetSdk 32
-        minSdk 23
+        minSdk 16
     }
 
     buildTypes {
