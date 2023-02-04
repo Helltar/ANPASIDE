@@ -20,7 +20,7 @@ import static com.github.helltar.anpaside.Utils.mkdir;
 
 import com.github.helltar.anpaside.logging.Logger;
 
-import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.FileUtils;
 
 import java.io.IOException;
 
@@ -70,7 +70,7 @@ public class ProjectManager extends ProjectConfig {
         try {
             open(filename);
 
-            projectPath = FilenameUtils.getFullPath(filename);
+            projectPath = FileUtils.getPath(filename) + "/";
             projectConfigFilename = filename;
             mainModuleFilename = projectPath + DIR_SRC + getMainModuleName() + EXT_PAS;
             projLibsDir = projectPath + DIR_LIBS;

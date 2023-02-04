@@ -7,7 +7,6 @@ import static com.github.helltar.anpaside.logging.Logger.LMT_ERROR;
 import com.github.helltar.anpaside.logging.Logger;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -15,23 +14,12 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.Objects;
 
 import javax.crypto.Cipher;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
 public class Utils {
-
-    public static void rmrf(File file) {
-        if (file.isDirectory()) {
-            for (File child : Objects.requireNonNull(file.listFiles())) {
-                rmrf(child);
-            }
-        }
-
-        file.delete();
-    }
 
     public static boolean mkdir(String dirName) {
         if (new File(dirName).mkdirs() | fileExists(dirName)) {
@@ -77,7 +65,7 @@ public class Utils {
     }
 
     public static String getFileNameOnly(String filename) {
-        return FilenameUtils.getBaseName(filename);
+        return FileUtils.removeExtension(FileUtils.getFile(filename).getName());
     }
 
     public static long getFileSize(String filename) {
@@ -86,9 +74,9 @@ public class Utils {
 
     public static boolean createTextFile(String filename, String text) {
         try {
-            FileUtils.writeStringToFile(new File(filename), text);
+            FileUtils.fileWrite(filename, text);
             return true;
-        } catch (IOException ioe) {
+        } catch (Exception ioe) {
             Logger.addLog(ioe);
         }
 

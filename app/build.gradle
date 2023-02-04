@@ -3,13 +3,13 @@ plugins {
 }
 
 android {
-    compileSdk 32
+    compileSdk 33
 
     defaultConfig {
         applicationId "com.github.helltar.anpaside"
-        versionCode 26
+        versionCode 27
         versionName '1.5'
-        targetSdk 32
+        targetSdk 33
         minSdk 16
     }
 
@@ -28,9 +28,9 @@ android {
 }
 
 dependencies {
-    implementation 'commons-io:commons-io:1.3.2'
-    implementation 'net.lingala.zip4j:zip4j:1.3.2'
-    implementation 'androidx.appcompat:appcompat:1.5.1'
-    implementation 'com.google.android.material:material:1.6.1'
+    implementation 'commons-io:commons-io:20030203.000550'
+    implementation 'net.lingala.zip4j:zip4j:2.11.3'
+    implementation 'androidx.appcompat:appcompat:1.6.0'
+    implementation 'com.google.android.material:material:1.8.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
 }

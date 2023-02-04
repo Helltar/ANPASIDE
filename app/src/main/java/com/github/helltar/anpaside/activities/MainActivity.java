@@ -49,7 +49,6 @@ import com.github.helltar.anpaside.project.ProjectBuilder;
 import com.github.helltar.anpaside.project.ProjectManager;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -262,7 +261,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private boolean isProjectFile(String filename) {
-        return FilenameUtils.getExtension(filename).equals(EXT_PROJ.substring(1));
+        return FileUtils.getExtension(filename).equals(EXT_PROJ.substring(1));
     }
 
     private View getViewById(int resource) {

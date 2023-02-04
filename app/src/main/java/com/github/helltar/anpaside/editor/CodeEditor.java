@@ -53,7 +53,7 @@ public class CodeEditor {
             tabHost.setCurrentTabByTag(filename);
         } else {
             try {
-                String text = FileUtils.readFileToString(new File(filename));
+                String text = FileUtils.fileRead(filename);
                 createEditText(filename, text);
             } catch (IOException ioe) {
                 Logger.addLog(ioe);

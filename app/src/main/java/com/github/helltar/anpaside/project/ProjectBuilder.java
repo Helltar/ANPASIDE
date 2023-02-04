@@ -23,10 +23,10 @@ import static com.github.helltar.anpaside.logging.Logger.LMT_INFO;
 import com.github.helltar.anpaside.ProcessResult;
 import com.github.helltar.anpaside.logging.Logger;
 
-import net.lingala.zip4j.core.ZipFile;
-import net.lingala.zip4j.exception.ZipException;
+import net.lingala.zip4j.ZipFile;
 import net.lingala.zip4j.model.ZipParameters;
-import net.lingala.zip4j.util.Zip4jConstants;
+import net.lingala.zip4j.model.enums.CompressionLevel;
+import net.lingala.zip4j.model.enums.CompressionMethod;
 
 import org.apache.commons.io.FileUtils;
 
@@ -242,18 +242,18 @@ public class ProjectBuilder extends ProjectManager {
     private boolean createZip(String dirPath, String zipFilename, boolean isAddToArchive) {
         ZipParameters param = new ZipParameters();
 
-        param.setCompressionMethod(Zip4jConstants.COMP_DEFLATE);
-        param.setCompressionLevel(Zip4jConstants.DEFLATE_LEVEL_ULTRA);
+        param.setCompressionMethod(CompressionMethod.DEFLATE);
+        param.setCompressionLevel(CompressionLevel.ULTRA);
         param.setIncludeRootFolder(false);
 
         if (isAddToArchive) {
-            param.setRootFolderInZip("/");
+            param.setRootFolderNameInZip("/");
         }
 
-        try {
-            new ZipFile(zipFilename).addFolder(dirPath, param);
+        try (ZipFile zf = new ZipFile(zipFilename)) {
+            zf.addFolder(new File(dirPath), param);
             return true;
-        } catch (ZipException ze) {
+        } catch (Exception ze) {
             Logger.addLog(
                     LANG_ERR_FAILED_CREATE_ARCHIVE + ": " + dirPath + " (" + ze.getMessage() + ")",
                     LMT_ERROR);
