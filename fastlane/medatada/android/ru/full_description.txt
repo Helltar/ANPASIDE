@@ -1,1 +1,0 @@
-<p>Мобильная среда разработки использующая компилятор языка программирования MIDletPascal. Для запуска приложений используйте <a href='https://f-droid.org/packages/ru.playsoftware.j2meloader/' target='_blank'>J2ME Loader</a>.</p>
