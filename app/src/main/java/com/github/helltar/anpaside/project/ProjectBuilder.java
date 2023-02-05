@@ -186,7 +186,7 @@ public class ProjectBuilder extends ProjectManager {
 
         return mkdir(manifestDir)
                 && createManifest(manifestDir)
-                && copyFileToDir(stubsDir + "/" + FW_CLASS, projPrebuildDir);
+                && copyFileToDir(stubsDir + FW_CLASS, projPrebuildDir);
     }
 
     private boolean isDirEmpty(String dirPath) {
