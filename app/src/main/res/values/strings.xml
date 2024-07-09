@@ -5,8 +5,8 @@
 
     <!-- messages -->
 
-    <string name="msg.install_start">Installation of the compiler, wait...</string>
-    <string name="msg.install_ok">Installation completed</string>
+    <string name="msg.install_start">Installing compiler, please wait...</string>
+    <string name="msg.install_ok">Installation completed successfully</string>
     <string name="msg.saved">Saved</string>
     <string name="msg.no_open_project">No open project</string>
     <string name="msg.build_successfully">Build completed successfully</string>
@@ -17,16 +17,16 @@
     <string name="err.module_name_least_chars">Module name must be at least %d characters</string>
     <string name="err.project_exists">Project already exists</string>
     <string name="err.module_exists">Module already exists</string>
-    <string name="err.del_old_module">Error deleting the old module</string>
-    <string name="err.failed_create_archive">Failed to create an archive</string>
+    <string name="err.del_old_module">Error while deleting the old module</string>
+    <string name="err.failed_create_archive">Failed to create the archive</string>
     <string name="err.file_not_found">File not found</string>
-    <string name="err.create_dir">Unable to create directory</string>
+    <string name="err.create_dir">Failed to create the directory</string>
 
     <!-- menu -->
 
     <string name="menu.create_project">Create project</string>
     <string name="menu.create_module">New module</string>
-    <string name="menu.project_config">Project config</string>
+    <string name="menu.project_config">Project settings</string>
     <string name="menu.open_project">Open project</string>
     <string name="menu.file_save">Save</string>
     <string name="menu.settings">Settings</string>
@@ -52,13 +52,13 @@
     <string name="text.editor.font.size">Font size:</string>
     <string name="text.editor.highlighter">Syntax highlighting</string>
     <string name="text.editor.wordwrap">Wordwrap</string>
-    <string name="text.global.directory.libs">Global libs directory path:</string>
+    <string name="text.global.directory.libs">Global libs directory:</string>
 
     <!-- buttons -->
 
     <string name="dlg.btn.create">Create</string>
     <string name="dlg.btn.cancel">Cancel</string>
-    <string name="dlg.btn.rewrite">Rewrite</string>
+    <string name="dlg.btn.rewrite">Overwrite</string>
     <string name="dlg.btn.yes">Yes</string>
     <string name="dlg.btn.no">No</string>
 
@@ -72,7 +72,7 @@
         \n\nhttps://helltar.com/projects/anpaside/privacy-policy.html
     </string>
 
-    <string name="j2meloader">To run applications you need to install the J2ME Loader</string>
+    <string name="j2meloader">To run programs, install J2ME Loader</string>
 
     <!-- templates -->
 

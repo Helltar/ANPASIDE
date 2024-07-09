@@ -15,7 +15,7 @@
     <string name="err.create_dir">Не вдалося створити каталог</string>
     <string name="menu.create_project">Створити проєкт</string>
     <string name="menu.create_module">Новий модуль</string>
-    <string name="menu.project_config">Настроки проєкта</string>
+    <string name="menu.project_config">Налаштування проєкта</string>
     <string name="menu.open_project">Відкрити проєкт</string>
     <string name="menu.file_save">Зберегти</string>
     <string name="menu.settings">Настройки</string>
