@@ -3,13 +3,13 @@ plugins {
 }
 
 android {
-    compileSdk 33
+    compileSdk 35
 
     defaultConfig {
         applicationId "com.github.helltar.anpaside"
-        versionCode 29
+        versionCode 30
         versionName '1.5'
-        targetSdk 33
+        targetSdk 35
         minSdk 16
     }
 
@@ -25,6 +25,7 @@ android {
     }
 
     namespace 'com.github.helltar.anpaside'
+    buildToolsVersion '35.0.0'
 }
 
 dependencies {
