@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <string-array name="pref_theme_entries" tools:ignore="InconsistentArrays">
+        <item>@string/pref_theme_light</item>
+        <item>@string/pref_theme_night</item>
+        <item>@string/pref_theme_auto_time</item>
+    </string-array>
+    <string-array name="pref_theme_values" translatable="false" tools:ignore="InconsistentArrays">
+        <item>light</item>
+        <item>dark</item>
+        <item>auto-time</item>
+    </string-array>
+    <string-array name="pref_app_sort_entries">
+        <item>@string/pref_app_sort_name</item>
+        <item>@string/pref_app_sort_date</item>
+        <item>@string/pref_app_sort_vendor</item>
+    </string-array>
+    <string-array name="pref_app_sort_values" translatable="false">
+        <item>title COLLATE LOCALIZED %1$s, author COLLATE LOCALIZED ASC</item>
+        <item>id %1$s</item>
+        <item>author COLLATE LOCALIZED %1$s, title COLLATE LOCALIZED ASC</item>
+    </string-array>
+    <string-array name="PREF_ORIENTATION_ENTRIES">
+        <item>@string/pref_orientation_default</item>
+        <item>@string/pref_orientation_auto</item>
+        <item>@string/pref_orientation_port</item>
+        <item>@string/pref_orientation_land</item>
+    </string-array>
+    <string-array name="PREF_VK_TYPE_ENTRIES">
+        <item>@string/pref_vk_type_custom</item>
+        <item>@string/pref_vk_type_phone</item>
+        <item>@string/pref_vk_type_phone_arrows</item>
+        <item>@string/pref_vk_type_numbers_arrows</item>
+        <item>@string/pref_vk_type_arrows_numbers</item>
+        <item>@string/pref_vk_type_numbers</item>
+        <item>@string/pref_vk_type_arrows</item>
+    </string-array>
+    <string-array name="pref_button_shape_entries">
+        <item>@string/pref_button_shape_oval</item>
+        <item>@string/pref_button_shape_rect</item>
+        <item>@string/pref_button_shape_round</item>
+    </string-array>
+    <string-array name="PREF_LAYOUT_ENTRIES" translatable="false">
+        <item>Nokia/SE</item>
+        <item>Siemens</item>
+        <item>Motorola</item>
+        <item>Custom</item>
+    </string-array>
+    <string-array name="pref_graphics_mode_entries" tools:ignore="InconsistentArrays">
+        <item>@string/pref_graphics_software</item>
+        <item>@string/pref_graphics_hw_gles</item>
+        <item>@string/pref_graphics_hw_view</item>
+    </string-array>
+    <string-array name="pref_scale_type_entries" >
+        <item>@string/pref_screen_scale_type_none</item>
+        <item>@string/pref_screen_scale_type_fit</item>
+        <item>@string/pref_screen_scale_type_fill</item>
+    </string-array>
+    <string-array name="pref_screen_gravity_entries" >
+        <item>@string/pref_screen_gravity_left</item>
+        <item>@string/pref_screen_gravity_top</item>
+        <item>@string/pref_screen_gravity_center</item>
+        <item>@string/pref_screen_gravity_right</item>
+        <item>@string/pref_screen_gravity_bottom</item>
+    </string-array>
+</resources>

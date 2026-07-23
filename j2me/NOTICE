@@ -1,0 +1,47 @@
+ANPASIDE embedded J2ME runtime
+==============================
+
+This module is a stripped down copy of J2ME Loader 1.8.2
+(https://github.com/nikita36078/J2ME-Loader)
+Copyright 2017-2024 Nikita Shakarun
+Licensed under the Apache License, Version 2.0 (see LICENSE).
+
+Large parts of the emulated API come from MicroEmulator,
+Copyright 2001-2007 Bartek Teodorczyk,
+Vlad Skarzhevskyy, Markus Heberling and others. Those files are offered by
+their authors under either the GNU Lesser General Public License 2.1 (or any
+newer version) or the Apache License 2.0; they are used here under the
+Apache License 2.0. Their original headers are kept intact.
+
+MIDI and tone playback use MidiDriver 1.29
+(https://github.com/billthefarmer/mididriver), Copyright 2013 Bill Farmer,
+licensed under the Apache License 2.0. The unmodified official release AAR
+is vendored in mididriver/maven; its source, checksum and licence are
+recorded in mididriver.
+
+Changes made for ANPASIDE
+-------------------------
+
+Removed:
+
+  - the loader's own user interface: app list, jad/jar downloads, installer
+    dialogs, per app settings, profile and key mapping screens, file picker,
+    ACRA crash reporting and the Room database of installed midlets
+  - 3D: JSR-184 (M3G), Mascot Capsule and the vendor wrappers around it,
+    together with all of the project's native code
+  - camera capture, bluetooth, and the audio format converter built on
+    mobile-ffmpeg
+  - the VIBRATE and RECORD_AUDIO permissions and the microphone hardware
+    feature from the manifest: MIDletPascal has no vibration API and its media
+    support is playback only, so nothing the compiler emits reaches them; only
+    INTERNET is kept
+
+Added or changed:
+
+  - MidletRunner, the whole public surface of the module: it dexes a jar with
+    the bundled dx, writes a default profile and starts the emulator activity,
+    so nothing appears between the Run button and the running midlet
+  - the emulator keeps converted midlets, profiles and record stores in
+    <external files dir>/emulator instead of a shared J2ME-Loader directory
+  - camera capture returns a silent player instead of throwing, and
+    platformRequest no longer hands over to another installed midlet

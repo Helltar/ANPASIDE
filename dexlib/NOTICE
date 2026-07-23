@@ -1,0 +1,12 @@
+dexlib
+======
+
+The legacy Android dexer, com.android.dx, taken unmodified from the dexlib
+module of J2ME Loader (https://github.com/nikita36078/J2ME-Loader), which in
+turn packages the dx tool from the Android Open Source Project.
+
+Copyright (C) The Android Open Source Project
+Licensed under the Apache License, Version 2.0 (see LICENSE).
+
+It runs on the device: the IDE compiles a midlet to java class files, this
+converts them to a dex, and the embedded runtime loads that dex.

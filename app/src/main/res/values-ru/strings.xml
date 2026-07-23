@@ -3,63 +3,118 @@
 
     <!-- messages -->
 
-    <string name="msg.install_start">Идет установка компилятора, подождите...</string>
-    <string name="msg.install_ok">Установка успешно завершена</string>
+    <string name="msg.install_start">Установка компилятора…</string>
+    <string name="msg.install_ok">Компилятор установлен</string>
     <string name="msg.saved">Сохранено</string>
-    <string name="msg.no_open_project">Нет открытого проекта</string>
+    <string name="msg.no_open_project">Ни один проект не открыт</string>
     <string name="msg.build_successfully">Сборка успешно завершена</string>
+    <string name="msg.building">Сборка…</string>
+    <string name="msg.imported">Импортировано</string>
 
     <!-- errors -->
 
-    <string name="err.project_name_least_chars">Название проекта должно состоять минимум из %d-х символов</string>
-    <string name="err.module_name_least_chars">Название модуля должно состоять минимум из %d-х символов</string>
+    <plurals name="err.project_name_least_chars">
+        <item quantity="one">Название проекта должно содержать не менее %d символа</item>
+        <item quantity="few">Название проекта должно содержать не менее %d символов</item>
+        <item quantity="many">Название проекта должно содержать не менее %d символов</item>
+        <item quantity="other">Название проекта должно содержать не менее %d символов</item>
+    </plurals>
+    <plurals name="err.module_name_least_chars">
+        <item quantity="one">Название модуля должно содержать не менее %d символа</item>
+        <item quantity="few">Название модуля должно содержать не менее %d символов</item>
+        <item quantity="many">Название модуля должно содержать не менее %d символов</item>
+        <item quantity="other">Название модуля должно содержать не менее %d символов</item>
+    </plurals>
     <string name="err.project_exists">Проект уже существует</string>
     <string name="err.module_exists">Модуль с таким именем уже существует</string>
-    <string name="err.del_old_module">Ошибка при удалении старого модуля</string>
+    <string name="err.del_old_module">Не удалось удалить существующий модуль</string>
     <string name="err.failed_create_archive">Не удалось создать архив</string>
     <string name="err.file_not_found">Файл не найден</string>
     <string name="err.create_dir">Не удалось создать каталог</string>
+    <string name="err.del_project">Не удалось удалить проект</string>
+    <string name="err.delete_file">Не удалось удалить</string>
+    <string name="err.rename_file">Не удалось переименовать</string>
+    <string name="err.file_exists">Файл или папка с таким именем уже существует</string>
+    <string name="err.no_share_app">Нет приложения для отправки этого файла</string>
+    <string name="err.compiler_exit">Компилятор завершился с кодом %d</string>
+    <string name="err.main_class_missing">Компиляция не создала M.class</string>
+    <string name="err.no_jar_app">Ни одно приложение не может открыть файлы .jar. Установите J2ME-эмулятор или включите встроенный эмулятор в настройках.</string>
 
     <!-- menu -->
 
     <string name="menu.create_project">Создать проект</string>
     <string name="menu.create_module">Новый модуль</string>
-    <string name="menu.project_config">Настройки проекта</string>
-    <string name="menu.open_project">Открыть проект</string>
+    <string name="menu.import_file">Импортировать файл</string>
+    <string name="menu.share">Поделиться</string>
+    <string name="menu.export_project">Экспортировать проект</string>
     <string name="menu.file_save">Сохранить</string>
     <string name="menu.settings">Настройки</string>
-    <string name="menu.about">О программе</string>
-    <string name="menu.exit">Выход</string>
+    <string name="menu.documentation">Справка</string>
+    <string name="menu.about">О приложении</string>
+    <string name="menu.exit">Выйти</string>
+    <string name="menu.run">Запустить</string>
 
-    <!-- editor popup menu -->
+    <!-- about -->
+
+    <string name="about.version">Версия %1$s (%2$s)</string>
+    <string name="about.link.source">Исходный код</string>
+    <string name="about.link.privacy">Политика конфиденциальности</string>
+    <string name="about.licenses">Лицензии открытого кода</string>
+    <string name="about.licenses_intro">ANPASIDE распространяется под лицензией MIT и включает перечисленные ниже компоненты с открытым исходным кодом.</string>
+
+    <!-- editor -->
 
     <string name="pmenu.tab.close">Закрыть</string>
+    <string name="lbl.log">Лог</string>
+    <string name="lbl.log.clear">Очистить лог</string>
+    <string name="lbl.log.hide">Скрыть лог</string>
+    <string name="lbl.project_files">Файлы проекта</string>
+    <string name="lbl.no_open_project">Проект не открыт</string>
+    <string name="lbl.project_open">Открыт</string>
+    <string name="lbl.back">Назад</string>
+    <string name="lbl.open_project_to_start">Создайте или откройте проект, чтобы начать редактирование</string>
+    <string name="lbl.open_file_to_edit">Откройте файл, чтобы начать редактирование</string>
+    <string name="lbl.no_projects">Проектов пока нет</string>
+    <string name="lbl.projects">Проекты</string>
+    <string name="lbl.workdir">Рабочий каталог</string>
 
     <!-- dialogs -->
 
     <string name="dlg.title.new_project">Новый проект</string>
     <string name="dlg.title.new_module">Новый модуль</string>
     <string name="dlg.title.invalid_value">Недопустимое значение</string>
+    <string name="dlg.title.delete_project">Удалить проект?</string>
     <string name="dlg.hint.project_name">Название проекта</string>
     <string name="dlg.hint.module_name">Имя модуля</string>
-    <string name="dlg.msg.save_modified_files">Сохранить измененные открытые файлы?</string>
+    <string name="dlg.msg.save_modified_files">Сохранить изменения в открытых файлах?</string>
+    <string name="dlg.msg.delete_project">Проект "%s" и все его файлы будут удалены</string>
+    <string name="dlg.title.rename">Переименовать</string>
+    <string name="dlg.title.delete_file">Удалить?</string>
+    <string name="dlg.hint.new_name">Новое имя</string>
+    <string name="dlg.msg.delete_file">Будет удалено: "%s"</string>
 
-    <!-- text views -->
+    <!-- settings -->
 
-    <string name="text.editor.font.size">Размер шрифта:</string>
+    <string name="text.editor.font.size">Размер шрифта</string>
     <string name="text.editor.highlighter">Подсветка синтаксиса</string>
-    <string name="text.global.directory.libs">Глобальный каталог с библиотеками:</string>
+    <string name="text.editor.line_numbers">Номера строк</string>
+    <string name="text.editor.word_wrap">Перенос строк</string>
+    <string name="text.emulator.builtin">Встроенный эмулятор</string>
+    <string name="text.emulator.builtin_hint">Когда выключено, файлы .jar открываются в другом приложении</string>
+    <string name="text.emulator.screen">Размер экрана</string>
+    <string name="text.emulator.screen_hint">Размер, который GetWidth и GetHeight возвращают программе</string>
+    <string name="text.emulator.keyboard">Экранная клавиатура</string>
+    <string name="lbl.screen_fit_device">Пропорции устройства</string>
+    <string name="text.global.directory.libs">Каталог глобальных библиотек</string>
 
     <!-- buttons -->
 
     <string name="dlg.btn.create">Создать</string>
     <string name="dlg.btn.cancel">Отмена</string>
     <string name="dlg.btn.rewrite">Перезаписать</string>
+    <string name="dlg.btn.delete">Удалить</string>
+    <string name="dlg.btn.rename">Переименовать</string>
     <string name="dlg.btn.yes">Да</string>
     <string name="dlg.btn.no">Нет</string>
-    <string name="j2meloader">Для запуска приложений установите J2ME Loader</string>
-    <string name="text.editor.wordwrap">Перенос строк</string>
-    <string name="lbl.projects">Проекты</string>
-    <string name="menu.documentation">Документация</string>
 
 </resources>

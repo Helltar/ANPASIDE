@@ -1,0 +1,261 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="navigation_drawer_open" translatable="false">Open navigation drawer</string>
+    <string name="navigation_drawer_close" translatable="false">Close navigation drawer</string>
+
+    <string name="close">Close</string>
+    <string name="exit">Exit</string>
+    <string name="about">About</string>
+    <string name="help">Help</string>
+    <string name="more">More</string>
+    <string name="search">Search</string>
+    <string name="licenses">Licenses</string>
+    <string name="profiles">Profiles</string>
+    <string name="save_log">Save log</string>
+    <string name="about_message">This app allows you to launch J2ME apps and games on Android. It supports most 2D and 3D games (including Mascot Capsule 3D ones).&lt;BR></string>
+    <string name="help_message">&#8226; Enabling filtering in some cases can greatly reduce performance. Disable this option if game is too slow.&lt;BR>&#8226; Image flickering issues can be fixed by enabling the "Immediate processing mode" option.</string>
+    <string name="about_email" translatable="false">&lt;BR>Email: &lt;a href="mailto:j2me.loader@mail.ru">j2me.loader@mail.ru&lt;/a></string>
+    <string name="about_github" translatable="false">&lt;BR>GitHub: &lt;a href="https://github.com/nikita36078/J2ME-Loader">github.com/nikita36078/J2ME-Loader&lt;/a></string>
+    <string name="about_emugen_wiki" translatable="false">&lt;BR>EmuGen Wiki: &lt;a href="https://emulation.gametechwiki.com/index.php/J2ME_Loader">emulation.gametechwiki.com/index.php/J2ME_Loader&lt;/a></string>
+    <string name="about_4pda" translatable="false">&lt;BR>4PDA: &lt;a href="https://4pda.to/forum/index.php?showtopic=824201">4pda.to/forum/index.php?showtopic=824201&lt;/a></string>
+    <string name="about_xda" translatable="false">&lt;BR>XDA: &lt;a href="https://forum.xda-developers.com/android/apps-games/app-j2me-loader-t3777889">forum.xda-developers.com/android/apps-games/app-j2me-loader-t3777889&lt;/a></string>
+    <string name="about_crowdin" translatable="false">&lt;BR>Crowdin(translation): &lt;a href="https://crowdin.com/project/j2me-loader">crowdin.com/project/j2me-loader&lt;/a></string>
+    <string name="about_copyright" translatable="false">&lt;BR>&lt;BR>Copyright 2017-2024 Nikita Shakarun</string>
+    <string name="author">Author: </string>
+    <string name="version">Version: </string>
+    <string name="no_data_for_display">No data</string>
+    <string name="message_delete">Do you really want to delete this app?</string>
+    <string name="permission_request_failed">This app requires storage write permission</string>
+    <string name="external_storage_not_mounted">This app requires external storage</string>
+    <string name="create">create</string>
+    <string name="alert_msg_workdir_not_exists">Working directory does not exist at path:\n\'%1$s\'.\nDo you want to create it or choose another one?</string>
+    <string name="action_context_shortcut">Add shortcut</string>
+    <string name="action_reinstall">Reinstall</string>
+    <string name="action_settings">Settings</string>
+    <string name="action_context_delete">Delete</string>
+    <string name="action_context_rename">Rename</string>
+    <string name="retry">retry</string>
+    <string name="err_missing_app">Application not found.\nPlease check storage device %savailability or re-create shortcut.</string>
+    <string name="error_disk_io">Storage error: check disk space</string>
+    <string name="create_apps_dir_failed">Failed to create a folder in the path:\n\'%s\'\nselect another.</string>
+    <string name="change">Change</string>
+    <string name="choose">Choose</string>
+    <string name="warning">Warning</string>
+    <string name="scoped_storage_warning">Your user data is stored in a location which <b>will be deleted</b> when you uninstall the app:\n</string>
+    <string name="error_no_picker">Please install a file picker app</string>
+
+    <string name="midlet_name"><b>Name: </b></string>
+    <string name="midlet_size"><b>Size: </b></string>
+    <string name="midlet_source"><b>Source: </b></string>
+    <string name="midlet_vendor"><b>Vendor: </b></string>
+    <string name="midlet_version"><b>Version: </b></string>
+    <string name="converting_wait">Converting JAR...</string>
+    <string name="install">install</string>
+    <string name="install_done">Application successfully installed!</string>
+    <string name="install_jar_non_matched_jad">This app differs from that described in JAD.\nIgnore JAD and install anyway?</string>
+    <string name="install_jar_needed">Select the JAR file</string>
+    <string name="invalid_resolution_not_saved">Invalid resolutions: not saved!</string>
+    <string name="warn_install_from_net">File will be downloaded from Internet</string>
+    <string name="reinstall">App already installed.\n\nDo you want to reinstall it?\nAll data will be saved.</string>
+    <string name="reinstall_newest">Update this app to version %1$s?\n\nCurrently installed: %2$s\nAll data will be saved.</string>
+    <string name="reinstall_older">Replace this app with version %1$s?\n\nCurrently installed: %2$s\nOlder version may not working correctly with recorded data.</string>
+    <string name="loading_info">loading info…</string>
+
+    <string name="START_CMD">Start</string>
+    <string name="CANCEL_CMD">Cancel</string>
+    <string name="CLEAR_DATA_CMD">Clear data</string>
+    <string name="RESET_SETTINGS_CMD">Reset settings</string>
+    <string name="RESET_LAYOUT_CMD">Reset keylayout</string>
+    <string name="load_profile">Load profile</string>
+    <string name="save_profile">Save profile</string>
+    <string name="PREF_SCREEN_OPTIONS">Screen options</string>
+    <string name="PREF_SCALE_RATIO">Scale(%)</string>
+    <string name="PREF_SCALE_TO_FIT">Scale to fit</string>
+    <string name="PREF_KEEP_ASPECT_RATIO">Keep aspect ratio</string>
+    <string name="PREF_FILTER">Filter</string>
+    <string name="PREF_IMMEDIATE">Immediate processing mode</string>
+    <string name="PREF_SHOW_FPS">Show FPS</string>
+    <string name="PREF_FORCE_FULLSCREEN">Force fullscreen</string>
+    <string name="PREF_LIMIT_FPS">Limit FPS</string>
+    <string name="PREF_FONT_OPTIONS">Font options</string>
+    <string name="PREF_WIDTH">Width</string>
+    <string name="PREF_HEIGHT">Height</string>
+    <string name="PREF_FONT_SMALL">Small</string>
+    <string name="PREF_FONT_MEDIUM">Medium</string>
+    <string name="PREF_FONT_LARGE">Large</string>
+    <string name="PREF_FONT_SIZE_IN_SP">Values are in Scaled Pixels</string>
+    <string name="PREF_BACKGROUND">Background</string>
+    <string name="PREF_VIRTUAL_KEYBOARD_OPTIONS">Virtual keyboard</string>
+    <string name="PREF_VK_SHOW">Show keyboard</string>
+    <string name="PREF_VK_FEEDBACK">Haptic feedback</string>
+    <string name="PREF_VK_FORCE_OPACITY">Force opacity for off-screen keys</string>
+    <string name="PREF_TOUCH_INPUT">Touch input</string>
+    <string name="PREF_HW_ACCELERATION">HW acceleration (unstable)</string>
+    <string name="pref_graphics_software">Software</string>
+    <string name="pref_graphics_hw_gles">HW acceleration (OpenGL ES)</string>
+    <string name="pref_graphics_hw_view">HW acceleration (window)</string>
+    <string name="pref_graphics_hw_surface">HW acceleration (surface)</string>
+    <string name="PREF_VK_BACK">Buttons</string>
+    <string name="PREF_VK_FORE">Labels</string>
+    <string name="PREF_VK_OUTLINE">Outline</string>
+    <string name="PREF_COLOR_HINT" translatable="false">RGB</string>
+    <string name="PREF_VK_ALPHA">Opacity: </string>
+    <string name="PREF_VK_HIDE_DELAY">Hide delay: </string>
+    <string name="PREF_UNIT_MS">ms</string>
+    <string name="PREF_VK_SEL_FORE">Labels (P)</string>
+    <string name="PREF_VK_SEL_BACK">Buttons (P)</string>
+    <string name="PREF_VK_KEY_SIZES">Key sizes</string>
+    <string name="PREF_VK_NAV_KEYS">Joystick: </string>
+    <string name="PREF_VK_SOFT_KEYS">Soft keys: </string>
+    <string name="PREF_VK_NUM_KEYS">Digits: </string>
+    <string name="PREF_VK_FIRE_KEY">Fire: </string>
+    <string name="PREF_VK_SIZE_HINT">Size</string>
+    <string name="SIZE_PRESETS">Presets</string>
+    <string name="SWAP_SIZES">Swap sizes</string>
+    <string name="PREF_SYS_PROPS">System properties</string>
+    <string name="PREF_SYS_PROPS_HINT" translatable="false">microedition.platform: Sony Ericsson C510i\nmicroedition.profiles: MIDP2.0</string>
+    <string name="PREF_ORIENTATION">Screen orientation</string>
+    <string name="pref_orientation_default">Default</string>
+    <string name="pref_orientation_auto">Auto</string>
+    <string name="pref_orientation_port">Portrait</string>
+    <string name="pref_orientation_land">Landscape</string>
+    <string name="error">Error</string>
+    <string name="message_clear_data">Do you really want to clear app data?</string>
+    <string name="PREF_VK_TYPE">Keyboard type</string>
+    <string name="pref_vk_type_arrows">Arrows</string>
+    <string name="pref_vk_type_arrows_numbers">Arrows &amp; numbers</string>
+    <string name="pref_vk_type_custom">Custom</string>
+    <string name="pref_vk_type_numbers">Numbers</string>
+    <string name="pref_vk_type_numbers_arrows">Numbers &amp; arrows</string>
+    <string name="pref_vk_type_phone">Phone</string>
+    <string name="pref_vk_type_phone_arrows">Phone (arrows)</string>
+    <string name="PREF_LAYOUT">Layout</string>
+    <string name="PREF_SHADER_FILTER">Shader:</string>
+    <string name="identity_filter">Fast (no filter)</string>
+    <string name="shader_tuning">Shader Tuning</string>
+    <string name="shader_setting" translatable="false">%s: %s</string>
+    <string name="reset">Reset</string>
+    <string name="pref_input_devices_title">Input devices</string>
+    <string name="pref_graphics_mode_title">Graphics mode:</string>
+    <string name="PREF_FONT_ANTI_ALIASING">Anti-Aliasing</string>
+    <string name="pref_screen_gravity">Screen gravity</string>
+    <string name="pref_screen_gravity_bottom">Bottom</string>
+    <string name="pref_screen_gravity_center">Center</string>
+    <string name="pref_screen_gravity_left">Left</string>
+    <string name="pref_screen_gravity_right">Right</string>
+    <string name="pref_screen_gravity_top">Top</string>
+    <string name="pref_screen_scale_type">Scale type</string>
+    <string name="pref_screen_scale_type_fill">Fill window (ignore aspect ratio)</string>
+    <string name="pref_screen_scale_type_fit">Fit to window</string>
+    <string name="pref_screen_scale_type_none">As is</string>
+    <string name="pref_vk_hide_hint">disabled</string>
+    <string name="unlimited">unlimited</string>
+    <string name="parallel_screen_redrawing">Parallel screen redrawing</string>
+    <string name="saved">Saved</string>
+
+    <string name="FORCE_CLOSE_CONFIRMATION">Force-closing the application may result in data loss or even break it completely!\nProceed?</string>
+    <string name="CONFIRMATION_REQUIRED">Confirmation required</string>
+    <string name="select_dialog_title">Select MIDlet</string>
+    <string name="crash_dialog_message">Do you want to send error report to the developer?</string>
+    <string name="crash_dialog_title">Error detected</string>
+    <string name="report_crash">Send</string>
+    <string name="layout_edit_finished">Edit mode finished</string>
+    <string name="layout_edit_finish">Finish edit mode</string>
+    <string name="layout_edit_mode">Keylayout edit mode</string>
+    <string name="layout_scale_mode">Keylayout resize mode</string>
+    <string name="layout_switch">Switch keylayout</string>
+    <string name="hide_buttons">Hide buttons</string>
+    <string name="take_screenshot">Take screenshot</string>
+    <string name="screenshot_saved">Screenshot has been saved to</string>
+    <string name="log_saved">Log has been saved</string>
+    <string name="action_keyboard_ime">Keyboard (IME)</string>
+    <string name="action_lock_orientation">Lock screen rotate</string>
+    <string name="pref_vk_save_alert">Custom keyboard will be replaced by current\nSave?</string>
+    <string name="opt_save_screen_params">save screen params</string>
+    <string name="cmd_menu">Menu</string>
+    <string name="dismiss">Dismiss</string>
+    <string name="show">Show</string>
+
+    <string name="pref_theme_auto_battery">Auto, by Battery Saver</string>
+    <string name="pref_theme_auto_time">Auto, by time of day</string>
+    <string name="pref_theme_default" translatable="false">light</string>
+    <string name="pref_theme_light">Light</string>
+    <string name="pref_theme_night">Dark</string>
+    <string name="pref_theme_system">Follow system settings</string>
+    <string name="pref_theme_title">Theme</string>
+    <string name="pref_requires_restart_summary">Requires restart</string>
+    <string name="pref_enable_actionbar_title">Enable ActionBar</string>
+    <string name="pref_enable_actionbar_summary">In fullscreen applications</string>
+    <string name="pref_black_background_title">Black background</string>
+    <string name="pref_black_background_summary">For the dark theme</string>
+    <string name="pref_enable_statusbar_title">Enable statusbar</string>
+    <string name="pref_add_cutout_area_title">Add cutout area</string>
+    <string name="pref_wakelock_title">Keep screen on</string>
+    <string name="pref_vibration_title">Enable vibration</string>
+    <string name="pref_button_shape_title">Button shape</string>
+    <string name="pref_button_shape_oval">Oval</string>
+    <string name="pref_button_shape_rect">Rectangle</string>
+    <string name="pref_button_shape_round">Rounded rectangle</string>
+    <string name="pref_app_sort_title">App sort order</string>
+    <string name="pref_app_sort_name">Name</string>
+    <string name="pref_app_sort_date">Date</string>
+    <string name="pref_app_sort_vendor">Vendor</string>
+    <string name="pref_map_keys">Key mappings</string>
+    <string name="pref_encoding_title">Encoding</string>
+    <string name="pref_default_settings">Default settings</string>
+    <string name="pref_emulator_dir">Working directory</string>
+    <string name="pref_screenshot_summary">Disable scaling and filtering for screenshots</string>
+    <string name="pref_screenshot_title">Raw screenshot</string>
+    <string name="pref_category_experimental">Experimental/temporary options</string>
+    <string name="pref_mascot_summary">Show message when using</string>
+    <string name="pref_mascot_title">Detect Mascot Capsule 3D</string>
+
+    <string name="_RESOLUTION_SEPARATOR" translatable="false">x</string>
+    <string name="_FONT_SEPARATOR" translatable="false">-</string>
+    <string name="_MINUS_ONE" translatable="false">-1</string>
+
+    <string name="virtual_key_left_soft" translatable="false">L</string>
+    <string name="virtual_key_right_soft" translatable="false">R</string>
+    <string name="virtual_key_menu" translatable="false">M</string>
+    <string name="virtual_key_d" translatable="false">D</string>
+    <string name="virtual_key_c" translatable="false">C</string>
+    <string name="virtual_key_left" translatable="false">←</string>
+    <string name="virtual_key_right" translatable="false">→</string>
+    <string name="virtual_key_up" translatable="false">↑</string>
+    <string name="virtual_key_down" translatable="false">↓</string>
+    <string name="virtual_key_f" translatable="false">F</string>
+    <string name="virtual_key_a" translatable="false" >A</string>
+    <string name="virtual_key_b" translatable="false">B</string>
+    <string name="virtual_key_1" translatable="false">1</string>
+    <string name="virtual_key_2" translatable="false">2</string>
+    <string name="virtual_key_3" translatable="false">3</string>
+    <string name="virtual_key_4" translatable="false">4</string>
+    <string name="virtual_key_5" translatable="false">5</string>
+    <string name="virtual_key_6" translatable="false">6</string>
+    <string name="virtual_key_7" translatable="false">7</string>
+    <string name="virtual_key_8" translatable="false">8</string>
+    <string name="virtual_key_9" translatable="false">9</string>
+    <string name="virtual_key_0" translatable="false">0</string>
+    <string name="virtual_key_star" translatable="false">*</string>
+    <string name="virtual_key_pound" translatable="false">#</string>
+    <string name="mapping_dialog_message">Current mapping: %1$s</string>
+    <string name="mapping_dialog_key_not_specified">not specified</string>
+    <string name="mapping_dialog_title">Press a key</string>
+    <string name="reset_mapping">Reset</string>
+    <string name="alert_map_menu">Menu key (M) is not assigned!\nThis may make it impossible to access the emulator options</string>
+    <string name="save">Save</string>
+
+    <string name="error_name">Enter name!</string>
+    <string name="set_as_default">Set as default</string>
+    <string name="edit">Edit</string>
+    <string name="add">Add</string>
+    <string name="add_profile_description">Create new profile</string>
+    <string name="enter_name">Enter name</string>
+    <string name="enter_new_name">Enter new name</string>
+    <string name="set_default_profile_description">Select this profile as a standard settings for all apps that will be installed later</string>
+    <string name="error_name_exists">Already exists, enter other name</string>
+    <string name="default_label">"%s (default)"</string>
+    <string name="not_saved_exists">Already exists</string>
+    <string name="alert_rewrite_profile">A profile named \"%1$s\" already exists.\nDo you want to overwrite it?</string>
+</resources>

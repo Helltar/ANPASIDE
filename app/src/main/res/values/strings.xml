@@ -5,74 +5,119 @@
 
     <!-- messages -->
 
-    <string name="msg.install_start">Installing compiler, please wait...</string>
-    <string name="msg.install_ok">Installation completed successfully</string>
+    <string name="msg.install_start">Installing compiler…</string>
+    <string name="msg.install_ok">Compiler installed</string>
     <string name="msg.saved">Saved</string>
-    <string name="msg.no_open_project">No open project</string>
+    <string name="msg.no_open_project">No project is open</string>
     <string name="msg.build_successfully">Build completed successfully</string>
+    <string name="msg.building">Building…</string>
+    <string name="msg.imported">Imported</string>
 
     <!-- errors -->
 
-    <string name="err.project_name_least_chars">Project name must be at least %d characters</string>
-    <string name="err.module_name_least_chars">Module name must be at least %d characters</string>
+    <plurals name="err.project_name_least_chars">
+        <item quantity="one">Project name must contain at least %d character</item>
+        <item quantity="other">Project name must contain at least %d characters</item>
+    </plurals>
+    <plurals name="err.module_name_least_chars">
+        <item quantity="one">Module name must contain at least %d character</item>
+        <item quantity="other">Module name must contain at least %d characters</item>
+    </plurals>
     <string name="err.project_exists">Project already exists</string>
     <string name="err.module_exists">Module already exists</string>
-    <string name="err.del_old_module">Error while deleting the old module</string>
+    <string name="err.del_old_module">Failed to delete the existing module</string>
     <string name="err.failed_create_archive">Failed to create the archive</string>
     <string name="err.file_not_found">File not found</string>
     <string name="err.create_dir">Failed to create the directory</string>
+    <string name="err.del_project">Failed to delete the project</string>
+    <string name="err.delete_file">Failed to delete</string>
+    <string name="err.rename_file">Failed to rename</string>
+    <string name="err.file_exists">A file or folder with this name already exists</string>
+    <string name="err.no_share_app">No app available to share this file</string>
+    <string name="err.compiler_exit">Compiler exited with code %d</string>
+    <string name="err.main_class_missing">Compilation did not produce M.class</string>
+    <string name="err.no_jar_app">No app can open .jar files. Install a J2ME emulator or enable the built-in emulator in Settings.</string>
 
     <!-- menu -->
 
     <string name="menu.create_project">Create project</string>
     <string name="menu.create_module">New module</string>
-    <string name="menu.project_config">Project settings</string>
-    <string name="menu.open_project">Open project</string>
+    <string name="menu.import_file">Import file</string>
+    <string name="menu.share">Share</string>
+    <string name="menu.export_project">Export project</string>
     <string name="menu.file_save">Save</string>
     <string name="menu.settings">Settings</string>
-    <string name="menu.documentation">MIDletPascal Help</string>
+    <string name="menu.documentation">Help</string>
     <string name="menu.about">About</string>
     <string name="menu.exit">Exit</string>
+    <string name="menu.run">Run</string>
 
-    <!-- editor popup menu -->
+    <!-- about -->
+
+    <string name="about.version">Version %1$s (%2$s)</string>
+    <string name="about.link.website" translatable="false">helltar.com</string>
+    <string name="about.link.source">Source code</string>
+    <string name="about.link.privacy">Privacy policy</string>
+    <string name="about.licenses">Open source licenses</string>
+    <string name="about.licenses_intro">ANPASIDE is released under the MIT License and bundles the open source components below.</string>
+
+    <!-- editor -->
 
     <string name="pmenu.tab.close">Close</string>
+    <string name="lbl.log">Log</string>
+    <string name="lbl.log.clear">Clear log</string>
+    <string name="lbl.log.hide">Hide log</string>
+    <string name="lbl.project_files">Project files</string>
+    <string name="lbl.no_open_project">No project open</string>
+    <string name="lbl.project_open">Open</string>
+    <string name="lbl.back">Back</string>
+    <string name="lbl.open_project_to_start">Create or open a project to start editing</string>
+    <string name="lbl.open_file_to_edit">Open a file to start editing</string>
+    <string name="lbl.no_projects">No projects yet</string>
+    <string name="lbl.projects">Projects</string>
+    <string name="lbl.workdir">Working directory</string>
 
     <!-- dialogs -->
 
     <string name="dlg.title.new_project">New project</string>
-    <string name="dlg.title.new_module">New unit</string>
+    <string name="dlg.title.new_module">New module</string>
     <string name="dlg.title.invalid_value">Invalid value</string>
+    <string name="dlg.title.delete_project">Delete project?</string>
     <string name="dlg.hint.project_name">Project name</string>
     <string name="dlg.hint.module_name">Module name</string>
-    <string name="dlg.msg.save_modified_files">Save modified open files?</string>
+    <string name="dlg.msg.save_modified_files">Save changes to open files?</string>
+    <string name="dlg.msg.delete_project">Project "%s" and all its files will be deleted</string>
+    <string name="dlg.title.rename">Rename</string>
+    <string name="dlg.title.delete_file">Delete?</string>
+    <string name="dlg.hint.new_name">New name</string>
+    <string name="dlg.msg.delete_file">"%s" will be deleted</string>
 
-    <!-- text views -->
+    <!-- settings -->
 
-    <string name="text.editor.font.size">Font size:</string>
+    <string name="text.editor.font.size">Font size</string>
     <string name="text.editor.highlighter">Syntax highlighting</string>
-    <string name="text.editor.wordwrap">Wordwrap</string>
-    <string name="text.global.directory.libs">Global libs directory:</string>
+    <string name="text.editor.line_numbers">Line numbers</string>
+    <string name="text.editor.word_wrap">Word wrap</string>
+    <string name="text.emulator.builtin">Built-in emulator</string>
+    <string name="text.emulator.builtin_hint">When disabled, .jar files open in another app</string>
+    <string name="text.emulator.screen">Screen size</string>
+    <string name="text.emulator.screen_hint">Size reported by GetWidth and GetHeight</string>
+    <string name="text.emulator.keyboard">On-screen keypad</string>
+    <string name="lbl.screen_fit_device">Device proportions</string>
+    <string name="text.global.directory.libs">Global library directory</string>
 
     <!-- buttons -->
 
     <string name="dlg.btn.create">Create</string>
     <string name="dlg.btn.cancel">Cancel</string>
     <string name="dlg.btn.rewrite">Overwrite</string>
+    <string name="dlg.btn.delete">Delete</string>
+    <string name="dlg.btn.rename">Rename</string>
     <string name="dlg.btn.yes">Yes</string>
     <string name="dlg.btn.no">No</string>
+    <string name="dlg.btn.ok" translatable="false">OK</string>
 
     <string name="manifest.mf" translatable="false">MANIFEST.MF</string>
-    <string name="lbl.projects">Projects</string>
-
-    <string name="about_text" translatable="false">
-        Helltar
-        \n\nhttps://helltar.com
-        \n\nhttps://github.com/helltar/anpaside
-        \n\nhttps://helltar.com/projects/anpaside/privacy-policy.html
-    </string>
-
-    <string name="j2meloader">To run programs, install J2ME Loader</string>
 
     <!-- templates -->
 
@@ -127,7 +172,5 @@ MicroEdition-Profile: MIDP-%s.0"
 "bin/
 prebuild/"
     </string>
-    <!-- Strings used for fragments for navigation -->
 
 </resources>
-

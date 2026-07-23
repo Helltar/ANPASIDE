@@ -1,1 +1,0 @@
-<p><i>ANPASIDE</i> is a mobile development environment using the MIDletPascal programming language compiler. Use <a href='https://f-droid.org/packages/ru.playsoftware.j2meloader/' target='_blank'>J2ME Loader</a> to run applications.</p>

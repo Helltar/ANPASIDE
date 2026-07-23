@@ -1,0 +1,15 @@
+<p><b>ANPASIDE</b> is an offline Android IDE for the MIDletPascal programming language. Write Pascal on your phone, compile projects into J2ME applications with the bundled mp3cc compiler, and run them immediately in the built-in emulator.</p>
+
+<p>Features:</p>
+
+<ul>
+<li>Pascal editor with syntax highlighting, line numbers, tabs, word wrap, and go to line</li>
+<li>Project navigator for source files, resources, libraries, and build output</li>
+<li>Bundled MIDletPascal compiler and Java ME runtime classes</li>
+<li>Built-in J2ME emulator with configurable screen size and on-screen keypad</li>
+<li>Project and global library support</li>
+<li>File import, sharing, project export, and external JAR launching</li>
+<li>Compiler output linked directly to source errors</li>
+</ul>
+
+<p>Projects remain on your device, and the complete edit, build, and run workflow works offline.</p>

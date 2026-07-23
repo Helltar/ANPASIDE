@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <application>
+
+        <!--
+          the midlet runs in its own process: a crash inside emulated code takes down
+          the emulator, not the ide
+        -->
+        <activity
+            android:name="javax.microedition.shell.MicroActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden|screenLayout|smallestScreenSize|uiMode"
+            android:exported="false"
+            android:process=":midlet"
+            android:theme="@style/AppTheme.NoActionBar" />
+    </application>
+</manifest>

@@ -1,0 +1,4 @@
+- Rewritten in Kotlin and Jetpack Compose
+- Built-in J2ME emulator
+- Project file navigator, import, sharing, and export
+- Updated compiler and modern Android support

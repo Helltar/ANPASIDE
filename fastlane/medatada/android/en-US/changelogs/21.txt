@@ -1,3 +1,0 @@
-- Fixed some bugs
-
-WARNING: new projects location in the file system and new app signature key, please uninstall & install

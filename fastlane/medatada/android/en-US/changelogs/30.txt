@@ -1,2 +1,0 @@
-- upgrade targetSdk (https://support.google.com/googleplay/android-developer/answer/11926878)
-- some locale fix.

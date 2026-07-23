@@ -1,43 +1,120 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
+    <!-- messages -->
+
+    <string name="msg.install_start">Встановлення компілятора…</string>
+    <string name="msg.install_ok">Компілятор встановлено</string>
     <string name="msg.saved">Збережено</string>
-    <string name="msg.no_open_project">Немає відкритого проєкта</string>
-    <string name="msg.install_start">Йде встановлення компілятора, почекайте</string>
-    <string name="msg.install_ok">Встановлення успішно завершено</string>
+    <string name="msg.no_open_project">Жоден проєкт не відкрито</string>
     <string name="msg.build_successfully">Збірка успішно завершена</string>
-    <string name="err.project_name_least_chars">Назва проєкту повинна складатись мінімум із %d-х символів</string>
-    <string name="err.module_name_least_chars">Назва модулю повинна складатись мінімум із %d-х символів</string>
-    <string name="err.project_exists">Проєкт вже існує</string>
-    <string name="err.module_exists">Модуль з такою назвою вже існує</string>
-    <string name="err.del_old_module">Помилка під час видалення старого модуля</string>
+    <string name="msg.building">Збірка…</string>
+    <string name="msg.imported">Імпортовано</string>
+
+    <!-- errors -->
+
+    <plurals name="err.project_name_least_chars">
+        <item quantity="one">Назва проєкту має містити не менше %d символу</item>
+        <item quantity="few">Назва проєкту має містити не менше %d символів</item>
+        <item quantity="many">Назва проєкту має містити не менше %d символів</item>
+        <item quantity="other">Назва проєкту має містити не менше %d символів</item>
+    </plurals>
+    <plurals name="err.module_name_least_chars">
+        <item quantity="one">Назва модуля має містити не менше %d символу</item>
+        <item quantity="few">Назва модуля має містити не менше %d символів</item>
+        <item quantity="many">Назва модуля має містити не менше %d символів</item>
+        <item quantity="other">Назва модуля має містити не менше %d символів</item>
+    </plurals>
+    <string name="err.project_exists">Проєкт уже існує</string>
+    <string name="err.module_exists">Модуль із такою назвою вже існує</string>
+    <string name="err.del_old_module">Не вдалося видалити наявний модуль</string>
     <string name="err.failed_create_archive">Не вдалося створити архів</string>
     <string name="err.file_not_found">Файл не знайдено</string>
     <string name="err.create_dir">Не вдалося створити каталог</string>
+    <string name="err.del_project">Не вдалося видалити проєкт</string>
+    <string name="err.delete_file">Не вдалося видалити</string>
+    <string name="err.rename_file">Не вдалося перейменувати</string>
+    <string name="err.file_exists">Файл або папка з такою назвою вже існує</string>
+    <string name="err.no_share_app">Немає застосунку для поширення цього файлу</string>
+    <string name="err.compiler_exit">Компілятор завершився з кодом %d</string>
+    <string name="err.main_class_missing">Компіляція не створила M.class</string>
+    <string name="err.no_jar_app">Жоден застосунок не може відкрити файли .jar. Встановіть J2ME-емулятор або ввімкніть вбудований емулятор у налаштуваннях.</string>
+
+    <!-- menu -->
+
     <string name="menu.create_project">Створити проєкт</string>
     <string name="menu.create_module">Новий модуль</string>
-    <string name="menu.project_config">Налаштування проєкта</string>
-    <string name="menu.open_project">Відкрити проєкт</string>
+    <string name="menu.import_file">Імпортувати файл</string>
+    <string name="menu.share">Поділитися</string>
+    <string name="menu.export_project">Експортувати проєкт</string>
     <string name="menu.file_save">Зберегти</string>
-    <string name="menu.settings">Настройки</string>
+    <string name="menu.settings">Налаштування</string>
+    <string name="menu.documentation">Довідка</string>
     <string name="menu.about">Про застосунок</string>
-    <string name="menu.exit">Вихід</string>
+    <string name="menu.exit">Вийти</string>
+    <string name="menu.run">Запустити</string>
+
+    <!-- about -->
+
+    <string name="about.version">Версія %1$s (%2$s)</string>
+    <string name="about.link.source">Вихідний код</string>
+    <string name="about.link.privacy">Політика конфіденційності</string>
+    <string name="about.licenses">Ліцензії відкритого коду</string>
+    <string name="about.licenses_intro">ANPASIDE поширюється за ліцензією MIT і містить наведені нижче компоненти з відкритим кодом.</string>
+
+    <!-- editor -->
+
     <string name="pmenu.tab.close">Закрити</string>
+    <string name="lbl.log">Лог</string>
+    <string name="lbl.log.clear">Очистити лог</string>
+    <string name="lbl.log.hide">Приховати лог</string>
+    <string name="lbl.project_files">Файли проєкту</string>
+    <string name="lbl.no_open_project">Проєкт не відкрито</string>
+    <string name="lbl.project_open">Відкрито</string>
+    <string name="lbl.back">Назад</string>
+    <string name="lbl.open_project_to_start">Створіть або відкрийте проєкт, щоб почати редагування</string>
+    <string name="lbl.open_file_to_edit">Відкрийте файл, щоб почати редагування</string>
+    <string name="lbl.no_projects">Проєктів ще немає</string>
+    <string name="lbl.projects">Проєкти</string>
+    <string name="lbl.workdir">Робочий каталог</string>
+
+    <!-- dialogs -->
+
     <string name="dlg.title.new_project">Новий проєкт</string>
     <string name="dlg.title.new_module">Новий модуль</string>
-    <string name="dlg.title.invalid_value">Неприйнятне значення</string>
+    <string name="dlg.title.invalid_value">Некоректне значення</string>
+    <string name="dlg.title.delete_project">Видалити проєкт?</string>
     <string name="dlg.hint.project_name">Назва проєкту</string>
-    <string name="dlg.hint.module_name">Имя модуля</string>
-    <string name="dlg.msg.save_modified_files">Зберегти змінені відкриті файли?</string>
-    <string name="text.editor.font.size">Розмір шрифту:</string>
-    <string name="text.editor.highlighter">Підсвітка синтаксису</string>
-    <string name="text.global.directory.libs">Глобальний каталог з бібліотеками:</string>
+    <string name="dlg.hint.module_name">Назва модуля</string>
+    <string name="dlg.msg.save_modified_files">Зберегти зміни у відкритих файлах?</string>
+    <string name="dlg.msg.delete_project">Проєкт "%s" і всі його файли буде видалено</string>
+    <string name="dlg.title.rename">Перейменувати</string>
+    <string name="dlg.title.delete_file">Видалити?</string>
+    <string name="dlg.hint.new_name">Нова назва</string>
+    <string name="dlg.msg.delete_file">"%s" буде видалено</string>
+
+    <!-- settings -->
+
+    <string name="text.editor.font.size">Розмір шрифту</string>
+    <string name="text.editor.highlighter">Підсвічування синтаксису</string>
+    <string name="text.editor.line_numbers">Номери рядків</string>
+    <string name="text.editor.word_wrap">Перенесення рядків</string>
+    <string name="text.emulator.builtin">Вбудований емулятор</string>
+    <string name="text.emulator.builtin_hint">Коли вимкнено, файли .jar відкриваються в іншому застосунку</string>
+    <string name="text.emulator.screen">Розмір екрана</string>
+    <string name="text.emulator.screen_hint">Розмір, який GetWidth і GetHeight повертають програмі</string>
+    <string name="text.emulator.keyboard">Екранна клавіатура</string>
+    <string name="lbl.screen_fit_device">Пропорції пристрою</string>
+    <string name="text.global.directory.libs">Каталог глобальних бібліотек</string>
+
+    <!-- buttons -->
+
     <string name="dlg.btn.create">Створити</string>
-    <string name="dlg.btn.cancel">Відміна</string>
+    <string name="dlg.btn.cancel">Скасувати</string>
     <string name="dlg.btn.rewrite">Перезаписати</string>
+    <string name="dlg.btn.delete">Видалити</string>
+    <string name="dlg.btn.rename">Перейменувати</string>
     <string name="dlg.btn.yes">Так</string>
     <string name="dlg.btn.no">Ні</string>
-    <string name="j2meloader">Для запуску програм встановiть J2ME Loader</string>
-    <string name="text.editor.wordwrap">Перенесення рядків</string>
-    <string name="lbl.projects">Проєкти</string>
-    <string name="menu.documentation">Документація</string>
+
 </resources>

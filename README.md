@@ -1,11 +1,13 @@
 ANPASIDE
 ========
 
-Mobile IDE that using the [MIDletPascal](http://wikipedia.org/wiki/MIDletPascal) programming language compiler.
+ANPASIDE is an Android IDE for the MIDletPascal language: write Pascal on your phone,
+compile it into a J2ME `.jar` with the bundled [mp3cc](https://github.com/Helltar/mp3cc)
+compiler, and run it in the built-in emulator — all on the device, offline.
 
-- https://helltar.com/mpascal/docs/docs.zip
+- MIDletPascal language reference: https://helltar.com/midletpascal
 
-<a href='https://play.google.com/store/apps/details?id=com.github.helltar.anpaside'><img alt='Get it on Google Play' src='https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png' height='75'/></a>
-<a href='https://apt.izzysoft.de/fdroid/index/apk/com.github.helltar.anpaside'><img alt='Get it on IzzyOnDroid' src='https://gitlab.com/IzzyOnDroid/repo/-/raw/master/assets/IzzyOnDroid.png' height='75'/></a>
+<a href="https://play.google.com/store/apps/details?id=com.github.helltar.anpaside"><img alt="Get it on Google Play" src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png" height="75"/></a>
+<a href="https://apt.izzysoft.de/fdroid/index/apk/com.github.helltar.anpaside"><img alt="Get it on IzzyOnDroid" src="https://gitlab.com/IzzyOnDroid/repo/-/raw/master/assets/IzzyOnDroid.png" height="75"/></a>
 ---
-<img src="https://helltar.com/projects/anpaside/screenshots/Screenshot_20220702_191748.png" width="30%"> <img src="https://helltar.com/projects/anpaside/screenshots/Screenshot_20220702_191825.png" width="30%"> <img src="https://helltar.com/projects/anpaside/screenshots/Screenshot_20220702_194122.png" width="30%">
+<img src="https://helltar.com/projects/anpaside/screenshots/screenshot_editor_20260723_164347.png" width="30%" alt="Pascal code editor"> <img src="https://helltar.com/projects/anpaside/screenshots/screenshot_project_20260723_164423.png" width="30%" alt="Project file tree"> <img src="https://helltar.com/projects/anpaside/screenshots/screenshot_emulator_20260723_164954.png" width="30%" alt="Built-in J2ME emulator">

@@ -2,4 +2,9 @@
     <external-files-path
         name="exexternal_files"
         path="." />
+
+    <!-- exported project archives -->
+    <cache-path
+        name="cache"
+        path="." />
 </paths>
