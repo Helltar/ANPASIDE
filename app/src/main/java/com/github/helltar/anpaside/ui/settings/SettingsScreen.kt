@@ -25,15 +25,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.github.helltar.anpaside.R
-import com.github.helltar.anpaside.core.Paths
-import com.github.helltar.anpaside.core.prefs.EditorPrefs
-import com.github.helltar.anpaside.core.prefs.IdePrefs
-import com.github.helltar.anpaside.ui.BackButton
-import com.github.helltar.anpaside.ui.IdeViewModel
+import com.github.helltar.anpaside.ui.components.BackButton
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SettingsScreen(viewModel: IdeViewModel, onBack: () -> Unit, modifier: Modifier = Modifier) {
+fun SettingsScreen(
+    viewModel: SettingsViewModel,
+    onBack: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val state = viewModel.state
+
     Scaffold(
         modifier = modifier,
         topBar = {
@@ -51,41 +53,42 @@ fun SettingsScreen(viewModel: IdeViewModel, onBack: () -> Unit, modifier: Modifi
                 .padding(horizontal = 24.dp)
         ) {
             Text(
-                text = stringResource(R.string.text_editor_font_size) + ": " + viewModel.fontSize,
+                text = stringResource(R.string.text_editor_font_size) + ": " + state.fontSize,
                 modifier = Modifier.padding(top = 16.dp)
             )
 
             Slider(
-                value = viewModel.fontSize.toFloat(),
-                onValueChange = { viewModel.fontSize = it.toInt() },
-                valueRange = EditorPrefs.MIN_FONT_SIZE.toFloat()..EditorPrefs.MAX_FONT_SIZE.toFloat(),
-                steps = EditorPrefs.MAX_FONT_SIZE - EditorPrefs.MIN_FONT_SIZE - 1
+                value = state.fontSize.toFloat(),
+                onValueChange = { viewModel.setFontSize(it.toInt()) },
+                valueRange =
+                    viewModel.fontSizeRange.first.toFloat()..viewModel.fontSizeRange.last.toFloat(),
+                steps = viewModel.fontSizeRange.last - viewModel.fontSizeRange.first - 1
             )
 
             SwitchRow(
                 text = stringResource(R.string.text_editor_highlighter),
-                checked = viewModel.highlighterEnabled,
-                onCheckedChange = { viewModel.highlighterEnabled = it }
+                checked = state.syntaxHighlighting,
+                onCheckedChange = viewModel::setSyntaxHighlighting
             )
 
             SwitchRow(
                 text = stringResource(R.string.text_editor_line_numbers),
-                checked = viewModel.lineNumbersEnabled,
-                onCheckedChange = { viewModel.lineNumbersEnabled = it }
+                checked = state.lineNumbers,
+                onCheckedChange = viewModel::setLineNumbers
             )
 
             SwitchRow(
                 text = stringResource(R.string.text_editor_word_wrap),
-                checked = viewModel.wordWrapEnabled,
-                onCheckedChange = { viewModel.wordWrapEnabled = it }
+                checked = state.wordWrap,
+                onCheckedChange = viewModel::setWordWrap
             )
 
             HorizontalDivider(Modifier.padding(vertical = 16.dp))
 
             SwitchRow(
                 text = stringResource(R.string.text_emulator_builtin),
-                checked = viewModel.embeddedEmulatorEnabled,
-                onCheckedChange = { viewModel.embeddedEmulatorEnabled = it }
+                checked = state.builtInEmulator,
+                onCheckedChange = viewModel::setBuiltInEmulator
             )
 
             Text(
@@ -97,7 +100,7 @@ fun SettingsScreen(viewModel: IdeViewModel, onBack: () -> Unit, modifier: Modifi
             Text(
                 text = stringResource(R.string.text_emulator_screen),
                 style = MaterialTheme.typography.titleSmall,
-                color = emulatorSettingsColor(viewModel.embeddedEmulatorEnabled),
+                color = emulatorSettingsColor(state.builtInEmulator),
                 modifier = Modifier.padding(top = 20.dp)
             )
 
@@ -112,23 +115,19 @@ fun SettingsScreen(viewModel: IdeViewModel, onBack: () -> Unit, modifier: Modifi
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 modifier = Modifier.padding(top = 8.dp)
             ) {
-                IdePrefs.SCREEN_SIZES.forEach { (width, height) ->
-                    val selected = width == viewModel.midletScreenWidth
-                            && height == viewModel.midletScreenHeight
+                viewModel.availableScreenSizes.forEach { size ->
+                    val selected = size == state.screenSize
 
                     FilterChip(
                         selected = selected,
-                        enabled = viewModel.embeddedEmulatorEnabled,
-                        onClick = {
-                            viewModel.midletScreenWidth = width
-                            viewModel.midletScreenHeight = height
-                        },
+                        enabled = state.builtInEmulator,
+                        onClick = { viewModel.setScreenSize(size) },
                         label = {
                             Text(
-                                if (width <= 0 || height <= 0) {
+                                if (size.width <= 0 || size.height <= 0) {
                                     stringResource(R.string.lbl_screen_fit_device)
                                 } else {
-                                    "$width × $height"
+                                    "${size.width} × ${size.height}"
                                 }
                             )
                         }
@@ -138,23 +137,23 @@ fun SettingsScreen(viewModel: IdeViewModel, onBack: () -> Unit, modifier: Modifi
 
             SwitchRow(
                 text = stringResource(R.string.text_emulator_keyboard),
-                checked = viewModel.midletKeyboardEnabled,
-                onCheckedChange = { viewModel.midletKeyboardEnabled = it },
-                enabled = viewModel.embeddedEmulatorEnabled
+                checked = state.virtualKeyboard,
+                onCheckedChange = viewModel::setVirtualKeyboard,
+                enabled = state.builtInEmulator
             )
 
             HorizontalDivider(Modifier.padding(vertical = 16.dp))
 
             OutlinedTextField(
-                value = viewModel.globalLibsDir,
-                onValueChange = { viewModel.globalLibsDir = it },
+                value = state.globalLibrariesDirectory,
+                onValueChange = viewModel::setGlobalLibrariesDirectory,
                 label = { Text(stringResource(R.string.text_global_directory_libs)) },
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth()
             )
 
             Text(
-                text = stringResource(R.string.lbl_workdir) + ": " + Paths.workDir.path,
+                text = stringResource(R.string.lbl_workdir) + ": " + viewModel.workspaceDirectory,
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.padding(vertical = 24.dp)

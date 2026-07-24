@@ -111,7 +111,7 @@ object PascalHighlighter {
                 continue
             }
 
-            // MIDletPascal escapes the active quote by doubling it: 'It''s'.
+            // midletpascal escapes the active quote by doubling it: 'It''s'.
             if (offset + 1 < text.length && text[offset + 1] == quote) {
                 offset += 2
             } else {

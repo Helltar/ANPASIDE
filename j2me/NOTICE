@@ -31,10 +31,14 @@ Removed:
     together with all of the project's native code
   - camera capture, bluetooth, and the audio format converter built on
     mobile-ffmpeg
-  - the VIBRATE and RECORD_AUDIO permissions and the microphone hardware
-    feature from the manifest: MIDletPascal has no vibration API and its media
-    support is playback only, so nothing the compiler emits reaches them; only
-    INTERNET is kept
+  - the VIBRATE, RECORD_AUDIO and POST_NOTIFICATIONS permissions and the
+    microphone hardware feature from the manifest: MIDletPascal has no
+    vibration API, its media support is playback only, and the only Nokia UI
+    class the compiler emits is FullCanvas, so nothing the compiler emits
+    reaches them; INTERNET is the only permission kept. The Nokia
+    SoftNotification classes stay in the tree but are unreachable from compiled
+    midlets, so on Android 13+ their permission request fails and post() throws
+    SoftNotificationException
 
 Added or changed:
 

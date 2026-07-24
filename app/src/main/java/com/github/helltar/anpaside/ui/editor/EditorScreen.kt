@@ -3,13 +3,9 @@ package com.github.helltar.anpaside.ui.editor
 import androidx.activity.compose.LocalActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.annotation.DrawableRes
-import androidx.annotation.StringRes
-import androidx.compose.foundation.clickable
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
@@ -18,24 +14,19 @@ import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DrawerValue
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalNavigationDrawer
-import androidx.compose.material3.PrimaryScrollableTabRow
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Snackbar
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberDrawerState
@@ -55,23 +46,15 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.github.helltar.anpaside.R
-import com.github.helltar.anpaside.ui.AboutDialog
-import com.github.helltar.anpaside.ui.ConfirmDialog
-import com.github.helltar.anpaside.ui.CreateResult
-import com.github.helltar.anpaside.ui.IdeViewModel
-import com.github.helltar.anpaside.ui.MessageDialog
-import com.github.helltar.anpaside.ui.ProjectConfigDialog
-import com.github.helltar.anpaside.ui.TextInputDialog
-import com.github.helltar.anpaside.ui.projects.ProjectDrawer
-import com.github.helltar.anpaside.ui.runJar
-import com.github.helltar.anpaside.ui.runJarExternally
-import com.github.helltar.anpaside.ui.shareFile
+import com.github.helltar.anpaside.ui.platform.launchInBuiltInEmulator
+import com.github.helltar.anpaside.ui.platform.launchInExternalEmulator
+import com.github.helltar.anpaside.ui.platform.shareFile
+import com.github.helltar.anpaside.ui.settings.SettingsViewModel
 import kotlinx.coroutines.launch
 
 private const val DOCS_URL = "https://helltar.com/midletpascal"
@@ -79,12 +62,14 @@ private const val DOCS_URL = "https://helltar.com/midletpascal"
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EditorScreen(
-    viewModel: IdeViewModel,
+    workspaceViewModel: WorkspaceViewModel,
+    settingsViewModel: SettingsViewModel,
     onOpenProjects: () -> Unit,
     onOpenSettings: () -> Unit,
     onOpenLicenses: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val settings = settingsViewModel.state
     val context = LocalContext.current
     val activity = LocalActivity.current
     val focusManager = LocalFocusManager.current
@@ -98,31 +83,27 @@ fun EditorScreen(
 
     val savedMessage = stringResource(R.string.msg_saved)
     val noShareAppMessage = stringResource(R.string.err_no_share_app)
-    val moduleTooShortMessage = pluralStringResource(
-        R.plurals.err_module_name_least_chars,
-        IdeViewModel.MIN_NAME_LENGTH,
-        IdeViewModel.MIN_NAME_LENGTH
-    )
-
     var logVisible by rememberSaveable { mutableStateOf(false) }
-    var seenErrors by rememberSaveable { mutableIntStateOf(viewModel.errorCount) }
+    var seenErrors by rememberSaveable { mutableIntStateOf(workspaceViewModel.errorCount) }
     var menuExpanded by remember { mutableStateOf(false) }
-    var showNewModule by remember { mutableStateOf(false) }
-    var showProjectConfig by remember { mutableStateOf(false) }
-    var showAbout by remember { mutableStateOf(false) }
-    var showNoJarApp by remember { mutableStateOf(false) }
-    var showExitConfirm by remember { mutableStateOf(false) }
-    var overwriteModuleName by remember { mutableStateOf<String?>(null) }
-    var alertMessage by remember { mutableStateOf<String?>(null) }
-    var importDir by remember { mutableStateOf("") }
+    var dialog by remember { mutableStateOf<EditorDialog?>(null) }
+    var importDestination by remember { mutableStateOf("") }
+
+    BackHandler(enabled = logVisible || workspaceViewModel.hasModifiedDocuments) {
+        if (logVisible) {
+            logVisible = false
+        } else {
+            dialog = EditorDialog.Exit
+        }
+    }
 
     // a failed build is the one moment the log has to be on screen without being asked for
-    LaunchedEffect(viewModel.errorCount) {
-        if (viewModel.errorCount > seenErrors) {
+    LaunchedEffect(workspaceViewModel.errorCount) {
+        if (workspaceViewModel.errorCount > seenErrors) {
             logVisible = true
         }
 
-        seenErrors = viewModel.errorCount
+        seenErrors = workspaceViewModel.errorCount
     }
 
     // the editor cursor handle is a popup, so it would otherwise draw over the drawer
@@ -133,42 +114,28 @@ fun EditorScreen(
     }
 
     val importLauncher = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
-        if (uri != null && importDir.isNotEmpty()) {
-            viewModel.importFileTo(uri, importDir)
+        if (uri != null && importDestination.isNotEmpty()) {
+            workspaceViewModel.importDocument(uri, importDestination)
         }
     }
 
     fun closeDrawer() = scope.launch { drawerState.close() }
 
-    fun importInto(dir: String) {
-        importDir = dir
+    fun importInto(directoryPath: String) {
+        importDestination = directoryPath
         importLauncher.launch(arrayOf("*/*"))
     }
 
-    fun share(filename: String) {
-        if (!shareFile(context, filename)) {
+    fun share(filePath: String) {
+        if (!shareFile(context, filePath, workspaceViewModel::reportError)) {
             scope.launch { snackbarHostState.showSnackbar(noShareAppMessage) }
         }
     }
 
     fun save() {
-        if (viewModel.saveAll()) {
-            scope.launch { snackbarHostState.showSnackbar(savedMessage) }
-        }
-    }
-
-    fun createModule(name: String, overwrite: Boolean) {
-        when (viewModel.createModule(name, overwrite)) {
-            CreateResult.NAME_TOO_SHORT -> alertMessage = moduleTooShortMessage
-
-            CreateResult.ALREADY_EXISTS -> {
-                showNewModule = false
-                overwriteModuleName = name
-            }
-
-            else -> {
-                showNewModule = false
-                overwriteModuleName = null
+        workspaceViewModel.saveAll { saved ->
+            if (saved) {
+                scope.launch { snackbarHostState.showSnackbar(savedMessage) }
             }
         }
     }
@@ -176,23 +143,23 @@ fun EditorScreen(
     ModalNavigationDrawer(
         drawerState = drawerState,
         drawerContent = {
-            ProjectDrawer(
-                viewModel = viewModel,
+            ProjectFilesDrawer(
+                workspace = workspaceViewModel,
                 onOpenProjects = {
                     closeDrawer()
                     onOpenProjects()
                 },
                 onNewModule = {
                     closeDrawer()
-                    showNewModule = true
+                    dialog = EditorDialog.NewModule
                 },
                 onProjectConfig = {
                     closeDrawer()
-                    showProjectConfig = true
+                    dialog = EditorDialog.ProjectMetadata
                 },
-                onImportInto = { dir ->
+                onImportInto = { directoryPath ->
                     closeDrawer()
-                    importInto(dir)
+                    importInto(directoryPath)
                 },
                 onShare = ::share,
                 onClose = { closeDrawer() }
@@ -224,38 +191,44 @@ fun EditorScreen(
                     },
                     title = {
                         Text(
-                            text = viewModel.currentFile?.name ?: stringResource(R.string.app_name),
+                            text = workspaceViewModel.selectedDocument?.name
+                                ?: stringResource(R.string.app_name),
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis
                         )
                     },
                     actions = {
-                        if (viewModel.isBuilding) {
+                        if (workspaceViewModel.isBuilding) {
                             CircularProgressIndicator(
                                 strokeWidth = 2.dp,
                                 modifier = Modifier.padding(horizontal = 12.dp).size(24.dp)
                             )
                         } else {
                             IconButton(
-                                enabled = viewModel.isProjectOpen,
+                                enabled = workspaceViewModel.isProjectOpen,
                                 onClick = {
-                                    viewModel.buildAndRun { jarFilename ->
+                                    workspaceViewModel.buildProject { builtMidlet ->
                                         val started =
-                                            if (viewModel.embeddedEmulatorEnabled) {
-                                                runJar(
+                                            if (settings.builtInEmulator) {
+                                                launchInBuiltInEmulator(
                                                     context = context,
-                                                    filename = jarFilename,
-                                                    projectName = viewModel.openProjectName,
-                                                    screenWidth = viewModel.midletScreenWidth,
-                                                    screenHeight = viewModel.midletScreenHeight,
-                                                    showKeyboard = viewModel.midletKeyboardEnabled
+                                                    jarPath = builtMidlet.jarPath,
+                                                    projectName = builtMidlet.projectName,
+                                                    screenWidth = settings.screenSize.width,
+                                                    screenHeight = settings.screenSize.height,
+                                                    showKeyboard = settings.virtualKeyboard,
+                                                    onError = workspaceViewModel::reportError
                                                 )
                                             } else {
-                                                runJarExternally(context, jarFilename)
+                                                launchInExternalEmulator(
+                                                    context,
+                                                    builtMidlet.jarPath,
+                                                    workspaceViewModel::reportError
+                                                )
                                             }
 
                                         if (!started) {
-                                            showNoJarApp = true
+                                            dialog = EditorDialog.NoJarHandler
                                         }
                                     }
                                 }
@@ -267,7 +240,10 @@ fun EditorScreen(
                             }
                         }
 
-                        IconButton(onClick = ::save, enabled = viewModel.hasModifiedFiles) {
+                        IconButton(
+                            onClick = ::save,
+                            enabled = workspaceViewModel.hasModifiedDocuments
+                        ) {
                             Icon(
                                 painter = painterResource(R.drawable.ic_save),
                                 contentDescription = stringResource(R.string.menu_file_save)
@@ -278,20 +254,20 @@ fun EditorScreen(
                             IconButton(onClick = { menuExpanded = true }) {
                                 Icon(
                                     painter = painterResource(R.drawable.ic_more_vert),
-                                    contentDescription = null
+                                    contentDescription = stringResource(R.string.menu_more_actions)
                                 )
                             }
 
-                            EditorMenu(
+                            EditorOverflowMenu(
                                 expanded = menuExpanded,
                                 onDismiss = { menuExpanded = false },
                                 onToggleLog = { logVisible = !logVisible },
                                 onOpenSettings = onOpenSettings,
                                 onDocumentation = { uriHandler.openUri(DOCS_URL) },
-                                onAbout = { showAbout = true },
+                                onAbout = { dialog = EditorDialog.About },
                                 onExit = {
-                                    if (viewModel.hasModifiedFiles) {
-                                        showExitConfirm = true
+                                    if (workspaceViewModel.hasModifiedDocuments) {
+                                        dialog = EditorDialog.Exit
                                     } else {
                                         activity?.finish()
                                     }
@@ -309,19 +285,24 @@ fun EditorScreen(
                     .fillMaxSize()
                     .imePadding()
             ) {
-                if (viewModel.openFiles.isNotEmpty()) {
-                    FileTabs(viewModel)
+                if (workspaceViewModel.documents.isNotEmpty()) {
+                    EditorTabs(
+                        documents = workspaceViewModel.documents,
+                        selectedIndex = workspaceViewModel.selectedDocumentIndex,
+                        onSelect = workspaceViewModel::selectDocument,
+                        onClose = workspaceViewModel::closeDocument
+                    )
                 }
 
-                val file = viewModel.currentFile
+                val file = workspaceViewModel.selectedDocument
 
                 if (file != null) {
                     CodeEditor(
                         file = file,
-                        fontSize = viewModel.fontSize,
-                        highlighterEnabled = viewModel.highlighterEnabled,
-                        lineNumbersEnabled = viewModel.lineNumbersEnabled,
-                        wordWrapEnabled = viewModel.wordWrapEnabled,
+                        fontSize = settings.fontSize,
+                        highlighterEnabled = settings.syntaxHighlighting,
+                        lineNumbersEnabled = settings.lineNumbers,
+                        wordWrapEnabled = settings.wordWrap,
                         onSaveShortcut = ::save,
                         modifier = Modifier.weight(1f).fillMaxWidth()
                     )
@@ -330,7 +311,7 @@ fun EditorScreen(
                         contentAlignment = Alignment.Center,
                         modifier = Modifier.weight(1f).fillMaxWidth()
                     ) {
-                        if (viewModel.isProjectOpen) {
+                        if (workspaceViewModel.isProjectOpen) {
                             Text(
                                 text = stringResource(R.string.lbl_open_file_to_edit),
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -357,165 +338,26 @@ fun EditorScreen(
 
                 if (file != null && keyboardVisible) {
                     HorizontalDivider()
-                    SymbolBar(onInsert = file::insert)
+                    SymbolBar(onInsert = file::insertText)
                 }
 
                 if (logVisible) {
                     LogPanel(
-                        messages = viewModel.log,
-                        onClear = viewModel::clearLog,
+                        messages = workspaceViewModel.logEntries,
+                        onClear = workspaceViewModel::clearLog,
                         onHide = { logVisible = false },
-                        onErrorClick = viewModel::openCompilerError
+                        onErrorClick = workspaceViewModel::openCompilerError
                     )
                 }
             }
         }
     }
 
-    if (showNewModule) {
-        TextInputDialog(
-            title = stringResource(R.string.dlg_title_new_module),
-            label = stringResource(R.string.dlg_hint_module_name),
-            confirmText = stringResource(R.string.dlg_btn_create),
-            onConfirm = { createModule(it, overwrite = false) },
-            onDismiss = { showNewModule = false }
-        )
-    }
-
-    overwriteModuleName?.let { name ->
-        ConfirmDialog(
-            text = stringResource(R.string.err_module_exists),
-            confirmText = stringResource(R.string.dlg_btn_rewrite),
-            onConfirm = { createModule(name, overwrite = true) },
-            onDismiss = { overwriteModuleName = null }
-        )
-    }
-
-    if (showProjectConfig) {
-        ProjectConfigDialog(
-            config = viewModel.projectConfig(),
-            onSave = {
-                viewModel.saveProjectConfig(it)
-                showProjectConfig = false
-            },
-            onDismiss = { showProjectConfig = false }
-        )
-    }
-
-    if (showAbout) {
-        AboutDialog(
-            onOpenLicenses = {
-                showAbout = false
-                onOpenLicenses()
-            },
-            onDismiss = { showAbout = false }
-        )
-    }
-
-    if (showNoJarApp) {
-        MessageDialog(
-            title = stringResource(R.string.menu_run),
-            text = stringResource(R.string.err_no_jar_app),
-            onDismiss = { showNoJarApp = false }
-        )
-    }
-
-    if (showExitConfirm) {
-        ConfirmDialog(
-            title = stringResource(R.string.menu_exit),
-            text = stringResource(R.string.dlg_msg_save_modified_files),
-            confirmText = stringResource(R.string.dlg_btn_yes),
-            dismissText = stringResource(R.string.dlg_btn_no),
-            onConfirm = {
-                viewModel.saveAll()
-                activity?.finish()
-            },
-            onDismiss = {
-                showExitConfirm = false
-                activity?.finish()
-            }
-        )
-    }
-
-    alertMessage?.let { message ->
-        MessageDialog(
-            title = stringResource(R.string.dlg_title_invalid_value),
-            text = message,
-            onDismiss = { alertMessage = null }
-        )
-    }
-}
-
-@Composable
-private fun EditorMenu(
-    expanded: Boolean,
-    onDismiss: () -> Unit,
-    onToggleLog: () -> Unit,
-    onOpenSettings: () -> Unit,
-    onDocumentation: () -> Unit,
-    onAbout: () -> Unit,
-    onExit: () -> Unit
-) {
-    @Composable
-    fun item(@DrawableRes icon: Int, @StringRes text: Int, enabled: Boolean = true, onClick: () -> Unit) {
-        DropdownMenuItem(
-            text = { Text(stringResource(text)) },
-            leadingIcon = {
-                Icon(
-                    painter = painterResource(icon),
-                    contentDescription = null,
-                    modifier = Modifier.size(20.dp)
-                )
-            },
-            enabled = enabled,
-            onClick = {
-                onDismiss()
-                onClick()
-            }
-        )
-    }
-
-    DropdownMenu(expanded = expanded, onDismissRequest = onDismiss) {
-        item(R.drawable.ic_subject, R.string.lbl_log, onClick = onToggleLog)
-        item(R.drawable.ic_settings, R.string.menu_settings, onClick = onOpenSettings)
-        item(R.drawable.ic_help, R.string.menu_documentation, onClick = onDocumentation)
-        item(R.drawable.ic_info, R.string.menu_about, onClick = onAbout)
-        item(R.drawable.ic_logout, R.string.menu_exit, onClick = onExit)
-    }
-}
-
-@Composable
-private fun FileTabs(viewModel: IdeViewModel) {
-    val selectedIndex = viewModel.currentFileIndex.coerceIn(0, viewModel.openFiles.lastIndex)
-
-    PrimaryScrollableTabRow(
-        selectedTabIndex = selectedIndex,
-        edgePadding = 0.dp
-    ) {
-        viewModel.openFiles.forEachIndexed { index, file ->
-            Tab(
-                selected = index == selectedIndex,
-                onClick = { viewModel.selectFile(index) },
-                text = {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text(
-                            text = if (file.isModified) file.name + " •" else file.name,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
-
-                        Spacer(Modifier.width(6.dp))
-
-                        Icon(
-                            painter = painterResource(R.drawable.ic_close),
-                            contentDescription = stringResource(R.string.pmenu_tab_close),
-                            modifier = Modifier
-                                .size(16.dp)
-                                .clickable { viewModel.closeFile(index) }
-                        )
-                    }
-                }
-            )
-        }
-    }
+    EditorDialogHost(
+        dialog = dialog,
+        workspace = workspaceViewModel,
+        onDialogChange = { dialog = it },
+        onOpenLicenses = onOpenLicenses,
+        onExit = { activity?.finish() }
+    )
 }

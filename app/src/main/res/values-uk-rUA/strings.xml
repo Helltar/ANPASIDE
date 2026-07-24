@@ -27,10 +27,12 @@
     </plurals>
     <string name="err.project_exists">Проєкт уже існує</string>
     <string name="err.module_exists">Модуль із такою назвою вже існує</string>
-    <string name="err.del_old_module">Не вдалося видалити наявний модуль</string>
+    <string name="err.invalid_project_name">Назва проєкту не може містити розділювачі шляху</string>
+    <string name="err.invalid_module_name">Назва модуля має бути ідентифікатором Pascal: літери, цифри та підкреслення, без цифри на початку</string>
+    <string name="err.invalid_file_name">Назва файлу не може містити розділювачі шляху</string>
+    <string name="err.invalid_midlet_metadata">Назва, постачальник і версія MIDlet мають бути непорожніми однорядковими значеннями; назва не може містити розділювачі шляху</string>
     <string name="err.failed_create_archive">Не вдалося створити архів</string>
     <string name="err.file_not_found">Файл не знайдено</string>
-    <string name="err.create_dir">Не вдалося створити каталог</string>
     <string name="err.del_project">Не вдалося видалити проєкт</string>
     <string name="err.delete_file">Не вдалося видалити</string>
     <string name="err.rename_file">Не вдалося перейменувати</string>
@@ -39,6 +41,7 @@
     <string name="err.compiler_exit">Компілятор завершився з кодом %d</string>
     <string name="err.main_class_missing">Компіляція не створила M.class</string>
     <string name="err.no_jar_app">Жоден застосунок не може відкрити файли .jar. Встановіть J2ME-емулятор або ввімкніть вбудований емулятор у налаштуваннях.</string>
+    <string name="err.failed_load_licenses">Не вдалося завантажити тексти ліцензій</string>
 
     <!-- menu -->
 
@@ -53,6 +56,7 @@
     <string name="menu.about">Про застосунок</string>
     <string name="menu.exit">Вийти</string>
     <string name="menu.run">Запустити</string>
+    <string name="menu.more_actions">Інші дії</string>
 
     <!-- about -->
 

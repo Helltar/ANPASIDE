@@ -4,6 +4,7 @@ import android.graphics.Paint
 import android.graphics.Typeface
 import androidx.compose.foundation.background
 import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -13,7 +14,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
@@ -51,10 +51,10 @@ import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 
 private const val INDENT = "    "
-private val GUTTER_GAP = 8.dp
+private val GutterGap = 8.dp
 
 // a little air between the tabs and the first line so the code does not sit right against them
-private val CONTENT_TOP = 6.dp
+private val ContentTop = 6.dp
 
 // code field with syntax highlighting and line numbers painted in a fixed left gutter.
 // the field grows inside a scrolling column so the caret-move scroll and the gutter can be
@@ -63,7 +63,7 @@ private val CONTENT_TOP = 6.dp
 // not inside the field, so it never scrolls sideways with the text)
 @Composable
 fun CodeEditor(
-    file: OpenFile,
+    file: EditorDocument,
     fontSize: Int,
     highlighterEnabled: Boolean,
     lineNumbersEnabled: Boolean,
@@ -73,8 +73,16 @@ fun CodeEditor(
 ) {
     val syntaxColors = LocalSyntaxColors.current
     val density = LocalDensity.current
-    val verticalScroll = rememberScrollState()
-    val horizontalScroll = rememberScrollState()
+    val verticalScroll = remember(file) { ScrollState(file.verticalScrollOffset) }
+    val horizontalScroll = remember(file) { ScrollState(file.horizontalScrollOffset) }
+
+    LaunchedEffect(file, verticalScroll) {
+        snapshotFlow { verticalScroll.value }.collect(file::updateVerticalScroll)
+    }
+
+    LaunchedEffect(file, horizontalScroll) {
+        snapshotFlow { horizontalScroll.value }.collect(file::updateHorizontalScroll)
+    }
 
     val textStyle = TextStyle(
         fontFamily = FontFamily.Monospace,
@@ -96,7 +104,7 @@ fun CodeEditor(
         if (highlighterEnabled) PascalVisualTransformation(syntaxColors) else VisualTransformation.None
     }
 
-    var editorLayout by remember { mutableStateOf<EditorLayout?>(null) }
+    var editorLayout by remember(file) { mutableStateOf<EditorLayout?>(null) }
 
     // the caret was moved from outside (a tap on a compiler error), the field itself does
     // not scroll, so the surrounding column has to be moved to the line the caret is on
@@ -123,7 +131,7 @@ fun CodeEditor(
 
     val gutterWidth =
         if (lineNumbersEnabled) {
-            with(density) { gutterPaint.measureText("0".repeat(digits)).toDp() } + GUTTER_GAP
+            with(density) { gutterPaint.measureText("0".repeat(digits)).toDp() } + GutterGap
         } else {
             0.dp
         }
@@ -165,7 +173,7 @@ fun CodeEditor(
                             event.type != KeyEventType.KeyDown -> false
 
                             event.key == Key.Tab -> {
-                                file.insert(INDENT)
+                                file.insertText(INDENT)
                                 true
                             }
 
@@ -177,7 +185,7 @@ fun CodeEditor(
                             else -> false
                         }
                     }
-                    .padding(top = CONTENT_TOP, end = 4.dp)
+                    .padding(top = ContentTop, end = 4.dp)
             )
         }
 
@@ -194,10 +202,10 @@ fun CodeEditor(
                                 layout = layout.text,
                                 numberedVisualLines = layout.numberedVisualLines,
                                 paint = gutterPaint,
-                                gutterEnd = size.width - GUTTER_GAP.toPx(),
+                                gutterEnd = size.width - GutterGap.toPx(),
                                 scrollOffset = verticalScroll.value,
                                 viewportHeight = viewportPx,
-                                topOffset = CONTENT_TOP.toPx()
+                                topOffset = ContentTop.toPx()
                             )
                         }
                     }

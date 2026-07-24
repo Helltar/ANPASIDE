@@ -27,19 +27,20 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import com.github.helltar.anpaside.R
-import com.github.helltar.anpaside.core.LogLevel
-import com.github.helltar.anpaside.core.LogMessage
+import com.github.helltar.anpaside.foundation.LogEntry
+import com.github.helltar.anpaside.foundation.LogSeverity
 import com.github.helltar.anpaside.ui.theme.LocalSyntaxColors
 
-private val PANEL_HEIGHT = 132.dp
+private val PanelHeight = 132.dp
 
 // error.c prints the offending place as "unit.pas(12)", with the bare file name
-private val ERROR_LOCATION = Regex("""([^\s\\/]+\.pas)\((\d+)\)""", RegexOption.IGNORE_CASE)
+private val ErrorLocationPattern =
+    Regex("""([^\s\\/]+\.pas)\((\d+)\)""", RegexOption.IGNORE_CASE)
 
 // build output, hidden until asked for or until something fails
 @Composable
 fun LogPanel(
-    messages: List<LogMessage>,
+    messages: List<LogEntry>,
     onClear: () -> Unit,
     onHide: () -> Unit,
     onErrorClick: (String, Int) -> Unit,
@@ -82,7 +83,7 @@ fun LogPanel(
             state = listState,
             modifier = Modifier
                 .fillMaxWidth()
-                .height(PANEL_HEIGHT)
+                .height(PanelHeight)
                 .padding(horizontal = 16.dp)
         ) {
             items(messages) { message ->
@@ -109,20 +110,20 @@ fun LogPanel(
     }
 }
 
-private fun LogMessage.location(): Pair<String, Int>? {
-    if (level != LogLevel.ERROR) {
+private fun LogEntry.location(): Pair<String, Int>? {
+    if (severity != LogSeverity.ERROR) {
         return null
     }
 
-    val match = ERROR_LOCATION.find(text) ?: return null
+    val match = ErrorLocationPattern.find(text) ?: return null
     val line = match.groupValues[2].toIntOrNull() ?: return null
 
     return match.groupValues[1] to line
 }
 
 @Composable
-private fun LogMessage.color() = when (level) {
-    LogLevel.TEXT -> MaterialTheme.colorScheme.onSurfaceVariant
-    LogLevel.INFO -> LocalSyntaxColors.current.logInfo
-    LogLevel.ERROR -> MaterialTheme.colorScheme.error
+private fun LogEntry.color() = when (severity) {
+    LogSeverity.PLAIN -> MaterialTheme.colorScheme.onSurfaceVariant
+    LogSeverity.INFO -> LocalSyntaxColors.current.logInfo
+    LogSeverity.ERROR -> MaterialTheme.colorScheme.error
 }

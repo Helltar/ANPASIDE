@@ -35,22 +35,22 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.github.helltar.anpaside.R
-import com.github.helltar.anpaside.core.Paths
-import com.github.helltar.anpaside.ui.BackButton
-import com.github.helltar.anpaside.ui.ConfirmDialog
-import com.github.helltar.anpaside.ui.IdeViewModel
-import com.github.helltar.anpaside.ui.NewProjectDialogs
-import com.github.helltar.anpaside.ui.shareFile
+import com.github.helltar.anpaside.ui.components.BackButton
+import com.github.helltar.anpaside.ui.components.ConfirmDialog
+import com.github.helltar.anpaside.ui.editor.WorkspaceViewModel
+import com.github.helltar.anpaside.ui.platform.shareFile
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProjectsScreen(
-    viewModel: IdeViewModel,
+    projectsViewModel: ProjectsViewModel,
+    workspaceViewModel: WorkspaceViewModel,
     onProjectOpened: () -> Unit,
     onBack: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val state = projectsViewModel.state
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
@@ -59,10 +59,10 @@ fun ProjectsScreen(
     var showNewProject by remember { mutableStateOf(false) }
     var projectToDelete by remember { mutableStateOf<String?>(null) }
 
-    LaunchedEffect(Unit) { viewModel.refreshProjects() }
+    LaunchedEffect(Unit) { projectsViewModel.refresh() }
 
-    fun share(filename: String) {
-        if (!shareFile(context, filename)) {
+    fun share(filePath: String) {
+        if (!shareFile(context, filePath, workspaceViewModel::reportError)) {
             scope.launch { snackbarHostState.showSnackbar(noShareAppMessage) }
         }
     }
@@ -90,7 +90,7 @@ fun ProjectsScreen(
                 .padding(innerPadding)
                 .fillMaxSize()
         ) {
-            if (viewModel.projects.isEmpty()) {
+            if (!state.isLoading && state.names.isEmpty()) {
                 Box(
                     contentAlignment = Alignment.Center,
                     modifier = Modifier.weight(1f).fillMaxWidth()
@@ -102,10 +102,10 @@ fun ProjectsScreen(
                 }
             } else {
                 LazyColumn(Modifier.weight(1f)) {
-                    items(viewModel.projects) { name ->
+                    items(state.names) { name ->
                         ListItem(
                             headlineContent = { Text(name) },
-                            supportingContent = if (viewModel.isOpenProject(name)) {
+                            supportingContent = if (workspaceViewModel.isProjectOpen(name)) {
                                 { Text(stringResource(R.string.lbl_project_open)) }
                             } else {
                                 null
@@ -116,7 +116,7 @@ fun ProjectsScreen(
                             trailingContent = {
                                 Row {
                                     IconButton(
-                                        onClick = { viewModel.exportProjectZip(name, Paths.exportDir, ::share) }
+                                        onClick = { projectsViewModel.export(name, ::share) }
                                     ) {
                                         Icon(
                                             painter = painterResource(R.drawable.ic_archive),
@@ -133,8 +133,11 @@ fun ProjectsScreen(
                                 }
                             },
                             modifier = Modifier.clickable {
-                                viewModel.openProject(name)
-                                onProjectOpened()
+                                workspaceViewModel.openProject(name) { opened ->
+                                    if (opened) {
+                                        onProjectOpened()
+                                    }
+                                }
                             }
                         )
 
@@ -144,7 +147,7 @@ fun ProjectsScreen(
             }
 
             Text(
-                text = viewModel.projectsDir,
+                text = projectsViewModel.projectsDirectory,
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 // keep the path clear of the floating action button
@@ -154,7 +157,8 @@ fun ProjectsScreen(
     }
 
     NewProjectDialogs(
-        viewModel = viewModel,
+        projectsViewModel = projectsViewModel,
+        workspaceViewModel = workspaceViewModel,
         visible = showNewProject,
         onDismiss = { showNewProject = false },
         onCreated = onProjectOpened
@@ -166,8 +170,12 @@ fun ProjectsScreen(
             text = stringResource(R.string.dlg_msg_delete_project, name),
             confirmText = stringResource(R.string.dlg_btn_delete),
             onConfirm = {
-                viewModel.deleteProject(name)
-                projectToDelete = null
+                projectsViewModel.delete(name) { deleted ->
+                    if (deleted) {
+                        workspaceViewModel.discardProjectSession(name)
+                        projectToDelete = null
+                    }
+                }
             },
             onDismiss = { projectToDelete = null }
         )

@@ -25,10 +25,12 @@
     </plurals>
     <string name="err.project_exists">Project already exists</string>
     <string name="err.module_exists">Module already exists</string>
-    <string name="err.del_old_module">Failed to delete the existing module</string>
+    <string name="err.invalid_project_name">Project name cannot contain path separators</string>
+    <string name="err.invalid_module_name">Module name must be a Pascal identifier: letters, digits and underscores, not starting with a digit</string>
+    <string name="err.invalid_file_name">File name cannot contain path separators</string>
+    <string name="err.invalid_midlet_metadata">MIDlet name, vendor and version must be non-empty single-line values; the name cannot contain path separators</string>
     <string name="err.failed_create_archive">Failed to create the archive</string>
     <string name="err.file_not_found">File not found</string>
-    <string name="err.create_dir">Failed to create the directory</string>
     <string name="err.del_project">Failed to delete the project</string>
     <string name="err.delete_file">Failed to delete</string>
     <string name="err.rename_file">Failed to rename</string>
@@ -37,6 +39,7 @@
     <string name="err.compiler_exit">Compiler exited with code %d</string>
     <string name="err.main_class_missing">Compilation did not produce M.class</string>
     <string name="err.no_jar_app">No app can open .jar files. Install a J2ME emulator or enable the built-in emulator in Settings.</string>
+    <string name="err.failed_load_licenses">Failed to load license texts</string>
 
     <!-- menu -->
 
@@ -51,6 +54,7 @@
     <string name="menu.about">About</string>
     <string name="menu.exit">Exit</string>
     <string name="menu.run">Run</string>
+    <string name="menu.more_actions">More options</string>
 
     <!-- about -->
 
