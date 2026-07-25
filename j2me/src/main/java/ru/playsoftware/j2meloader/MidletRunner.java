@@ -59,8 +59,9 @@ public final class MidletRunner {
 	public static void run(Context context, File jar, String name,
 						   int screenWidth, int screenHeight, boolean showKeyboard) throws IOException {
 		File appDir = install(context, jar, name);
-		applyProfile(context, name, screenWidth, screenHeight, showKeyboard);
-		Config.startApp(context, name, appDir.getPath(), false);
+		ProfileModel profile = applyProfile(context, name, screenWidth, screenHeight, showKeyboard);
+		Config.startApp(context, name, appDir.getPath(), false,
+				profile.screenWidth, profile.screenHeight, profile.showKeyboard);
 	}
 
 	/**
@@ -106,12 +107,13 @@ public final class MidletRunner {
 	 * shipped, so one is always written here - and rewritten on every run, because the
 	 * screen size lives in the ide settings and can change between runs.
 	 */
-	private static void applyProfile(Context context, String name,
-									 int screenWidth, int screenHeight, boolean showKeyboard) {
+	private static ProfileModel applyProfile(Context context, String name,
+											 int screenWidth, int screenHeight,
+											 boolean showKeyboard) throws IOException {
 		File configDir = new File(Config.getConfigsDir(), name);
 
 		if (!configDir.exists() && !configDir.mkdirs()) {
-			return;
+			throw new IOException("Can't create directory: " + configDir);
 		}
 
 		ProfileModel profile = ProfilesManager.loadConfig(configDir);
@@ -136,6 +138,7 @@ public final class MidletRunner {
 		migrateDefaultKeyboardStyle(profile);
 
 		ProfilesManager.saveConfig(profile);
+		return profile;
 	}
 
 	private static void migrateDefaultKeyboardStyle(ProfileModel profile) {

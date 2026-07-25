@@ -24,6 +24,9 @@ public class Constants {
 	public static final String KEY_APPCENTER_ATTACHMENT = "key_appcenter_attachment";
 	public static final String KEY_CONFIG_PATH = "configPath";
 	public static final String KEY_MIDLET_NAME = "midletName";
+	public static final String KEY_SCREEN_HEIGHT = "screenHeight";
+	public static final String KEY_SCREEN_WIDTH = "screenWidth";
+	public static final String KEY_SHOW_KEYBOARD = "showKeyboard";
 	public static final String KEY_START_ARGUMENTS = "startArguments";
 
 	public static final String PREF_APP_SORT = "pref_app_sort";

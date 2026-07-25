@@ -128,6 +128,17 @@ public class Config {
 		}
 	}
 
+	public static void startApp(Context context, String name, String path, boolean showSettings,
+								int screenWidth, int screenHeight, boolean showKeyboard) {
+		Intent intent = new Intent(Intent.ACTION_DEFAULT, Uri.parse(path),
+				context, MicroActivity.class);
+		intent.putExtra(KEY_MIDLET_NAME, name);
+		intent.putExtra(KEY_SCREEN_WIDTH, screenWidth);
+		intent.putExtra(KEY_SCREEN_HEIGHT, screenHeight);
+		intent.putExtra(KEY_SHOW_KEYBOARD, showKeyboard);
+		context.startActivity(intent);
+	}
+
 	private static void initDirs(String path) {
 		emulatorDir = path;
 		dataDir = emulatorDir + MIDLET_DATA_DIR;

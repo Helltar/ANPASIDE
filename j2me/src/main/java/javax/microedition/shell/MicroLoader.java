@@ -268,6 +268,13 @@ public class MicroLoader {
 		}
 	}
 
+	void applyConfiguration(int screenWidth, int screenHeight, boolean showKeyboard) {
+		params.screenWidth = screenWidth;
+		params.screenHeight = screenHeight;
+		params.showKeyboard = showKeyboard;
+		applyConfiguration();
+	}
+
 	void takeScreenshot(Canvas canvas, SingleObserver<String> observer) {
 		canvas.getScreenShot()
 				.subscribeOn(Schedulers.computation())

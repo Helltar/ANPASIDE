@@ -149,13 +149,13 @@ public class Image {
 
 	void setSize(int width, int height) {
 		if (width > bitmap.getWidth() || height > bitmap.getHeight()) {
-			Bitmap b = bitmap;
+			Bitmap oldBitmap = bitmap;
 			bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
 			bounds.right = width;
 			bounds.bottom = height;
 			if (graphics != null) {
-				graphics.reset(0, 0, width, height);
-				graphics.getCanvas().drawBitmap(b, 0, 0, null);
+				new android.graphics.Canvas(bitmap).drawBitmap(oldBitmap, 0, 0, null);
+				graphics = new Graphics(this);
 			}
 		} else {
 			bounds.right = width;

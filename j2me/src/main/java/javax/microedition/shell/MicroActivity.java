@@ -168,7 +168,15 @@ public class MicroActivity extends AppCompatActivity {
 			finish();
 			return;
 		}
-		microLoader.applyConfiguration();
+		if (intent.hasExtra(KEY_SCREEN_WIDTH) && intent.hasExtra(KEY_SCREEN_HEIGHT)
+				&& intent.hasExtra(KEY_SHOW_KEYBOARD)) {
+			microLoader.applyConfiguration(
+					intent.getIntExtra(KEY_SCREEN_WIDTH, 0),
+					intent.getIntExtra(KEY_SCREEN_HEIGHT, 0),
+					intent.getBooleanExtra(KEY_SHOW_KEYBOARD, true));
+		} else {
+			microLoader.applyConfiguration();
+		}
 		VirtualKeyboard vk = ContextHolder.getVk();
 		int orientation = microLoader.getOrientation();
 		if (vk != null) {
