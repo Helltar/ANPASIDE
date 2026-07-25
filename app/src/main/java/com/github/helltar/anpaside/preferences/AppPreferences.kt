@@ -32,13 +32,14 @@ class AppPreferences(
         set(value) = prefs.edit { putBoolean(KEY_EMBEDDED_EMULATOR, value) }
 
     // the canvas the embedded emulator gives the midlet; this is what GetWidth and
-    // GetHeight return in pascal. zero means "follow the device screen proportions"
+    // GetHeight return in pascal. zero follows the device proportions, while a negative
+    // size uses the native display resolution
     var screenWidth: Int
-        get() = prefs.getInt(KEY_MIDLET_SCREEN_WIDTH, DEFAULT_SCREEN_WIDTH)
+        get() = prefs.getInt(KEY_MIDLET_SCREEN_WIDTH, FIT_SCREEN_DIMENSION)
         set(value) = prefs.edit { putInt(KEY_MIDLET_SCREEN_WIDTH, value) }
 
     var screenHeight: Int
-        get() = prefs.getInt(KEY_MIDLET_SCREEN_HEIGHT, DEFAULT_SCREEN_HEIGHT)
+        get() = prefs.getInt(KEY_MIDLET_SCREEN_HEIGHT, FIT_SCREEN_DIMENSION)
         set(value) = prefs.edit { putInt(KEY_MIDLET_SCREEN_HEIGHT, value) }
 
     var virtualKeyboardEnabled: Boolean
@@ -54,18 +55,22 @@ class AppPreferences(
         private const val KEY_MIDLET_SCREEN_HEIGHT = "midlet_screen_height"
         private const val KEY_MIDLET_KEYBOARD = "midlet_keyboard"
 
-        const val DEFAULT_SCREEN_WIDTH = 240
-        const val DEFAULT_SCREEN_HEIGHT = 320
+        private const val FIT_SCREEN_DIMENSION = 0
+        private const val CLASSIC_SCREEN_WIDTH = 240
+        private const val CLASSIC_SCREEN_HEIGHT = 320
 
-        // zero by zero asks the emulator to match the device aspect ratio
+        // zero by zero matches the device aspect ratio; negative dimensions ask the
+        // emulator to expose the native display resolution
         val availableScreenSizes = listOf(
-            ScreenSize(DEFAULT_SCREEN_WIDTH, DEFAULT_SCREEN_HEIGHT),
-            ScreenSize(176, 220),
+            ScreenSize(CLASSIC_SCREEN_WIDTH, CLASSIC_SCREEN_HEIGHT),
             ScreenSize(320, 240),
-            ScreenSize(320, 480),
-            ScreenSize(0, 0)
+            ScreenSize(FIT_SCREEN_DIMENSION, FIT_SCREEN_DIMENSION),
+            ScreenSize(-1, -1)
         )
     }
 }
 
-data class ScreenSize(val width: Int, val height: Int)
+data class ScreenSize(val width: Int, val height: Int) {
+    val usesNativeResolution: Boolean
+        get() = width < 0 && height < 0
+}

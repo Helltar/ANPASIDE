@@ -22,11 +22,15 @@ import static javax.microedition.lcdui.keyboard.KeyMapper.SE_KEY_SPECIAL_GAMING_
 
 import android.graphics.PointF;
 import android.graphics.RectF;
+import android.os.Build;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.util.Log;
 import android.util.SparseBooleanArray;
+import android.view.DisplayCutout;
+import android.view.RoundedCorner;
 import android.view.View;
+import android.view.WindowInsets;
 
 import androidx.annotation.NonNull;
 
@@ -84,6 +88,10 @@ public class VirtualKeyboard implements Overlay, Runnable {
 	private static final float PHONE_KEY_ROWS = 5;
 	private static final float PHONE_KEY_SCALE_X = 2.0f;
 	private static final float PHONE_KEY_SCALE_Y = 0.75f;
+	private static final float EDGE_PADDING_DP = 8.0f;
+	private static final float KEY_FACE_INSET_DP = 3.0f;
+	private static final float CORNER_RADIUS_RATIO = 0.18f;
+	private static final float ROUNDED_CORNER_SAFE_INSET_FACTOR = 0.29289323f;
 	private static final long[] REPEAT_INTERVALS = {200, 400, 128, 128, 128, 128, 128};
 
 	private static final int SCREEN = -1;
@@ -173,6 +181,11 @@ public class VirtualKeyboard implements Overlay, Runnable {
 	private final File saveFile;
 	private final ProfileModel settings;
 	private final RectF virtualScreen = new RectF();
+	private final float edgePadding;
+	private final float keyFaceInset;
+	private float leftPadding;
+	private float rightPadding;
+	private float bottomPadding;
 
 	private Canvas target;
 	private View overlayView;
@@ -193,6 +206,12 @@ public class VirtualKeyboard implements Overlay, Runnable {
 	public VirtualKeyboard(ProfileModel settings) {
 		this.settings = settings;
 		this.saveFile = new File(settings.dir + Config.MIDLET_KEY_LAYOUT_FILE);
+		float density = ContextHolder.getAppContext().getResources().getDisplayMetrics().density;
+		edgePadding = EDGE_PADDING_DP * density;
+		keyFaceInset = KEY_FACE_INSET_DP * density;
+		leftPadding = edgePadding;
+		rightPadding = edgePadding;
+		bottomPadding = edgePadding;
 
 		for (int i = KEY_NUM1; i < 9; i++) {
 			keypad[i] = new VirtualKey(Canvas.KEY_NUM1 + i, Integer.toString(1 + i));
@@ -487,7 +506,10 @@ public class VirtualKeyboard implements Overlay, Runnable {
 	}
 
 	public float getPhoneKeyboardHeight(float w, float h) {
-		return PHONE_KEY_ROWS * getKeySize(w, h) * PHONE_KEY_SCALE_Y;
+		updateSafePadding();
+		float width = Math.max(1, w - leftPadding - rightPadding);
+		float height = Math.max(1, h - bottomPadding);
+		return PHONE_KEY_ROWS * getKeySize(width, height) * PHONE_KEY_SCALE_Y + bottomPadding;
 	}
 
 	public void setLayout(int variant) {
@@ -791,7 +813,10 @@ public class VirtualKeyboard implements Overlay, Runnable {
 			snapKey(i, 0);
 			VirtualKey key = keypad[i];
 			RectF rect = key.rect;
-			key.corners = (int) (Math.min(rect.width(), rect.height()) * 0.25F);
+			key.faceRect.set(rect);
+			key.faceRect.inset(keyFaceInset, keyFaceInset);
+			key.corners = (int) (Math.min(key.faceRect.width(), key.faceRect.height())
+					* CORNER_RADIUS_RATIO);
 			if (!isPhone && RectF.intersects(rect, virtualScreen)) {
 				obscuresVirtualScreen = true;
 				key.opaque = false;
@@ -854,7 +879,13 @@ public class VirtualKeyboard implements Overlay, Runnable {
 
 	@Override
 	public void resize(RectF screen, float left, float top, float right, float bottom) {
-		this.screen = screen;
+		updateSafePadding();
+		this.screen = new RectF(
+				screen.left + leftPadding,
+				screen.top,
+				screen.right - rightPadding,
+				screen.bottom - bottomPadding
+		);
 		virtualScreen.set(left, top, right, bottom);
 		snapRadius = keyScales[0];
 		for (int i = 1; i < keyScales.length; i++) {
@@ -863,7 +894,7 @@ public class VirtualKeyboard implements Overlay, Runnable {
 			}
 		}
 
-		float keySize = getKeySize(screen.width(), screen.height());
+		float keySize = getKeySize(this.screen.width(), this.screen.height());
 		snapRadius = keySize * snapRadius / 4;
 		this.keySize = keySize;
 		for (int group = 0; group < keyScaleGroups.length; group++) {
@@ -879,6 +910,46 @@ public class VirtualKeyboard implements Overlay, Runnable {
 				}
 			}
 			handler.postDelayed(this, delay);
+		}
+	}
+
+	private void updateSafePadding() {
+		leftPadding = edgePadding;
+		rightPadding = edgePadding;
+		bottomPadding = edgePadding;
+
+		if (overlayView == null || Build.VERSION.SDK_INT < Build.VERSION_CODES.P) {
+			return;
+		}
+
+		WindowInsets insets = overlayView.getRootWindowInsets();
+		if (insets == null) {
+			return;
+		}
+
+		DisplayCutout cutout = insets.getDisplayCutout();
+		if (cutout != null) {
+			leftPadding = Math.max(leftPadding, cutout.getSafeInsetLeft());
+			rightPadding = Math.max(rightPadding, cutout.getSafeInsetRight());
+			bottomPadding = Math.max(bottomPadding, cutout.getSafeInsetBottom());
+		}
+
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+			RoundedCorner bottomLeft =
+					insets.getRoundedCorner(RoundedCorner.POSITION_BOTTOM_LEFT);
+			if (bottomLeft != null) {
+				float safeInset = bottomLeft.getRadius() * ROUNDED_CORNER_SAFE_INSET_FACTOR;
+				leftPadding = Math.max(leftPadding, safeInset);
+				bottomPadding = Math.max(bottomPadding, safeInset);
+			}
+
+			RoundedCorner bottomRight =
+					insets.getRoundedCorner(RoundedCorner.POSITION_BOTTOM_RIGHT);
+			if (bottomRight != null) {
+				float safeInset = bottomRight.getRadius() * ROUNDED_CORNER_SAFE_INSET_FACTOR;
+				rightPadding = Math.max(rightPadding, safeInset);
+				bottomPadding = Math.max(bottomPadding, safeInset);
+			}
 		}
 	}
 
@@ -1206,6 +1277,7 @@ public class VirtualKeyboard implements Overlay, Runnable {
 		final String label;
 		final int keyCode;
 		final RectF rect = new RectF();
+		final RectF faceRect = new RectF();
 		final PointF snapOffset = new PointF();
 		int snapOrigin;
 		int snapMode;
@@ -1249,19 +1321,19 @@ public class VirtualKeyboard implements Overlay, Runnable {
 
 			switch (settings.vkButtonShape) {
 				case ROUND_RECT_SHAPE:
-					g.fillRoundRect(rect, corners, corners);
-					g.drawRoundRect(rect, corners, corners);
+					g.fillRoundRect(faceRect, corners, corners);
+					g.drawRoundRect(faceRect, corners, corners);
 					break;
 				case RECT_SHAPE:
-					g.fillRect(rect);
-					g.drawRect(rect);
+					g.fillRect(faceRect);
+					g.drawRect(faceRect);
 					break;
 				case OVAL_SHAPE:
-					g.fillArc(rect, 0, 360);
-					g.drawArc(rect, 0, 360);
+					g.fillArc(faceRect, 0, 360);
+					g.drawArc(faceRect, 0, 360);
 					break;
 			}
-			g.drawString(label, rect.centerX(), rect.centerY());
+			g.drawString(label, faceRect.centerX(), faceRect.centerY());
 		}
 
 		@NonNull

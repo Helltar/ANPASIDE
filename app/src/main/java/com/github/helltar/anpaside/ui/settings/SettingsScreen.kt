@@ -124,10 +124,12 @@ fun SettingsScreen(
                         onClick = { viewModel.setScreenSize(size) },
                         label = {
                             Text(
-                                if (size.width <= 0 || size.height <= 0) {
-                                    stringResource(R.string.lbl_screen_fit_device)
-                                } else {
-                                    "${size.width} × ${size.height}"
+                                when {
+                                    size.usesNativeResolution ->
+                                        stringResource(R.string.lbl_screen_device_resolution)
+                                    size.width == 0 || size.height == 0 ->
+                                        stringResource(R.string.lbl_screen_fit_device)
+                                    else -> "${size.width} × ${size.height}"
                                 }
                             )
                         }

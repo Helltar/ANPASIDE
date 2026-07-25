@@ -107,7 +107,8 @@
     <string name="text.emulator.screen">Screen size</string>
     <string name="text.emulator.screen_hint">Size reported by GetWidth and GetHeight</string>
     <string name="text.emulator.keyboard">On-screen keypad</string>
-    <string name="lbl.screen_fit_device">Device proportions</string>
+    <string name="lbl.screen_fit_device">Fit screen (scaled)</string>
+    <string name="lbl.screen_device_resolution">Native resolution (1:1)</string>
     <string name="text.global.directory.libs">Global library directory</string>
 
     <!-- buttons -->

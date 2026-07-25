@@ -43,8 +43,9 @@ Removed:
 Added or changed:
 
   - MidletRunner, the whole public surface of the module: it dexes a jar with
-    the bundled dx, writes a default profile and starts the emulator activity,
-    so nothing appears between the Run button and the running midlet
+    the bundled dx, writes the IDE-selected display and keypad profile and
+    starts the emulator activity, so nothing appears between the Run button
+    and the running midlet
   - the emulator keeps converted midlets, profiles and record stores in
     <external files dir>/emulator instead of a shared J2ME-Loader directory
   - camera capture returns a silent player instead of throwing, and

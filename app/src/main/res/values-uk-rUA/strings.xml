@@ -108,7 +108,8 @@
     <string name="text.emulator.screen">Розмір екрана</string>
     <string name="text.emulator.screen_hint">Розмір, який GetWidth і GetHeight повертають програмі</string>
     <string name="text.emulator.keyboard">Екранна клавіатура</string>
-    <string name="lbl.screen_fit_device">Пропорції пристрою</string>
+    <string name="lbl.screen_fit_device">На весь екран (масштаб)</string>
+    <string name="lbl.screen_device_resolution">Нативна роздільність (1:1)</string>
     <string name="text.global.directory.libs">Каталог глобальних бібліотек</string>
 
     <!-- buttons -->

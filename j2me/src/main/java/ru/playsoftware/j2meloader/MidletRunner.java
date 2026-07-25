@@ -50,8 +50,10 @@ public final class MidletRunner {
 	 * Converts the jar and opens it in the emulator activity.
 	 *
 	 * @param name         directory name for the converted midlet, one per project
-	 * @param screenWidth  canvas width the midlet sees, 0 to follow the device proportions
-	 * @param screenHeight canvas height the midlet sees, 0 to follow the device proportions
+	 * @param screenWidth  canvas width the midlet sees, 0 to follow the device proportions,
+	 *                     or a negative value to use the native display width
+	 * @param screenHeight canvas height the midlet sees, 0 to follow the device proportions,
+	 *                     or a negative value to use the native display height
 	 * @param showKeyboard whether the on screen keypad is drawn under the canvas
 	 */
 	public static void run(Context context, File jar, String name,
@@ -118,7 +120,7 @@ public final class MidletRunner {
 			profile = new ProfileModel(configDir);
 		}
 
-		if (screenWidth <= 0 || screenHeight <= 0) {
+		if (screenWidth == 0 || screenHeight == 0) {
 			DisplayMetrics metrics = context.getResources().getDisplayMetrics();
 			screenWidth = ProfileModel.DEFAULT_WIDTH;
 			screenHeight = Math.round((float) screenWidth * metrics.heightPixels / metrics.widthPixels);
@@ -128,12 +130,30 @@ public final class MidletRunner {
 		profile.screenWidth = screenWidth;
 		profile.screenHeight = screenHeight;
 		profile.showKeyboard = showKeyboard;
-		// centred on a dark ground, so that the space the canvas cannot fill reads as
-		// a frame around the device screen rather than a gap
-		profile.screenGravity = 2;
+		// align the canvas to the top, matching j2me loader's default profile
+		profile.screenGravity = 1;
 		profile.screenBackgroundColor = 0x101010;
+		migrateDefaultKeyboardStyle(profile);
 
 		ProfilesManager.saveConfig(profile);
+	}
+
+	private static void migrateDefaultKeyboardStyle(ProfileModel profile) {
+		if (profile.vkAlpha != 64
+				|| profile.vkBgColor != 0xD0D0D0
+				|| profile.vkFgColor != 0x000080
+				|| profile.vkBgColorSelected != 0x000080
+				|| profile.vkFgColorSelected != 0xFFFFFF
+				|| profile.vkOutlineColor != 0xFFFFFF) {
+			return;
+		}
+
+		profile.vkAlpha = 204;
+		profile.vkBgColor = 0x3F444C;
+		profile.vkFgColor = 0xD7E3FF;
+		profile.vkBgColorSelected = 0x6EA8FE;
+		profile.vkFgColorSelected = 0x17202B;
+		profile.vkOutlineColor = 0x747B86;
 	}
 
 	private static Descriptor readDescriptor(File jar) throws IOException {
