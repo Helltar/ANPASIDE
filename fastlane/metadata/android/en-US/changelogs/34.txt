@@ -1,0 +1,2 @@
+- Improved built-in emulator scaling with fit-to-screen and native-resolution modes
+- Refined virtual keypad layout, styling, and safe-area handling
