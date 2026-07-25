@@ -51,6 +51,7 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -107,6 +108,12 @@ public class MicroActivity extends AppCompatActivity {
 	public void onCreate(Bundle savedInstanceState) {
 		lockNightMode();
 		super.onCreate(savedInstanceState);
+		getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
+			@Override
+			public void handleOnBackPressed() {
+				exitToIde();
+			}
+		});
 		ContextHolder.setCurrentActivity(this);
 
 		binding = ActivityMicroBinding.inflate(getLayoutInflater());
@@ -339,6 +346,12 @@ public class MicroActivity extends AppCompatActivity {
 		return visible;
 	}
 
+	private void exitToIde() {
+		hideSoftInput();
+		finish();
+		MidletThread.destroyApp();
+	}
+
 	public void showExitConfirmation() {
 		AlertDialog.Builder alertBuilder = new AlertDialog.Builder(this);
 		alertBuilder.setTitle(R.string.CONFIRMATION_REQUIRED)
@@ -402,8 +415,13 @@ public class MicroActivity extends AppCompatActivity {
 
 	@Override
 	public boolean onKeyUp(int keyCode, KeyEvent event) {
-		if ((keyCode == menuKey || keyCode == KeyEvent.KEYCODE_BACK || keyCode == KeyEvent.KEYCODE_MENU)
-				&& (event.getFlags() & (KeyEvent.FLAG_LONG_PRESS | KeyEvent.FLAG_CANCELED)) == 0) {
+		boolean shortPress =
+				(event.getFlags() & (KeyEvent.FLAG_LONG_PRESS | KeyEvent.FLAG_CANCELED)) == 0;
+		if (keyCode == KeyEvent.KEYCODE_BACK && shortPress) {
+			exitToIde();
+			return true;
+		}
+		if ((keyCode == menuKey || keyCode == KeyEvent.KEYCODE_MENU) && shortPress) {
 			openOptionsMenu();
 			return true;
 		}
@@ -412,7 +430,7 @@ public class MicroActivity extends AppCompatActivity {
 
 	@Override
 	public void onBackPressed() {
-		// Intentionally overridden by empty due to support for back-key remapping.
+		exitToIde();
 	}
 
 	@Override

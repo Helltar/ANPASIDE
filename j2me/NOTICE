@@ -48,5 +48,7 @@ Added or changed:
     activity, so nothing appears between the Run button and the running midlet
   - the emulator keeps converted midlets, profiles and record stores in
     <external files dir>/emulator instead of a shared J2ME-Loader directory
+  - the system Back action exits the embedded midlet directly instead of
+    opening the loader options menu
   - camera capture returns a silent player instead of throwing, and
     platformRequest no longer hands over to another installed midlet
