@@ -100,6 +100,7 @@
     <string name="dlg.hint.new_name">New name</string>
     <string name="dlg.title.project_config">Project settings</string>
     <string name="dlg.hint.package">Android package (APK)</string>
+    <string name="dlg.option.apk_keyboard">On-screen keypad in APK</string>
     <string name="dlg.msg.delete_file">"%s" will be deleted</string>
 
     <!-- settings -->

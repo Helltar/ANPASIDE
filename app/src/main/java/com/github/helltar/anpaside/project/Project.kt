@@ -49,6 +49,11 @@ class Project private constructor(val configFile: File, private val properties: 
                     properties.getProperty(KEY_CANVAS_TYPE)?.toIntOrNull() ?: DEFAULT_CANVAS_TYPE
             )
 
+    val apkKeyboardEnabled: Boolean
+        get() =
+            properties.getProperty(KEY_APK_KEYBOARD)?.toBooleanStrictOrNull()
+                ?: DEFAULT_APK_KEYBOARD
+
     val mainModule: File
         get() {
             require(ProjectNames.isValidModuleName(mainModuleName)) {
@@ -90,6 +95,10 @@ class Project private constructor(val configFile: File, private val properties: 
     fun updatePackageName(name: String) {
         require(ProjectNames.isValidPackageName(name)) { "Invalid package name: $name" }
         properties.setProperty(KEY_PACKAGE, name)
+    }
+
+    fun updateApkKeyboard(enabled: Boolean) {
+        properties.setProperty(KEY_APK_KEYBOARD, enabled.toString())
     }
 
     fun updateMainModule(name: String) {
@@ -134,11 +143,13 @@ class Project private constructor(val configFile: File, private val properties: 
                 )
                 properties.setProperty(KEY_MATH_TYPE, DEFAULT_MATH_TYPE.toString())
                 properties.setProperty(KEY_CANVAS_TYPE, DEFAULT_CANVAS_TYPE.toString())
+                properties.setProperty(KEY_APK_KEYBOARD, DEFAULT_APK_KEYBOARD.toString())
                 updateMetadata(MidletMetadata(name, DEFAULT_VENDOR, "1.0"))
             }
 
         private const val KEY_MAIN_MODULE = "MainModule"
         private const val KEY_PACKAGE = "Package"
+        private const val KEY_APK_KEYBOARD = "ApkKeyboard"
         private const val KEY_MATH_TYPE = "MathType"
         private const val KEY_CANVAS_TYPE = "CanvasType"
         private const val KEY_NAME = "Name"
@@ -150,5 +161,6 @@ class Project private constructor(val configFile: File, private val properties: 
         private const val DEFAULT_VERSION = "1"
         private const val DEFAULT_MATH_TYPE = 0
         private const val DEFAULT_CANVAS_TYPE = 1
+        private const val DEFAULT_APK_KEYBOARD = false
     }
 }

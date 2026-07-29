@@ -74,8 +74,13 @@ fun EditorDialogHost(
             ProjectMetadataDialog(
                 metadata = workspace.currentProjectMetadata(),
                 packageName = workspace.currentPackageName(),
-                onSave = { metadata, packageName ->
-                    workspace.saveProjectMetadata(metadata, packageName) { saved ->
+                apkKeyboardEnabled = workspace.currentApkKeyboardEnabled(),
+                onSave = { metadata, packageName, apkKeyboardEnabled ->
+                    workspace.saveProjectMetadata(
+                        metadata,
+                        packageName,
+                        apkKeyboardEnabled
+                    ) { saved ->
                         if (saved) {
                             onDialogChange(null)
                         }

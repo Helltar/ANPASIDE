@@ -1,7 +1,9 @@
 package com.github.helltar.anpaside.project
 
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertThrows
+import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TemporaryFolder
@@ -24,6 +26,7 @@ class ProjectTest {
             setProperty("MainModule", "main")
             setProperty("MathType", "2")
             setProperty("CanvasType", "1")
+            setProperty("ApkKeyboard", "true")
         }.run { config.outputStream().use { store(it, null) } }
 
         val project = Project.open(config)
@@ -34,12 +37,15 @@ class ProjectTest {
         assertEquals(File(projectDir, "bin/My Game.jar"), project.outputJar)
         assertEquals("Helltar", project.metadata.vendor)
         assertEquals(2, project.compilerSettings.mathType)
+        assertTrue(project.apkKeyboardEnabled)
 
         project.updateMetadata(project.metadata.copy(version = "3.0"))
+        project.updateApkKeyboard(false)
         project.save()
 
         val saved = Properties().apply { config.inputStream().use(::load) }
         assertEquals("3.0", saved.getProperty("Version"))
+        assertEquals("false", saved.getProperty("ApkKeyboard"))
     }
 
     @Test
@@ -54,6 +60,19 @@ class ProjectTest {
 
         assertEquals(0, project.compilerSettings.mathType)
         assertEquals(1, project.compilerSettings.canvasType)
+        assertFalse(project.apkKeyboardEnabled)
+    }
+
+    @Test
+    fun apkKeyboardIsDisabledByDefault() {
+        val projectDir = temporaryFolder.newFolder("keyboard-default")
+        val oldConfig =
+            File(projectDir, "old.aproj").apply {
+                writeText("Name=game\nMainModule=main")
+            }
+
+        assertFalse(Project.open(oldConfig).apkKeyboardEnabled)
+        assertFalse(Project.create(File(projectDir, "new.aproj"), "game").apkKeyboardEnabled)
     }
 
     @Test

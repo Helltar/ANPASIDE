@@ -101,6 +101,7 @@
     <string name="dlg.hint.new_name">Нова назва</string>
     <string name="dlg.title.project_config">Налаштування проєкту</string>
     <string name="dlg.hint.package">Android-пакет (APK)</string>
+    <string name="dlg.option.apk_keyboard">Екранна клавіатура в APK</string>
     <string name="dlg.msg.delete_file">"%s" буде видалено</string>
 
     <!-- settings -->

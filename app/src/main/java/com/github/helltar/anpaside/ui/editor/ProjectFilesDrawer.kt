@@ -44,6 +44,7 @@ fun ProjectFilesDrawer(
     onOpenProjects: () -> Unit,
     onNewModule: () -> Unit,
     onProjectConfig: () -> Unit,
+    onExportApk: () -> Unit,
     onImportInto: (String) -> Unit,
     onShare: (String) -> Unit,
     onClose: () -> Unit,
@@ -91,6 +92,7 @@ fun ProjectFilesDrawer(
             isProjectOpen = workspace.isProjectOpen,
             onNewModule = onNewModule,
             onProjectConfig = onProjectConfig,
+            onExportApk = onExportApk,
             onOpenProjects = onOpenProjects
         )
     }
@@ -132,12 +134,13 @@ private data class FooterTile(
     val onClick: () -> Unit
 )
 
-// footer: icon tiles laid out three to a row, project actions shown only while a project is open
+// footer: icon tiles are laid out three to a row, with project actions first
 @Composable
 private fun DrawerFooter(
     isProjectOpen: Boolean,
     onNewModule: () -> Unit,
     onProjectConfig: () -> Unit,
+    onExportApk: () -> Unit,
     onOpenProjects: () -> Unit
 ) {
     val tiles = buildList {
@@ -150,13 +153,21 @@ private fun DrawerFooter(
                     onProjectConfig
                 )
             )
+            add(
+                FooterTile(
+                    R.drawable.ic_android,
+                    stringResource(R.string.menu_export_apk),
+                    onExportApk
+                )
+            )
         }
 
         add(FooterTile(R.drawable.ic_folder, stringResource(R.string.lbl_projects), onOpenProjects))
     }
+    val columnCount = 3
 
     Column(Modifier.padding(horizontal = 12.dp, vertical = 8.dp)) {
-        tiles.chunked(3).forEachIndexed { rowIndex, row ->
+        tiles.chunked(columnCount).forEachIndexed { rowIndex, row ->
             if (rowIndex > 0) {
                 Spacer(Modifier.height(8.dp))
             }
@@ -175,7 +186,7 @@ private fun DrawerFooter(
                 }
 
                 // pad a short last row so tiles keep the same width across rows
-                repeat(3 - row.size) {
+                repeat(columnCount - row.size) {
                     Spacer(Modifier.weight(1f))
                 }
             }

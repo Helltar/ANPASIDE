@@ -35,20 +35,24 @@ fun launchInBuiltInEmulator(
         false
     }
 
-// converts the jar exactly as running it would, and returns the files an exported apk carries
-// in its assets: the dex, the midlet manifest, the resource jar and the emulator profile
+// converts the jar and returns the files an exported apk carries in its assets; exported apps
+// always use the physical display resolution, independently of the ide emulator settings
 fun convertMidletForExport(
     context: Context,
     jarPath: String,
     projectName: String,
-    screenWidth: Int,
-    screenHeight: Int,
     showKeyboard: Boolean
 ): Map<String, File> {
     val name = midletDirectoryName(projectName, jarPath)
     val directory = MidletRunner.install(context, File(jarPath), name)
     val profile =
-        MidletRunner.installProfile(context, name, screenWidth, screenHeight, showKeyboard)
+        MidletRunner.installProfile(
+            context,
+            name,
+            NATIVE_SCREEN_DIMENSION,
+            NATIVE_SCREEN_DIMENSION,
+            showKeyboard
+        )
 
     return buildMap {
         directory.listFiles().orEmpty().filter(File::isFile).forEach { file -> put(file.name, file) }
@@ -84,3 +88,5 @@ private fun midletDirectoryName(projectName: String, jarPath: String): String {
     val name = projectName.ifEmpty { File(jarPath).nameWithoutExtension }
     return name.replace(Regex("[^A-Za-z0-9_.-]"), "_")
 }
+
+private const val NATIVE_SCREEN_DIMENSION = -1

@@ -52,7 +52,11 @@ data class BuiltMidlet(
  * the launcher.
  */
 fun interface MidletConverter {
-    fun convert(jarPath: String, projectName: String): Map<String, File>
+    fun convert(
+        jarPath: String,
+        projectName: String,
+        showKeyboard: Boolean
+    ): Map<String, File>
 }
 
 class WorkspaceViewModel(
@@ -278,9 +282,12 @@ class WorkspaceViewModel(
 
     fun currentPackageName(): String = project?.packageName.orEmpty()
 
+    fun currentApkKeyboardEnabled(): Boolean = project?.apkKeyboardEnabled ?: false
+
     fun saveProjectMetadata(
         metadata: MidletMetadata,
         packageName: String,
+        apkKeyboardEnabled: Boolean,
         onComplete: (Boolean) -> Unit = {}
     ) {
         val activeProject = project ?: return onComplete(false)
@@ -299,6 +306,7 @@ class WorkspaceViewModel(
 
         val previous = activeProject.metadata
         val previousPackage = activeProject.packageName
+        val previousApkKeyboardEnabled = activeProject.apkKeyboardEnabled
 
         viewModelScope.launch {
             val saved =
@@ -306,11 +314,13 @@ class WorkspaceViewModel(
                     withContext(ioDispatcher) {
                         activeProject.updateMetadata(metadata)
                         activeProject.updatePackageName(packageName)
+                        activeProject.updateApkKeyboard(apkKeyboardEnabled)
                         activeProject.save()
                     }
                 }.onFailure { error ->
                     activeProject.updateMetadata(previous)
                     activeProject.updatePackageName(previousPackage)
+                    activeProject.updateApkKeyboard(previousApkKeyboardEnabled)
                     logger.error(error)
                 }.isSuccess
 
@@ -467,7 +477,8 @@ class WorkspaceViewModel(
                                     activeProject,
                                     converter.convert(
                                         builtMidlet.jarPath,
-                                        builtMidlet.projectName
+                                        builtMidlet.projectName,
+                                        activeProject.apkKeyboardEnabled
                                     )
                                 )
                             )
