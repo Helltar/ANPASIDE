@@ -1,5 +1,6 @@
 package com.github.helltar.anpaside.ui.editor
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -7,6 +8,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.FilterChip
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
@@ -21,6 +23,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.github.helltar.anpaside.R
+import com.github.helltar.anpaside.project.ApkOrientation
 import com.github.helltar.anpaside.project.MidletMetadata
 import com.github.helltar.anpaside.project.ProjectNames
 
@@ -29,7 +32,8 @@ fun ProjectMetadataDialog(
     metadata: MidletMetadata,
     packageName: String,
     apkKeyboardEnabled: Boolean,
-    onSave: (MidletMetadata, String, Boolean) -> Unit,
+    apkOrientation: ApkOrientation,
+    onSave: (MidletMetadata, String, ApkOrientation, Boolean) -> Unit,
     onDismiss: () -> Unit
 ) {
     var name by rememberSaveable { mutableStateOf(metadata.name) }
@@ -37,6 +41,7 @@ fun ProjectMetadataDialog(
     var version by rememberSaveable { mutableStateOf(metadata.version) }
     var packageId by rememberSaveable { mutableStateOf(packageName) }
     var showApkKeyboard by rememberSaveable { mutableStateOf(apkKeyboardEnabled) }
+    var selectedApkOrientation by rememberSaveable { mutableStateOf(apkOrientation) }
 
     val packageValid = ProjectNames.isValidPackageName(packageId.trim())
 
@@ -60,6 +65,27 @@ fun ProjectMetadataDialog(
                         .takeIf { !packageValid }
                 )
 
+                Text(
+                    text = stringResource(R.string.dlg_option_apk_orientation),
+                    modifier = Modifier.padding(top = 12.dp)
+                )
+
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    FilterChip(
+                        selected = selectedApkOrientation == ApkOrientation.PORTRAIT,
+                        onClick = { selectedApkOrientation = ApkOrientation.PORTRAIT },
+                        label = { Text(stringResource(R.string.lbl_orientation_portrait)) }
+                    )
+                    FilterChip(
+                        selected = selectedApkOrientation == ApkOrientation.LANDSCAPE,
+                        onClick = { selectedApkOrientation = ApkOrientation.LANDSCAPE },
+                        label = { Text(stringResource(R.string.lbl_orientation_landscape)) }
+                    )
+                }
+
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier.fillMaxWidth().padding(top = 8.dp)
@@ -81,6 +107,7 @@ fun ProjectMetadataDialog(
                     onSave(
                         MidletMetadata(name.trim(), vendor.trim(), version.trim()),
                         packageId.trim(),
+                        selectedApkOrientation,
                         showApkKeyboard
                     )
                 },

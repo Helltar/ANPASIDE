@@ -100,6 +100,7 @@
     <string name="dlg.hint.new_name">New name</string>
     <string name="dlg.title.project_config">Project settings</string>
     <string name="dlg.hint.package">Android package (APK)</string>
+    <string name="dlg.option.apk_orientation">APK orientation</string>
     <string name="dlg.option.apk_keyboard">On-screen keypad in APK</string>
     <string name="dlg.msg.delete_file">"%s" will be deleted</string>
 
@@ -116,6 +117,8 @@
     <string name="text.emulator.keyboard">On-screen keypad</string>
     <string name="lbl.screen_fit_device">Fit screen (scaled)</string>
     <string name="lbl.screen_device_resolution">Native resolution (1:1)</string>
+    <string name="lbl.orientation.portrait">Portrait</string>
+    <string name="lbl.orientation.landscape">Landscape</string>
     <string name="text.global.directory.libs">Global library directory</string>
 
     <!-- buttons -->

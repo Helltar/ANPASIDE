@@ -27,6 +27,7 @@ class ProjectTest {
             setProperty("MathType", "2")
             setProperty("CanvasType", "1")
             setProperty("ApkKeyboard", "true")
+            setProperty("ApkOrientation", "landscape")
         }.run { config.outputStream().use { store(it, null) } }
 
         val project = Project.open(config)
@@ -38,14 +39,17 @@ class ProjectTest {
         assertEquals("Helltar", project.metadata.vendor)
         assertEquals(2, project.compilerSettings.mathType)
         assertTrue(project.apkKeyboardEnabled)
+        assertEquals(ApkOrientation.LANDSCAPE, project.apkOrientation)
 
         project.updateMetadata(project.metadata.copy(version = "3.0"))
         project.updateApkKeyboard(false)
+        project.updateApkOrientation(ApkOrientation.PORTRAIT)
         project.save()
 
         val saved = Properties().apply { config.inputStream().use(::load) }
         assertEquals("3.0", saved.getProperty("Version"))
         assertEquals("false", saved.getProperty("ApkKeyboard"))
+        assertEquals("portrait", saved.getProperty("ApkOrientation"))
     }
 
     @Test
@@ -53,7 +57,10 @@ class ProjectTest {
         val projectDir = temporaryFolder.newFolder("corrupt")
         val config =
             File(projectDir, "corrupt.aproj").apply {
-                writeText("Name=game\nMainModule=main\nMathType=nope\nCanvasType=")
+                writeText(
+                    "Name=game\nMainModule=main\nMathType=nope\nCanvasType=\n" +
+                            "ApkOrientation=sideways"
+                )
             }
 
         val project = Project.open(config)
@@ -61,18 +68,23 @@ class ProjectTest {
         assertEquals(0, project.compilerSettings.mathType)
         assertEquals(1, project.compilerSettings.canvasType)
         assertFalse(project.apkKeyboardEnabled)
+        assertEquals(ApkOrientation.PORTRAIT, project.apkOrientation)
     }
 
     @Test
-    fun apkKeyboardIsDisabledByDefault() {
+    fun apkSettingsHaveSafeDefaults() {
         val projectDir = temporaryFolder.newFolder("keyboard-default")
         val oldConfig =
             File(projectDir, "old.aproj").apply {
                 writeText("Name=game\nMainModule=main")
             }
+        val oldProject = Project.open(oldConfig)
+        val newProject = Project.create(File(projectDir, "new.aproj"), "game")
 
-        assertFalse(Project.open(oldConfig).apkKeyboardEnabled)
-        assertFalse(Project.create(File(projectDir, "new.aproj"), "game").apkKeyboardEnabled)
+        assertFalse(oldProject.apkKeyboardEnabled)
+        assertFalse(newProject.apkKeyboardEnabled)
+        assertEquals(ApkOrientation.PORTRAIT, oldProject.apkOrientation)
+        assertEquals(ApkOrientation.PORTRAIT, newProject.apkOrientation)
     }
 
     @Test

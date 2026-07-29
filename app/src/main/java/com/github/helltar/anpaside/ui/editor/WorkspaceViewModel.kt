@@ -25,6 +25,7 @@ import com.github.helltar.anpaside.foundation.StringResources
 import com.github.helltar.anpaside.foundation.TextFileStore
 import com.github.helltar.anpaside.preferences.AppPreferences
 import com.github.helltar.anpaside.preferences.EditorPreferences
+import com.github.helltar.anpaside.project.ApkOrientation
 import com.github.helltar.anpaside.project.CreationResult
 import com.github.helltar.anpaside.project.MidletMetadata
 import com.github.helltar.anpaside.project.Project
@@ -55,7 +56,8 @@ fun interface MidletConverter {
     fun convert(
         jarPath: String,
         projectName: String,
-        showKeyboard: Boolean
+        showKeyboard: Boolean,
+        orientation: ApkOrientation
     ): Map<String, File>
 }
 
@@ -284,9 +286,13 @@ class WorkspaceViewModel(
 
     fun currentApkKeyboardEnabled(): Boolean = project?.apkKeyboardEnabled ?: false
 
+    fun currentApkOrientation(): ApkOrientation =
+        project?.apkOrientation ?: ApkOrientation.PORTRAIT
+
     fun saveProjectMetadata(
         metadata: MidletMetadata,
         packageName: String,
+        apkOrientation: ApkOrientation,
         apkKeyboardEnabled: Boolean,
         onComplete: (Boolean) -> Unit = {}
     ) {
@@ -306,6 +312,7 @@ class WorkspaceViewModel(
 
         val previous = activeProject.metadata
         val previousPackage = activeProject.packageName
+        val previousApkOrientation = activeProject.apkOrientation
         val previousApkKeyboardEnabled = activeProject.apkKeyboardEnabled
 
         viewModelScope.launch {
@@ -314,12 +321,14 @@ class WorkspaceViewModel(
                     withContext(ioDispatcher) {
                         activeProject.updateMetadata(metadata)
                         activeProject.updatePackageName(packageName)
+                        activeProject.updateApkOrientation(apkOrientation)
                         activeProject.updateApkKeyboard(apkKeyboardEnabled)
                         activeProject.save()
                     }
                 }.onFailure { error ->
                     activeProject.updateMetadata(previous)
                     activeProject.updatePackageName(previousPackage)
+                    activeProject.updateApkOrientation(previousApkOrientation)
                     activeProject.updateApkKeyboard(previousApkKeyboardEnabled)
                     logger.error(error)
                 }.isSuccess
@@ -478,7 +487,8 @@ class WorkspaceViewModel(
                                     converter.convert(
                                         builtMidlet.jarPath,
                                         builtMidlet.projectName,
-                                        activeProject.apkKeyboardEnabled
+                                        activeProject.apkKeyboardEnabled,
+                                        activeProject.apkOrientation
                                     )
                                 )
                             )

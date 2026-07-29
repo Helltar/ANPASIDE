@@ -43,6 +43,8 @@ import ru.woesss.j2me.jar.Descriptor;
  */
 public final class MidletRunner {
 
+	private static final int ORIENTATION_DEFAULT = 0;
+
 	private MidletRunner() {
 	}
 
@@ -59,7 +61,8 @@ public final class MidletRunner {
 	public static void run(Context context, File jar, String name,
 						   int screenWidth, int screenHeight, boolean showKeyboard) throws IOException {
 		File appDir = install(context, jar, name);
-		ProfileModel profile = applyProfile(context, name, screenWidth, screenHeight, showKeyboard);
+		ProfileModel profile = applyProfile(context, name, screenWidth, screenHeight,
+				showKeyboard, ORIENTATION_DEFAULT);
 		Config.startApp(context, name, appDir.getPath(), false,
 				profile.screenWidth, profile.screenHeight, profile.showKeyboard);
 	}
@@ -109,8 +112,9 @@ public final class MidletRunner {
 	 */
 	public static File installProfile(Context context, String name,
 									  int screenWidth, int screenHeight,
-									  boolean showKeyboard) throws IOException {
-		ProfileModel profile = applyProfile(context, name, screenWidth, screenHeight, showKeyboard);
+									  boolean showKeyboard, int orientation) throws IOException {
+		ProfileModel profile = applyProfile(context, name, screenWidth, screenHeight,
+				showKeyboard, orientation);
 		return new File(profile.dir, Config.MIDLET_CONFIG_FILE);
 	}
 
@@ -121,7 +125,7 @@ public final class MidletRunner {
 	 */
 	private static ProfileModel applyProfile(Context context, String name,
 											 int screenWidth, int screenHeight,
-											 boolean showKeyboard) throws IOException {
+											 boolean showKeyboard, int orientation) throws IOException {
 		File configDir = new File(Config.getConfigsDir(), name);
 
 		if (!configDir.exists() && !configDir.mkdirs()) {
@@ -144,6 +148,7 @@ public final class MidletRunner {
 		profile.screenWidth = screenWidth;
 		profile.screenHeight = screenHeight;
 		profile.showKeyboard = showKeyboard;
+		profile.orientation = orientation;
 		// align the canvas to the top, matching j2me loader's default profile
 		profile.screenGravity = 1;
 		profile.screenBackgroundColor = 0x101010;

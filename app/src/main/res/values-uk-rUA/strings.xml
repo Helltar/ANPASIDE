@@ -101,6 +101,7 @@
     <string name="dlg.hint.new_name">Нова назва</string>
     <string name="dlg.title.project_config">Налаштування проєкту</string>
     <string name="dlg.hint.package">Android-пакет (APK)</string>
+    <string name="dlg.option.apk_orientation">Орієнтація APK</string>
     <string name="dlg.option.apk_keyboard">Екранна клавіатура в APK</string>
     <string name="dlg.msg.delete_file">"%s" буде видалено</string>
 
@@ -117,6 +118,8 @@
     <string name="text.emulator.keyboard">Екранна клавіатура</string>
     <string name="lbl.screen_fit_device">На весь екран (масштаб)</string>
     <string name="lbl.screen_device_resolution">Нативна роздільність (1:1)</string>
+    <string name="lbl.orientation.portrait">Портретна</string>
+    <string name="lbl.orientation.landscape">Альбомна</string>
     <string name="text.global.directory.libs">Каталог глобальних бібліотек</string>
 
     <!-- buttons -->

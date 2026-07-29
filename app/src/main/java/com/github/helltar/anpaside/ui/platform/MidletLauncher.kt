@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import androidx.core.content.FileProvider
 import com.github.helltar.anpaside.BuildConfig
+import com.github.helltar.anpaside.project.ApkOrientation
 import java.io.File
 import ru.playsoftware.j2meloader.MidletRunner
 
@@ -41,6 +42,7 @@ fun convertMidletForExport(
     context: Context,
     jarPath: String,
     projectName: String,
+    orientation: ApkOrientation,
     showKeyboard: Boolean
 ): Map<String, File> {
     val name = midletDirectoryName(projectName, jarPath)
@@ -51,7 +53,8 @@ fun convertMidletForExport(
             name,
             NATIVE_SCREEN_DIMENSION,
             NATIVE_SCREEN_DIMENSION,
-            showKeyboard
+            showKeyboard,
+            orientation.profileValue
         )
 
     return buildMap {
@@ -90,3 +93,12 @@ private fun midletDirectoryName(projectName: String, jarPath: String): String {
 }
 
 private const val NATIVE_SCREEN_DIMENSION = -1
+private const val PROFILE_ORIENTATION_PORTRAIT = 2
+private const val PROFILE_ORIENTATION_LANDSCAPE = 3
+
+private val ApkOrientation.profileValue: Int
+    get() =
+        when (this) {
+            ApkOrientation.PORTRAIT -> PROFILE_ORIENTATION_PORTRAIT
+            ApkOrientation.LANDSCAPE -> PROFILE_ORIENTATION_LANDSCAPE
+        }

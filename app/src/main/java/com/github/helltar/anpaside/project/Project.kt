@@ -18,6 +18,16 @@ data class CompilerSettings(
     val canvasType: Int
 )
 
+enum class ApkOrientation(val propertyValue: String) {
+    PORTRAIT("portrait"),
+    LANDSCAPE("landscape");
+
+    companion object {
+        fun fromProperty(value: String?): ApkOrientation =
+            entries.firstOrNull { it.propertyValue == value } ?: PORTRAIT
+    }
+}
+
 // a project is an .aproj properties file plus the directory tree derived from its location
 class Project private constructor(val configFile: File, private val properties: Properties) {
 
@@ -53,6 +63,9 @@ class Project private constructor(val configFile: File, private val properties: 
         get() =
             properties.getProperty(KEY_APK_KEYBOARD)?.toBooleanStrictOrNull()
                 ?: DEFAULT_APK_KEYBOARD
+
+    val apkOrientation: ApkOrientation
+        get() = ApkOrientation.fromProperty(properties.getProperty(KEY_APK_ORIENTATION))
 
     val mainModule: File
         get() {
@@ -101,6 +114,10 @@ class Project private constructor(val configFile: File, private val properties: 
         properties.setProperty(KEY_APK_KEYBOARD, enabled.toString())
     }
 
+    fun updateApkOrientation(orientation: ApkOrientation) {
+        properties.setProperty(KEY_APK_ORIENTATION, orientation.propertyValue)
+    }
+
     fun updateMainModule(name: String) {
         require(ProjectNames.isValidModuleName(name)) { "Invalid main module name: $name" }
         properties.setProperty(KEY_MAIN_MODULE, name)
@@ -144,12 +161,17 @@ class Project private constructor(val configFile: File, private val properties: 
                 properties.setProperty(KEY_MATH_TYPE, DEFAULT_MATH_TYPE.toString())
                 properties.setProperty(KEY_CANVAS_TYPE, DEFAULT_CANVAS_TYPE.toString())
                 properties.setProperty(KEY_APK_KEYBOARD, DEFAULT_APK_KEYBOARD.toString())
+                properties.setProperty(
+                    KEY_APK_ORIENTATION,
+                    ApkOrientation.PORTRAIT.propertyValue
+                )
                 updateMetadata(MidletMetadata(name, DEFAULT_VENDOR, "1.0"))
             }
 
         private const val KEY_MAIN_MODULE = "MainModule"
         private const val KEY_PACKAGE = "Package"
         private const val KEY_APK_KEYBOARD = "ApkKeyboard"
+        private const val KEY_APK_ORIENTATION = "ApkOrientation"
         private const val KEY_MATH_TYPE = "MathType"
         private const val KEY_CANVAS_TYPE = "CanvasType"
         private const val KEY_NAME = "Name"

@@ -147,11 +147,12 @@ fun EditorScreen(
         workspaceViewModel.buildProject { builtMidlet ->
             workspaceViewModel.exportApk(
                 builtMidlet = builtMidlet,
-                converter = { jarPath, projectName, showKeyboard ->
+                converter = { jarPath, projectName, showKeyboard, orientation ->
                     convertMidletForExport(
                         context = context,
                         jarPath = jarPath,
                         projectName = projectName,
+                        orientation = orientation,
                         showKeyboard = showKeyboard
                     )
                 }
