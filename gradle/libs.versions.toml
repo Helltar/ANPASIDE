@@ -7,6 +7,7 @@ coreKtx = "1.17.0"
 lifecycle = "2.9.4"
 activityCompose = "1.10.1"
 zip4j = "2.11.3"
+apksig = "9.3.1"
 
 # the embedded j2me runtime, taken from J2ME-Loader
 appcompat = "1.7.0"
@@ -33,6 +34,8 @@ androidx-compose-ui-graphics = { group = "androidx.compose.ui", name = "ui-graph
 androidx-compose-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
 androidx-compose-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }
 zip4j = { group = "net.lingala.zip4j", name = "zip4j", version.ref = "zip4j" }
+# google's own apk signer, used on device to sign the exported midlet apks
+apksig = { group = "com.android.tools.build", name = "apksig", version.ref = "apksig" }
 
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
 androidx-preference = { group = "androidx.preference", name = "preference", version.ref = "preference" }

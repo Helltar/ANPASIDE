@@ -31,11 +31,30 @@ object ProjectNames {
     fun defaultMainModuleName(projectName: String): String =
         projectName.lowercase().takeIf(::isValidModuleName) ?: DEFAULT_MAIN_MODULE
 
+    fun isValidPackageName(name: String): Boolean = packageName.matches(name)
+
+    // android needs at least two segments, each starting with a letter, and nothing but the
+    // midlet name is known here to build one from
+    fun defaultPackageName(midletName: String): String {
+        val segment =
+            midletName
+                .lowercase()
+                .replace(invalidPackageCharacters, "_")
+                .dropWhile { character -> !character.isLetter() }
+                .ifEmpty { DEFAULT_PACKAGE_SEGMENT }
+
+        return "$PACKAGE_ROOT.$segment"
+    }
+
     private fun String.isValidManifestValue(): Boolean =
         isNotBlank() && trim() == this && none(Char::isISOControl)
 
     private val pascalIdentifier = Regex("[A-Za-z_][A-Za-z0-9_]*")
+    private val packageName = Regex("[A-Za-z][A-Za-z0-9_]*(\\.[A-Za-z][A-Za-z0-9_]*)+")
+    private val invalidPackageCharacters = Regex("[^a-z0-9_]")
     private const val DEFAULT_MAIN_MODULE = "main"
+    private const val PACKAGE_ROOT = "midlet"
+    private const val DEFAULT_PACKAGE_SEGMENT = "app"
 }
 
 data class ProjectTemplates(

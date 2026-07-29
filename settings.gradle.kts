@@ -31,3 +31,4 @@ rootProject.name = "ANPASIDE"
 include(":app")
 include(":j2me")
 include(":dexlib")
+include(":player")

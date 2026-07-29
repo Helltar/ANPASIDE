@@ -13,6 +13,7 @@ object ProjectLayout {
     const val PROJECT_EXTENSION = ".aproj"
     const val PASCAL_EXTENSION = ".pas"
     const val JAR_EXTENSION = ".jar"
+    const val APK_EXTENSION = ".apk"
     const val CLASS_EXTENSION = ".class"
     const val SYMBOL_EXTENSION = ".bsf"
 

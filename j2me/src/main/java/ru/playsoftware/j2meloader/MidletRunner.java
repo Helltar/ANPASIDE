@@ -103,6 +103,18 @@ public final class MidletRunner {
 	}
 
 	/**
+	 * Writes the emulator profile of a midlet without starting anything, and returns the file
+	 * it was written to. The apk exporter puts that file inside the exported apk, which has no
+	 * settings screen to fall back to either.
+	 */
+	public static File installProfile(Context context, String name,
+									  int screenWidth, int screenHeight,
+									  boolean showKeyboard) throws IOException {
+		ProfileModel profile = applyProfile(context, name, screenWidth, screenHeight, showKeyboard);
+		return new File(profile.dir, Config.MIDLET_CONFIG_FILE);
+	}
+
+	/**
 	 * A midlet without a profile sends the emulator to its settings screen, which is not
 	 * shipped, so one is always written here - and rewritten on every run, because the
 	 * screen size lives in the ide settings and can change between runs.

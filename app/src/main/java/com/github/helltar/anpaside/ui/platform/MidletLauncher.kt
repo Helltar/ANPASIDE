@@ -35,6 +35,27 @@ fun launchInBuiltInEmulator(
         false
     }
 
+// converts the jar exactly as running it would, and returns the files an exported apk carries
+// in its assets: the dex, the midlet manifest, the resource jar and the emulator profile
+fun convertMidletForExport(
+    context: Context,
+    jarPath: String,
+    projectName: String,
+    screenWidth: Int,
+    screenHeight: Int,
+    showKeyboard: Boolean
+): Map<String, File> {
+    val name = midletDirectoryName(projectName, jarPath)
+    val directory = MidletRunner.install(context, File(jarPath), name)
+    val profile =
+        MidletRunner.installProfile(context, name, screenWidth, screenHeight, showKeyboard)
+
+    return buildMap {
+        directory.listFiles().orEmpty().filter(File::isFile).forEach { file -> put(file.name, file) }
+        put(profile.name, profile)
+    }
+}
+
 // hands the jar to an external j2me emulator, returns false when there is none installed
 fun launchInExternalEmulator(
     context: Context,

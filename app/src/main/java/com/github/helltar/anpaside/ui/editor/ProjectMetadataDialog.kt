@@ -19,34 +19,52 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.github.helltar.anpaside.R
 import com.github.helltar.anpaside.project.MidletMetadata
+import com.github.helltar.anpaside.project.ProjectNames
 
 @Composable
 fun ProjectMetadataDialog(
     metadata: MidletMetadata,
-    onSave: (MidletMetadata) -> Unit,
+    packageName: String,
+    onSave: (MidletMetadata, String) -> Unit,
     onDismiss: () -> Unit
 ) {
     var name by rememberSaveable { mutableStateOf(metadata.name) }
     var vendor by rememberSaveable { mutableStateOf(metadata.vendor) }
     var version by rememberSaveable { mutableStateOf(metadata.version) }
+    var packageId by rememberSaveable { mutableStateOf(packageName) }
+
+    val packageValid = ProjectNames.isValidPackageName(packageId.trim())
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text(stringResource(R.string.manifest_mf)) },
+        title = { Text(stringResource(R.string.dlg_title_project_config)) },
         text = {
             // landscape leaves the dialog short, so fields scroll instead of clipping
             Column(Modifier.verticalScroll(rememberScrollState())) {
                 MetadataField(name, { name = it }, "MIDlet-Name")
                 MetadataField(vendor, { vendor = it }, "MIDlet-Vendor", Modifier.padding(top = 8.dp))
                 MetadataField(version, { version = it }, "MIDlet-Version", Modifier.padding(top = 8.dp))
+
+                MetadataField(
+                    value = packageId,
+                    onValueChange = { packageId = it },
+                    label = stringResource(R.string.dlg_hint_package),
+                    modifier = Modifier.padding(top = 8.dp),
+                    isError = !packageValid,
+                    supportingText = stringResource(R.string.err_invalid_package_name)
+                        .takeIf { !packageValid }
+                )
             }
         },
         confirmButton = {
             TextButton(
                 onClick = {
-                    onSave(MidletMetadata(name.trim(), vendor.trim(), version.trim()))
+                    onSave(
+                        MidletMetadata(name.trim(), vendor.trim(), version.trim()),
+                        packageId.trim()
+                    )
                 },
-                enabled = name.isNotBlank()
+                enabled = name.isNotBlank() && packageValid
             ) {
                 Text(stringResource(R.string.menu_file_save))
             }
@@ -64,13 +82,17 @@ private fun MetadataField(
     value: String,
     onValueChange: (String) -> Unit,
     label: String,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    isError: Boolean = false,
+    supportingText: String? = null
 ) {
     OutlinedTextField(
         value = value,
         onValueChange = onValueChange,
         label = { Text(label) },
         singleLine = true,
+        isError = isError,
+        supportingText = supportingText?.let { text -> { Text(text) } },
         modifier = modifier.fillMaxWidth()
     )
 }

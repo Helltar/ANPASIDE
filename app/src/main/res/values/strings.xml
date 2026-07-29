@@ -12,6 +12,8 @@
     <string name="msg.build_successfully">Build completed successfully</string>
     <string name="msg.building">Building…</string>
     <string name="msg.imported">Imported</string>
+    <string name="msg.exporting_apk">Packing APK…</string>
+    <string name="msg.apk_exported">APK exported</string>
 
     <!-- errors -->
 
@@ -29,6 +31,7 @@
     <string name="err.invalid_module_name">Module name must be a Pascal identifier: letters, digits and underscores, not starting with a digit</string>
     <string name="err.invalid_file_name">File name cannot contain path separators</string>
     <string name="err.invalid_midlet_metadata">MIDlet name, vendor and version must be non-empty single-line values; the name cannot contain path separators</string>
+    <string name="err.invalid_package_name">At least two parts separated by dots, letters, digits and underscores only, each part starting with a letter — for example midlet.tank</string>
     <string name="err.failed_create_archive">Failed to create the archive</string>
     <string name="err.file_not_found">File not found</string>
     <string name="err.del_project">Failed to delete the project</string>
@@ -48,6 +51,7 @@
     <string name="menu.import_file">Import file</string>
     <string name="menu.share">Share</string>
     <string name="menu.export_project">Export project</string>
+    <string name="menu.export_apk">Export APK</string>
     <string name="menu.file_save">Save</string>
     <string name="menu.settings">Settings</string>
     <string name="menu.documentation">Help</string>
@@ -94,6 +98,8 @@
     <string name="dlg.title.rename">Rename</string>
     <string name="dlg.title.delete_file">Delete?</string>
     <string name="dlg.hint.new_name">New name</string>
+    <string name="dlg.title.project_config">Project settings</string>
+    <string name="dlg.hint.package">Android package (APK)</string>
     <string name="dlg.msg.delete_file">"%s" will be deleted</string>
 
     <!-- settings -->
@@ -121,8 +127,6 @@
     <string name="dlg.btn.yes">Yes</string>
     <string name="dlg.btn.no">No</string>
     <string name="dlg.btn.ok" translatable="false">OK</string>
-
-    <string name="manifest.mf" translatable="false">MANIFEST.MF</string>
 
     <!-- templates -->
 

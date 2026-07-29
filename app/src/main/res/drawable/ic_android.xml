@@ -1,0 +1,20 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+
+    <!-- antennae, drawn under the head so the two shapes simply merge -->
+    <path
+        android:fillColor="#FF000000"
+        android:pathData="M6.6,6.9 L7.4,6.4 L9.9,10.5 L9.1,11 Z" />
+    <path
+        android:fillColor="#FF000000"
+        android:pathData="M17.4,6.9 L16.6,6.4 L14.1,10.5 L14.9,11 Z" />
+
+    <!-- head with the eyes cut out of it -->
+    <path
+        android:fillColor="#FF000000"
+        android:fillType="evenOdd"
+        android:pathData="M5,17.5 v-1 a7,7 0 0,1 14,0 v1 z M8.15,13.2 a0.85,0.85 0 1,1 1.7,0 a0.85,0.85 0 1,1 -1.7,0 z M14.15,13.2 a0.85,0.85 0 1,1 1.7,0 a0.85,0.85 0 1,1 -1.7,0 z" />
+</vector>

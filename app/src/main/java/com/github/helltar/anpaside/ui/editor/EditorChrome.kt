@@ -28,6 +28,8 @@ fun EditorOverflowMenu(
     expanded: Boolean,
     onDismiss: () -> Unit,
     onToggleLog: () -> Unit,
+    onExportApk: () -> Unit,
+    exportEnabled: Boolean,
     onOpenSettings: () -> Unit,
     onDocumentation: () -> Unit,
     onAbout: () -> Unit,
@@ -37,7 +39,8 @@ fun EditorOverflowMenu(
     fun item(
         @DrawableRes icon: Int,
         @StringRes text: Int,
-        onClick: () -> Unit
+        onClick: () -> Unit,
+        enabled: Boolean = true
     ) {
         DropdownMenuItem(
             text = { Text(stringResource(text)) },
@@ -48,6 +51,7 @@ fun EditorOverflowMenu(
                     modifier = Modifier.size(20.dp)
                 )
             },
+            enabled = enabled,
             onClick = {
                 onDismiss()
                 onClick()
@@ -57,6 +61,7 @@ fun EditorOverflowMenu(
 
     DropdownMenu(expanded = expanded, onDismissRequest = onDismiss) {
         item(R.drawable.ic_subject, R.string.lbl_log, onToggleLog)
+        item(R.drawable.ic_android, R.string.menu_export_apk, onExportApk, exportEnabled)
         item(R.drawable.ic_settings, R.string.menu_settings, onOpenSettings)
         item(R.drawable.ic_help, R.string.menu_documentation, onDocumentation)
         item(R.drawable.ic_info, R.string.menu_about, onAbout)

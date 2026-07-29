@@ -73,8 +73,9 @@ fun EditorDialogHost(
         EditorDialog.ProjectMetadata ->
             ProjectMetadataDialog(
                 metadata = workspace.currentProjectMetadata(),
-                onSave = { metadata ->
-                    workspace.saveProjectMetadata(metadata) { saved ->
+                packageName = workspace.currentPackageName(),
+                onSave = { metadata, packageName ->
+                    workspace.saveProjectMetadata(metadata, packageName) { saved ->
                         if (saved) {
                             onDialogChange(null)
                         }

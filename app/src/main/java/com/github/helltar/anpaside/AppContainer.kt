@@ -1,6 +1,9 @@
 package com.github.helltar.anpaside
 
 import android.app.Application
+import com.github.helltar.anpaside.apk.ApkExporter
+import com.github.helltar.anpaside.apk.ApkSigningKey
+import com.github.helltar.anpaside.apk.ApkTemplate
 import com.github.helltar.anpaside.assets.AssetInstaller
 import com.github.helltar.anpaside.assets.LicenseRepository
 import com.github.helltar.anpaside.compiler.BuildMessages
@@ -23,7 +26,7 @@ import java.io.File
  * The app is small enough that explicit constructor injection is clearer than a dependency
  * injection framework. This is the only place that knows how concrete services are assembled.
  */
-class AppContainer(application: Application) {
+class AppContainer(private val application: Application) {
     val directories = AppDirectories.from(application)
     val strings = StringResources(application)
     val logger = IdeLogger()
@@ -36,6 +39,13 @@ class AppContainer(application: Application) {
     val assetInstaller = AssetInstaller(application.assets, directories)
     val licenseRepository = LicenseRepository(application.assets)
     val contentResolver = application.contentResolver
+
+    val apkExporter =
+        ApkExporter(
+            template = { application.assets.open(ApkTemplate.ASSET_PATH) },
+            signingKey = ApkSigningKey(),
+            workDirectory = directories.exportDirectory
+        )
 
     val projectTemplates: ProjectTemplates
         get() =

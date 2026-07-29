@@ -66,11 +66,30 @@ class Project private constructor(val configFile: File, private val properties: 
                 metadata.name + ProjectLayout.JAR_EXTENSION
             )
 
+    val outputApk: File
+        get() =
+            binariesDirectory.requireDirectChildName(
+                metadata.name + ProjectLayout.APK_EXTENSION
+            )
+
+    // the android package name of an exported apk: two midlets that shared one could not be
+    // installed side by side, so a project that never had one gets it derived from its name
+    val packageName: String
+        get() =
+            properties.getProperty(KEY_PACKAGE)
+                ?.takeIf(ProjectNames::isValidPackageName)
+                ?: ProjectNames.defaultPackageName(metadata.name)
+
     fun updateMetadata(metadata: MidletMetadata) {
         require(ProjectNames.isValidMetadata(metadata)) { "Invalid MIDlet metadata" }
         properties.setProperty(KEY_NAME, metadata.name)
         properties.setProperty(KEY_VENDOR, metadata.vendor)
         properties.setProperty(KEY_VERSION, metadata.version)
+    }
+
+    fun updatePackageName(name: String) {
+        require(ProjectNames.isValidPackageName(name)) { "Invalid package name: $name" }
+        properties.setProperty(KEY_PACKAGE, name)
     }
 
     fun updateMainModule(name: String) {
@@ -119,6 +138,7 @@ class Project private constructor(val configFile: File, private val properties: 
             }
 
         private const val KEY_MAIN_MODULE = "MainModule"
+        private const val KEY_PACKAGE = "Package"
         private const val KEY_MATH_TYPE = "MathType"
         private const val KEY_CANVAS_TYPE = "CanvasType"
         private const val KEY_NAME = "Name"

@@ -10,6 +10,8 @@
     <string name="msg.build_successfully">Сборка успешно завершена</string>
     <string name="msg.building">Сборка…</string>
     <string name="msg.imported">Импортировано</string>
+    <string name="msg.exporting_apk">Сборка APK…</string>
+    <string name="msg.apk_exported">APK собран</string>
 
     <!-- errors -->
 
@@ -31,6 +33,7 @@
     <string name="err.invalid_module_name">Имя модуля должно быть идентификатором Pascal: буквы, цифры и подчёркивания, без цифры в начале</string>
     <string name="err.invalid_file_name">Имя файла не может содержать разделители пути</string>
     <string name="err.invalid_midlet_metadata">Название, поставщик и версия MIDlet должны быть непустыми однострочными значениями; название не может содержать разделители пути</string>
+    <string name="err.invalid_package_name">Минимум две части через точку, только буквы, цифры и подчёркивания, каждая часть начинается с буквы — например midlet.tank</string>
     <string name="err.failed_create_archive">Не удалось создать архив</string>
     <string name="err.file_not_found">Файл не найден</string>
     <string name="err.del_project">Не удалось удалить проект</string>
@@ -50,6 +53,7 @@
     <string name="menu.import_file">Импортировать файл</string>
     <string name="menu.share">Поделиться</string>
     <string name="menu.export_project">Экспортировать проект</string>
+    <string name="menu.export_apk">Экспорт в APK</string>
     <string name="menu.file_save">Сохранить</string>
     <string name="menu.settings">Настройки</string>
     <string name="menu.documentation">Справка</string>
@@ -95,6 +99,8 @@
     <string name="dlg.title.rename">Переименовать</string>
     <string name="dlg.title.delete_file">Удалить?</string>
     <string name="dlg.hint.new_name">Новое имя</string>
+    <string name="dlg.title.project_config">Настройки проекта</string>
+    <string name="dlg.hint.package">Android-пакет (APK)</string>
     <string name="dlg.msg.delete_file">Будет удалено: "%s"</string>
 
     <!-- settings -->

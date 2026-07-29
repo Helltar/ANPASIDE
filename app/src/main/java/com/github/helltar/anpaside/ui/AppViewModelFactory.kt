@@ -27,7 +27,8 @@ class AppViewModelFactory(
                     contentResolver = container.contentResolver,
                     strings = container.strings,
                     logger = container.logger,
-                    buildPipeline = container::createBuildPipeline
+                    buildPipeline = container::createBuildPipeline,
+                    apkExporter = container.apkExporter
                 )
 
             modelClass == ProjectsViewModel::class.java ->

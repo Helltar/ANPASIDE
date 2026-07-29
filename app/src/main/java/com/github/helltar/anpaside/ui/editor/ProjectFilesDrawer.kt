@@ -143,7 +143,13 @@ private fun DrawerFooter(
     val tiles = buildList {
         if (isProjectOpen) {
             add(FooterTile(R.drawable.ic_add, stringResource(R.string.menu_create_module), onNewModule))
-            add(FooterTile(R.drawable.ic_description, stringResource(R.string.manifest_mf), onProjectConfig))
+            add(
+                FooterTile(
+                    R.drawable.ic_description,
+                    stringResource(R.string.dlg_title_project_config),
+                    onProjectConfig
+                )
+            )
         }
 
         add(FooterTile(R.drawable.ic_folder, stringResource(R.string.lbl_projects), onOpenProjects))

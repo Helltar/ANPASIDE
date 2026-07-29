@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!--
+      class names are written out in full on purpose: the ide rewrites every string that starts
+      with the placeholder application id, and a relative ".PlayerActivity" would be rewritten
+      into a class that does not exist in the dex
+    -->
+    <application
+        android:name="com.github.helltar.anpaside.player.PlayerApplication"
+        android:allowBackup="false"
+        android:icon="@mipmap/midlet_icon"
+        android:label="ANPASIDE Midlet"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme.NoActionBar">
+
+        <activity
+            android:name="com.github.helltar.anpaside.player.PlayerActivity"
+            android:exported="true"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+    </application>
+</manifest>

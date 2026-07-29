@@ -1,5 +1,6 @@
 package com.github.helltar.anpaside.project
 
+import com.github.helltar.anpaside.foundation.ProjectLayout
 import com.github.helltar.anpaside.foundation.createDirectories
 import com.github.helltar.anpaside.foundation.deleteOrThrow
 import net.lingala.zip4j.ZipFile
@@ -26,8 +27,13 @@ class ProjectArchiveExporter {
             ZipParameters().apply {
                 compressionMethod = CompressionMethod.DEFLATE
                 compressionLevel = CompressionLevel.ULTRA
-                // build leftovers are reproducible from the sources
-                excludeFileFilter = ExcludeFileFilter { it.startsWith(project.buildDirectory) }
+                // build leftovers are reproducible from the sources, and an exported apk is
+                // several megabytes of emulator runtime that would dwarf the project itself
+                excludeFileFilter =
+                    ExcludeFileFilter { file ->
+                        file.startsWith(project.buildDirectory) ||
+                                file.name.endsWith(ProjectLayout.APK_EXTENSION)
+                    }
             }
 
         ZipFile(archive).use { it.addFolder(project.rootDirectory, parameters) }

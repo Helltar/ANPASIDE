@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- the tile every exported midlet icon sits on, the same grey the ide's own icon uses -->
+    <color name="midlet_icon_background">#3F444C</color>
+</resources>

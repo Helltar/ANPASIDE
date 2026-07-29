@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  minSdk is 28, so this always wins and no raster fallback has to ship. Only the foreground is
+  ever replaced: the ide draws the midlet's own icon into a bitmap of the same size and swaps
+  the png inside the exported apk, which leaves this file and the resource ids untouched.
+-->
+<adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
+    <background android:drawable="@color/midlet_icon_background" />
+    <foreground android:drawable="@mipmap/midlet_icon_foreground" />
+</adaptive-icon>

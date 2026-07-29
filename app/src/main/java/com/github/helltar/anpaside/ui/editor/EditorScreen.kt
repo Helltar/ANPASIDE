@@ -27,6 +27,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Snackbar
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberDrawerState
@@ -51,6 +52,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.github.helltar.anpaside.R
+import com.github.helltar.anpaside.ui.platform.convertMidletForExport
 import com.github.helltar.anpaside.ui.platform.launchInBuiltInEmulator
 import com.github.helltar.anpaside.ui.platform.launchInExternalEmulator
 import com.github.helltar.anpaside.ui.platform.shareFile
@@ -82,6 +84,8 @@ fun EditorScreen(
     val keyboardVisible = WindowInsets.ime.getBottom(LocalDensity.current) > 0
 
     val savedMessage = stringResource(R.string.msg_saved)
+    val apkExportedMessage = stringResource(R.string.msg_apk_exported)
+    val shareLabel = stringResource(R.string.menu_share)
     val noShareAppMessage = stringResource(R.string.err_no_share_app)
     var logVisible by rememberSaveable { mutableStateOf(false) }
     var seenErrors by rememberSaveable { mutableIntStateOf(workspaceViewModel.errorCount) }
@@ -136,6 +140,38 @@ fun EditorScreen(
         workspaceViewModel.saveAll { saved ->
             if (saved) {
                 scope.launch { snackbarHostState.showSnackbar(savedMessage) }
+            }
+        }
+    }
+
+    // an apk is built out of the same jar the run button produces, so the export starts with
+    // an ordinary build
+    fun exportApk() {
+        workspaceViewModel.buildProject { builtMidlet ->
+            workspaceViewModel.exportApk(
+                builtMidlet = builtMidlet,
+                converter = { jarPath, projectName ->
+                    convertMidletForExport(
+                        context = context,
+                        jarPath = jarPath,
+                        projectName = projectName,
+                        screenWidth = settings.screenSize.width,
+                        screenHeight = settings.screenSize.height,
+                        showKeyboard = settings.virtualKeyboard
+                    )
+                }
+            ) { apk ->
+                scope.launch {
+                    val action =
+                        snackbarHostState.showSnackbar(
+                            message = apkExportedMessage,
+                            actionLabel = shareLabel
+                        )
+
+                    if (action == SnackbarResult.ActionPerformed) {
+                        share(apk.path)
+                    }
+                }
             }
         }
     }
@@ -198,7 +234,7 @@ fun EditorScreen(
                         )
                     },
                     actions = {
-                        if (workspaceViewModel.isBuilding) {
+                        if (workspaceViewModel.isBuilding || workspaceViewModel.isExporting) {
                             CircularProgressIndicator(
                                 strokeWidth = 2.dp,
                                 modifier = Modifier.padding(horizontal = 12.dp).size(24.dp)
@@ -262,6 +298,8 @@ fun EditorScreen(
                                 expanded = menuExpanded,
                                 onDismiss = { menuExpanded = false },
                                 onToggleLog = { logVisible = !logVisible },
+                                onExportApk = ::exportApk,
+                                exportEnabled = workspaceViewModel.isProjectOpen,
                                 onOpenSettings = onOpenSettings,
                                 onDocumentation = { uriHandler.openUri(DOCS_URL) },
                                 onAbout = { dialog = EditorDialog.About },

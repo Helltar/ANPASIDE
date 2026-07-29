@@ -11,6 +11,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.github.helltar.anpaside.BuildConfig
 import com.github.helltar.anpaside.R
+import com.github.helltar.anpaside.apk.ApkApplication
+import com.github.helltar.anpaside.apk.ApkExportRequest
+import com.github.helltar.anpaside.apk.ApkExporter
+import com.github.helltar.anpaside.apk.ApkVersions
 import com.github.helltar.anpaside.assets.AssetInstaller
 import com.github.helltar.anpaside.compiler.ProjectBuildPipeline
 import com.github.helltar.anpaside.foundation.IdeLogger
@@ -42,6 +46,15 @@ data class BuiltMidlet(
     val projectName: String
 )
 
+/**
+ * Converts a built jar into the files an exported apk carries. It runs through the embedded
+ * emulator's dexer, which needs a context, so the screen passes it in the same way it passes
+ * the launcher.
+ */
+fun interface MidletConverter {
+    fun convert(jarPath: String, projectName: String): Map<String, File>
+}
+
 class WorkspaceViewModel(
     private val projects: ProjectRepository,
     private val projectFiles: ProjectFileManager,
@@ -54,6 +67,7 @@ class WorkspaceViewModel(
     private val strings: StringResources,
     private val logger: IdeLogger,
     private val buildPipeline: (Project, File) -> ProjectBuildPipeline,
+    private val apkExporter: ApkExporter,
     private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : ViewModel() {
 
@@ -81,6 +95,9 @@ class WorkspaceViewModel(
         private set
 
     var isBuilding by mutableStateOf(false)
+        private set
+
+    var isExporting by mutableStateOf(false)
         private set
 
     var errorCount by mutableIntStateOf(0)
@@ -259,7 +276,13 @@ class WorkspaceViewModel(
     fun currentProjectMetadata(): MidletMetadata =
         project?.metadata ?: MidletMetadata("", "", "")
 
-    fun saveProjectMetadata(metadata: MidletMetadata, onComplete: (Boolean) -> Unit = {}) {
+    fun currentPackageName(): String = project?.packageName.orEmpty()
+
+    fun saveProjectMetadata(
+        metadata: MidletMetadata,
+        packageName: String,
+        onComplete: (Boolean) -> Unit = {}
+    ) {
         val activeProject = project ?: return onComplete(false)
 
         if (!ProjectNames.isValidMetadata(metadata)) {
@@ -268,17 +291,26 @@ class WorkspaceViewModel(
             return
         }
 
+        if (!ProjectNames.isValidPackageName(packageName)) {
+            logger.error(strings.get(R.string.err_invalid_package_name))
+            onComplete(false)
+            return
+        }
+
         val previous = activeProject.metadata
+        val previousPackage = activeProject.packageName
 
         viewModelScope.launch {
             val saved =
                 runCatching {
                     withContext(ioDispatcher) {
                         activeProject.updateMetadata(metadata)
+                        activeProject.updatePackageName(packageName)
                         activeProject.save()
                     }
                 }.onFailure { error ->
                     activeProject.updateMetadata(previous)
+                    activeProject.updatePackageName(previousPackage)
                     logger.error(error)
                 }.isSuccess
 
@@ -405,6 +437,73 @@ class WorkspaceViewModel(
         }
     }
 
+    /**
+     * Packs an already built midlet into an installable apk next to its jar.
+     *
+     * The conversion is the same one the built in emulator does before running a midlet, so a
+     * project that runs is a project that exports.
+     */
+    fun exportApk(
+        builtMidlet: BuiltMidlet,
+        converter: MidletConverter,
+        onExported: (File) -> Unit
+    ) {
+        val activeProject = project
+
+        if (activeProject == null || isExporting) {
+            return
+        }
+
+        isExporting = true
+        logger.plain(strings.get(R.string.msg_exporting_apk))
+
+        viewModelScope.launch {
+            try {
+                val apk =
+                    runCatching {
+                        withContext(ioDispatcher) {
+                            apkExporter.export(
+                                exportRequest(
+                                    activeProject,
+                                    converter.convert(
+                                        builtMidlet.jarPath,
+                                        builtMidlet.projectName
+                                    )
+                                )
+                            )
+                        }
+                    }.onFailure(logger::error).getOrNull() ?: return@launch
+
+                logger.info(
+                    strings.get(R.string.msg_apk_exported) + "\n" +
+                            "${ProjectLayout.BINARY_DIRECTORY}/${apk.name}\n" +
+                            "${apk.length() / 1024} KB\n" +
+                            activeProject.packageName
+                )
+
+                refreshProjectTree()
+                onExported(apk)
+            } finally {
+                isExporting = false
+            }
+        }
+    }
+
+    private fun exportRequest(project: Project, midletFiles: Map<String, File>) =
+        ApkExportRequest(
+            application =
+                ApkApplication(
+                    packageName = project.packageName,
+                    label = project.metadata.name,
+                    versionName = project.metadata.version,
+                    versionCode = ApkVersions.codeOf(project.metadata.version)
+                ),
+            midletFiles = midletFiles,
+            // the same file the midlet manifest points at, so the app and the midlet share it
+            icon = project.resourcesDirectory.resolve(MIDLET_ICON).takeIf(File::isFile),
+            target = project.outputApk
+        )
+
     private suspend fun installAssetsIfNeeded() {
         val firstInstall = !appPreferences.assetsInstalled
         val needsUpdate =
@@ -510,5 +609,6 @@ class WorkspaceViewModel(
 
     private companion object {
         const val MAX_LOG_ENTRIES = 200
+        const val MIDLET_ICON = "icon.png"
     }
 }

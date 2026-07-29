@@ -3,6 +3,51 @@ plugins {
     alias(libs.plugins.kotlin.compose)
 }
 
+/**
+ * Puts the player module's apk into this module's assets, where the apk exporter reads it as
+ * the template for every exported midlet.
+ *
+ * The player is a separate application module, so its apk cannot be consumed as an ordinary
+ * dependency; it is taken from its output directory after `:player:assembleRelease` ran.
+ */
+abstract class BundlePlayerTemplate : DefaultTask() {
+
+    @get:InputDirectory
+    abstract val playerOutputDirectory: DirectoryProperty
+
+    @get:OutputDirectory
+    abstract val assetDirectory: DirectoryProperty
+
+    @TaskAction
+    fun bundle() {
+        val outputs = playerOutputDirectory.get().asFile
+        val apk =
+            outputs.listFiles().orEmpty().singleOrNull { it.name.endsWith(".apk") }
+                ?: error("Expected exactly one player apk in $outputs")
+
+        val target = assetDirectory.get().asFile.resolve("player")
+        target.mkdirs()
+        apk.copyTo(target.resolve("template.apk"), overwrite = true)
+    }
+}
+
+val bundlePlayerTemplate =
+    tasks.register<BundlePlayerTemplate>("bundlePlayerTemplate") {
+        dependsOn(":player:assembleRelease")
+        playerOutputDirectory.set(
+            project(":player").layout.buildDirectory.dir("outputs/apk/release")
+        )
+    }
+
+androidComponents {
+    onVariants { variant ->
+        variant.sources.assets?.addGeneratedSourceDirectory(
+            bundlePlayerTemplate,
+            BundlePlayerTemplate::assetDirectory
+        )
+    }
+}
+
 android {
     namespace = "com.github.helltar.anpaside"
 
@@ -45,6 +90,11 @@ android {
             useLegacyPackaging = true
         }
     }
+
+    androidResources {
+        // the bundled player apk is already compressed, deflating it again only costs build time
+        noCompress += "apk"
+    }
 }
 
 dependencies {
@@ -59,6 +109,7 @@ dependencies {
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.zip4j)
+    implementation(libs.apksig)
     debugImplementation(libs.androidx.compose.ui.tooling)
     testImplementation(libs.junit)
 }

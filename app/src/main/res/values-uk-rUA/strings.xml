@@ -10,6 +10,8 @@
     <string name="msg.build_successfully">Збірка успішно завершена</string>
     <string name="msg.building">Збірка…</string>
     <string name="msg.imported">Імпортовано</string>
+    <string name="msg.exporting_apk">Збірка APK…</string>
+    <string name="msg.apk_exported">APK зібрано</string>
 
     <!-- errors -->
 
@@ -31,6 +33,7 @@
     <string name="err.invalid_module_name">Назва модуля має бути ідентифікатором Pascal: літери, цифри та підкреслення, без цифри на початку</string>
     <string name="err.invalid_file_name">Назва файлу не може містити розділювачі шляху</string>
     <string name="err.invalid_midlet_metadata">Назва, постачальник і версія MIDlet мають бути непорожніми однорядковими значеннями; назва не може містити розділювачі шляху</string>
+    <string name="err.invalid_package_name">Щонайменше дві частини через крапку, лише літери, цифри та підкреслення, кожна частина починається з літери — наприклад midlet.tank</string>
     <string name="err.failed_create_archive">Не вдалося створити архів</string>
     <string name="err.file_not_found">Файл не знайдено</string>
     <string name="err.del_project">Не вдалося видалити проєкт</string>
@@ -50,6 +53,7 @@
     <string name="menu.import_file">Імпортувати файл</string>
     <string name="menu.share">Поділитися</string>
     <string name="menu.export_project">Експортувати проєкт</string>
+    <string name="menu.export_apk">Експорт в APK</string>
     <string name="menu.file_save">Зберегти</string>
     <string name="menu.settings">Налаштування</string>
     <string name="menu.documentation">Довідка</string>
@@ -95,6 +99,8 @@
     <string name="dlg.title.rename">Перейменувати</string>
     <string name="dlg.title.delete_file">Видалити?</string>
     <string name="dlg.hint.new_name">Нова назва</string>
+    <string name="dlg.title.project_config">Налаштування проєкту</string>
+    <string name="dlg.hint.package">Android-пакет (APK)</string>
     <string name="dlg.msg.delete_file">"%s" буде видалено</string>
 
     <!-- settings -->
