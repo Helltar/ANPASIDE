@@ -43,10 +43,12 @@ class ProjectBuildPipeline(
     private val outputJar = project.outputJar
     private val logEntries = mutableListOf<LogEntry>()
     private val compilingSources = mutableSetOf<String>()
+    private var nextRecordId = 0
 
     fun build(): BuildReport {
         logEntries.clear()
         compilingSources.clear()
+        nextRecordId = 0
 
         val outputJar =
             try {
@@ -109,6 +111,10 @@ class ProjectBuildPipeline(
             return false
         }
 
+        // every module compiles into the same prebuild/, so the next one has to keep counting
+        // where this one stopped instead of writing its own R_0.class over this one's
+        nextRecordId = CompilerOutput.nextRecordId(result.output, nextRecordId)
+
         plainLines(CompilerOutput.clean(result.output))
         return copyRuntimeClasses(result.output) && copyLibraries(result.output)
     }
@@ -136,7 +142,11 @@ class ProjectBuildPipeline(
         )
 
         if (detectUnits) {
+            // the detect pass writes no classes at all, so it needs no record numbering
             args.add("-d")
+        } else {
+            args.add("-r")
+            args.add(nextRecordId.toString())
         }
 
         return when (val result = processRunner.run(args)) {

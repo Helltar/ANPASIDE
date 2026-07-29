@@ -71,6 +71,68 @@ class ProjectBuildPipelineTest {
     }
 
     @Test
+    fun numbersRecordClassesAcrossModulesSoTheyDoNotOverwriteEachOther() {
+        val fixture = fixture()
+        val recordIds = mutableMapOf<String, String>()
+
+        val runner =
+            ProcessRunner { arguments ->
+                val source = File(arguments.valueAfter("-s"))
+                val output = File(arguments.valueAfter("-o"))
+
+                when {
+                    "-d" in arguments && source == fixture.project.mainModule ->
+                        ProcessResult.Completed(0, "^0helper")
+
+                    "-d" in arguments -> ProcessResult.Completed(0, "")
+
+                    // the unit declares two record types, the main module one
+                    source == fixture.project.mainModule -> {
+                        recordIds[source.name] = arguments.valueAfter("-r")
+                        output.resolve("M.class").writeBytes(byteArrayOf(1))
+                        ProcessResult.Completed(0, "^3R_2.class")
+                    }
+
+                    else -> {
+                        recordIds[source.name] = arguments.valueAfter("-r")
+                        output.resolve("helper.class").writeBytes(byteArrayOf(5))
+                        ProcessResult.Completed(0, "^3R_0.class\n^3R_1.class")
+                    }
+                }
+            }
+
+        val report = fixture.pipeline(runner).build()
+
+        assertTrue(report.succeeded)
+        assertEquals("0", recordIds["helper.pas"])
+        assertEquals("2", recordIds["game.pas"])
+    }
+
+    @Test
+    fun startsRecordNumberingOverOnEveryBuild() {
+        val fixture = fixture()
+        val recordIds = mutableListOf<String>()
+
+        val runner =
+            ProcessRunner { arguments ->
+                if ("-d" in arguments) {
+                    ProcessResult.Completed(0, "")
+                } else {
+                    recordIds += arguments.valueAfter("-r")
+                    File(arguments.valueAfter("-o")).resolve("M.class").writeBytes(byteArrayOf(1))
+                    ProcessResult.Completed(0, "^3R_0.class")
+                }
+            }
+
+        // prebuild/ is wiped for each build, so the second one has to number from zero again
+        val pipeline = fixture.pipeline(runner)
+        pipeline.build()
+        pipeline.build()
+
+        assertEquals(listOf("0", "0"), recordIds)
+    }
+
+    @Test
     fun reportsSilentCompilerExitAndDoesNotCreateJar() {
         val fixture = fixture()
         val runner = ProcessRunner { ProcessResult.Completed(137, "") }
