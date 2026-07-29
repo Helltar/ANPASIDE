@@ -2,10 +2,13 @@ package com.github.helltar.anpaside.foundation
 
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertThrows
+import org.junit.Assume.assumeTrue
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TemporaryFolder
 import java.io.File
+import java.nio.file.FileSystems
+import java.nio.file.Files
 
 class FileSystemTest {
 
@@ -25,6 +28,24 @@ class FileSystemTest {
                 .list()
                 .orEmpty()
                 .filter { it.startsWith(".config.aproj.") }
+        )
+    }
+
+    // the workspace lives on external storage, where a file written owner-only stops being
+    // readable from a pc over adb or MTP
+    @Test
+    fun atomicWriteLeavesTheSamePermissionsAsAnOrdinaryWrite() {
+        assumeTrue(FileSystems.getDefault().supportedFileAttributeViews().contains("posix"))
+
+        val directory = temporaryFolder.newFolder("project")
+        val ordinary = File(directory, "ordinary.aproj").apply { writeText("x") }
+        val atomic = File(directory, "atomic.aproj")
+
+        atomic.writeTextAtomically("x")
+
+        assertEquals(
+            Files.getPosixFilePermissions(ordinary.toPath()),
+            Files.getPosixFilePermissions(atomic.toPath())
         )
     }
 

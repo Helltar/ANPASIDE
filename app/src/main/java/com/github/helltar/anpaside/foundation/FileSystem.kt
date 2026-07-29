@@ -68,8 +68,15 @@ fun File.writeAtomically(write: (OutputStream) -> Unit) {
     val directory = parentFile ?: File(".")
     directory.createDirectories()
 
-    val temporary =
-        Files.createTempFile(directory.toPath(), ".$name.", ".tmp").toFile()
+    // deliberately not Files.createTempFile: that one creates the file readable by its owner
+    // only, and the rename below carries the mode over to the project file. On the external
+    // storage the workspace lives on, such a file is no longer readable over adb or MTP,
+    // which is the whole reason the workspace is there
+    val temporary = directory.resolve(".$name.${System.nanoTime()}.tmp")
+
+    if (!temporary.createNewFile()) {
+        throw IOException("Cannot create a temporary file: ${temporary.path}")
+    }
 
     try {
         temporary.outputStream().use(write)
