@@ -1,0 +1,1 @@
+- Fixed builds of projects that declare record types in more than one module
