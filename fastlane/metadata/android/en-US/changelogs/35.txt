@@ -1,0 +1,3 @@
+- Export projects as standalone Android APKs
+- Configure the APK package name, screen orientation, and on-screen keypad
+- Use project metadata and icons in exported apps
