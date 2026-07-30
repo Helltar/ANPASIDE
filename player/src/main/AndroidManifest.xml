@@ -6,9 +6,15 @@
       with the placeholder application id, and a relative ".PlayerActivity" would be rewritten
       into a class that does not exist in the dex
     -->
+    <!--
+      backup is on so a midlet's record store survives a new phone: everything the runtime keeps,
+      the converted midlet and its rms data, lives under getExternalFilesDir(), which android's
+      auto backup covers by default. the exported apk is signed with a key that never leaves the
+      ide's installation, so a restore can only land in an app the same user exported
+    -->
     <application
         android:name="com.github.helltar.anpaside.player.PlayerApplication"
-        android:allowBackup="false"
+        android:allowBackup="true"
         android:icon="@mipmap/midlet_icon"
         android:label="ANPASIDE Midlet"
         android:supportsRtl="true"
