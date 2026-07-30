@@ -10,7 +10,7 @@
       of holes. side 11.5 with rounded 3 corners, spaced 16, the group shifted 2 up because a
       triangle with the apex on top reads bottom heavy. the farthest corner sits 29 from the
       centre, so there is real air between the artwork and every launcher mask.
-      no android:tint here, the flat colour is what the monochrome layer gets retinted from.
+      no android:tint here, the flat color is what the monochrome layer gets retinted from.
     -->
     <path
         android:fillColor="#F5F7FA"

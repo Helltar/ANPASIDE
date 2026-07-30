@@ -1,7 +1,7 @@
 package com.github.helltar.anpaside.project
 
 /**
- * The `#RRGGBB` colours a project config stores.
+ * The `#RRGGBB` colors a project config stores.
  *
  * Written by hand into an `.aproj` as often as it is picked in the dialog, so anything the parser
  * does not recognise has to fall back rather than throw. There is no alpha: the layers of a

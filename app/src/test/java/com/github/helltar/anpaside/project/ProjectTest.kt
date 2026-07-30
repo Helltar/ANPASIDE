@@ -94,7 +94,7 @@ class ProjectTest {
 
         assertEquals("Catch Rect HD", reopened.label)
         assertEquals(77, reopened.versionCode)
-        // the hash of a colour is escaped by Properties.store and has to survive the round trip
+        // the hash of a color is escaped by Properties.store and has to survive the round trip
         assertEquals("#2E5E4E", reopened.iconBackground)
     }
 
@@ -156,10 +156,10 @@ class ProjectTest {
     }
 
     @Test
-    fun aBrokenIconColourFallsBackToTheDefaultTile() {
-        val projectDir = temporaryFolder.newFolder("colour")
+    fun aBrokenIconColorFallsBackToTheDefaultTile() {
+        val projectDir = temporaryFolder.newFolder("color")
         val config =
-            File(projectDir, "colour.aproj").apply {
+            File(projectDir, "color.aproj").apply {
                 writeText("Name=game\nMainModule=main\nIconBackground=nonsense")
             }
 

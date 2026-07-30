@@ -1,5 +1,5 @@
 - New APK settings screen for the exported app
 - Set the name shown under the launcher icon, separately from the MIDlet name
 - Set the APK version code by hand instead of deriving it from MIDlet-Version
-- Pick the background colour of the launcher icon
+- Pick the background color of the launcher icon
 - Exported apps now keep their saved data in Android backups

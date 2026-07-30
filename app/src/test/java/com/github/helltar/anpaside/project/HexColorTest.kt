@@ -9,7 +9,7 @@ import org.junit.Test
 class HexColorTest {
 
     @Test
-    fun parsesSixDigitColoursAsOpaque() {
+    fun parsesSixDigitColorsAsOpaque() {
         assertEquals(0xFF3F444C.toInt(), HexColor.parse("#3F444C"))
         assertEquals(0xFFFFFFFF.toInt(), HexColor.parse("#ffffff"))
         assertEquals(0xFF000000.toInt(), HexColor.parse("#000000"))

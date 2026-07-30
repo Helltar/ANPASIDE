@@ -33,8 +33,8 @@
     <string name="err.invalid_midlet_metadata">MIDlet name, vendor and version must be non-empty single-line values; the name cannot contain path separators</string>
     <string name="err.invalid_package_name">At least two parts separated by dots, letters, digits and underscores only, each part starting with a letter — for example midlet.tank</string>
     <string name="err.invalid_version_code">A whole number of at least 1, or empty</string>
-    <string name="err.invalid_icon_background">A colour as #RRGGBB — for example #3F444C</string>
-    <string name="err.invalid_apk_settings">Check the APK package, version code and icon colour</string>
+    <string name="err.invalid_icon_background">A color as #RRGGBB — for example #3F444C</string>
+    <string name="err.invalid_apk_settings">Check the APK package, version code and icon color</string>
     <string name="err.failed_create_archive">Failed to create the archive</string>
     <string name="err.file_not_found">File not found</string>
     <string name="err.del_project">Failed to delete the project</string>
@@ -130,7 +130,7 @@
     <string name="text.apk.icon_background">Icon background</string>
     <string name="text.apk.orientation">Orientation</string>
     <string name="text.apk.keyboard">On-screen keypad</string>
-    <string name="text.apk.pick_colour">Pick a colour</string>
+    <string name="text.apk.pick_color">Pick a color</string>
 
     <string name="text.global.directory.libs">Global library directory</string>
 

@@ -159,13 +159,13 @@ fun ApkSettingsScreen(
                 isError = !iconBackgroundValid,
                 supportingText = stringResource(R.string.err_invalid_icon_background)
                     .takeIf { !iconBackgroundValid },
-                // the swatch is the button: it shows the colour the field spells out and opens
+                // the swatch is the button: it shows the color the field spells out and opens
                 // the picker, which is the only other way to change it
                 trailingIcon = {
                     IconButton(onClick = { pickerOpen = true }) {
                         ColorSwatch(
                             color = HexColor.parse(iconBackground.trim()),
-                            description = stringResource(R.string.text_apk_pick_colour)
+                            description = stringResource(R.string.text_apk_pick_color)
                         )
                     }
                 }
@@ -212,7 +212,7 @@ fun ApkSettingsScreen(
 
     if (pickerOpen) {
         ColorPickerDialog(
-            // a half typed colour in the field is no reason to open on black
+            // a half typed color in the field is no reason to open on black
             initialColor = HexColor.parse(iconBackground.trim())
                 ?: ApkSettings.DEFAULT_ICON_BACKGROUND_COLOR,
             onPick = { picked ->
@@ -225,7 +225,7 @@ fun ApkSettingsScreen(
     }
 }
 
-// an unparseable colour leaves an empty ring rather than nothing to press
+// an unparseable color leaves an empty ring rather than nothing to press
 @Composable
 private fun ColorSwatch(color: Int?, description: String) {
     Box(

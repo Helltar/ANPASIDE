@@ -47,7 +47,7 @@ private val hueColors =
     listOf(0f, 60f, 120f, 180f, 240f, 300f, 360f).map { hue -> Color(hsvColor(hue, 1f, 1f)) }
 
 /**
- * Picks the flat colour behind an exported midlet's icon.
+ * Picks the flat color behind an exported midlet's icon.
  *
  * HSV rather than three RGB sliders, because the tile is chosen by eye against a sprite: a hue
  * strip plus a saturation/value square is how that is done everywhere else, and both are a couple
@@ -70,7 +70,7 @@ fun ColorPickerDialog(
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text(stringResource(R.string.text_apk_pick_colour)) },
+        title = { Text(stringResource(R.string.text_apk_pick_color)) },
         text = {
             Column {
                 Row(verticalAlignment = Alignment.CenterVertically) {
@@ -174,7 +174,7 @@ private fun Modifier.pickPosition(onPosition: (Offset, IntSize) -> Unit): Modifi
         }
     }
 
-// a two colour ring, so the marker stays visible over both the white and the black corner
+// a two color ring, so the marker stays visible over both the white and the black corner
 private fun DrawScope.drawMarker(center: Offset) {
     val stroke = Stroke(width = 1.dp.toPx())
 

@@ -131,7 +131,7 @@
     <string name="text.apk.icon_background">Фон иконки</string>
     <string name="text.apk.orientation">Ориентация</string>
     <string name="text.apk.keyboard">Экранная клавиатура</string>
-    <string name="text.apk.pick_colour">Выбрать цвет</string>
+    <string name="text.apk.pick_color">Выбрать цвет</string>
 
     <string name="text.global.directory.libs">Каталог глобальных библиотек</string>
 

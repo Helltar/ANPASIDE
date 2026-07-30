@@ -51,7 +51,7 @@ data class ApkSettings(
     fun labelOr(midletName: String): String = label.ifBlank { midletName }
 
     companion object {
-        // the tile every exported icon used to sit on, when it was a colour resource of the
+        // the tile every exported icon used to sit on, when it was a color resource of the
         // player template rather than a layer the export draws
         const val DEFAULT_ICON_BACKGROUND = "#3F444C"
 

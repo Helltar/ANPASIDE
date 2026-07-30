@@ -16,7 +16,7 @@ import kotlin.math.roundToInt
  * something has to do the scaling. Left to the launcher it is done with smoothing, which turns
  * pixel art into mush; here it is scaled by a whole number instead, with filtering off, and
  * placed in the part of the foreground layer that no launcher mask can crop. The layer below it
- * is a flat colour, drawn here as well rather than read from the template, so that two exported
+ * is a flat color, drawn here as well rather than read from the template, so that two exported
  * midlets do not have to share one tile.
  */
 object LauncherIcon {
@@ -26,7 +26,7 @@ object LauncherIcon {
     const val CANVAS_SIZE = 432
     const val SAFE_ZONE_SIZE = 264
 
-    /** The background layer: the whole grid in one opaque colour. */
+    /** The background layer: the whole grid in one opaque color. */
     fun background(color: Int): ByteArray {
         val target = Bitmap.createBitmap(CANVAS_SIZE, CANVAS_SIZE, Bitmap.Config.ARGB_8888)
 
