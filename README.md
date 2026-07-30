@@ -1,10 +1,10 @@
 ANPASIDE
 ========
 
-ANPASIDE is an Android IDE for MIDletPascal. Write Pascal on your phone, compile it
-with the bundled [mp3cc](https://github.com/Helltar/mp3cc) compiler, package it as a
-J2ME `.jar`, run it in the built-in emulator, or export it as a standalone Android
-`.apk` — entirely on-device and offline.
+An IDE for the MIDletPascal language: write Pascal on your phone, compile it with the
+bundled [mp3cc](https://github.com/Helltar/mp3cc) compiler, package it as a J2ME `.jar`,
+run it in the built-in emulator, or export it as a standalone Android `.apk` — entirely
+on-device and offline.
 
 - MIDletPascal language reference: https://helltar.com/midletpascal
 
