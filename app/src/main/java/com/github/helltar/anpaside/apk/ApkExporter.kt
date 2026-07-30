@@ -16,6 +16,7 @@ data class ApkExportRequest(
     val application: ApkApplication,
     val midletFiles: Map<String, File>,
     val icon: File?,
+    val iconBackground: Int,
     val target: File
 )
 
@@ -64,7 +65,9 @@ class ApkExporter(
         val replacements =
             mutableMapOf(
                 ApkTemplate.MANIFEST_ENTRY to
-                        ApkTemplate.patchManifest(manifest, request.application)
+                        ApkTemplate.patchManifest(manifest, request.application),
+                ApkTemplate.ICON_BACKGROUND_ENTRY to
+                        LauncherIcon.background(request.iconBackground)
             )
 
         // a midlet without a readable icon of its own keeps the template's

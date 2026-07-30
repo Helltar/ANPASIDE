@@ -34,6 +34,9 @@
     <string name="err.invalid_file_name">Назва файлу не може містити розділювачі шляху</string>
     <string name="err.invalid_midlet_metadata">Назва, постачальник і версія MIDlet мають бути непорожніми однорядковими значеннями; назва не може містити розділювачі шляху</string>
     <string name="err.invalid_package_name">Щонайменше дві частини через крапку, лише літери, цифри та підкреслення, кожна частина починається з літери — наприклад midlet.tank</string>
+    <string name="err.invalid_version_code">Ціле число не менше 1 або порожньо</string>
+    <string name="err.invalid_icon_background">Колір у вигляді #RRGGBB — наприклад #3F444C</string>
+    <string name="err.invalid_apk_settings">Перевірте пакет APK, код версії та колір іконки</string>
     <string name="err.failed_create_archive">Не вдалося створити архів</string>
     <string name="err.file_not_found">Файл не знайдено</string>
     <string name="err.del_project">Не вдалося видалити проєкт</string>
@@ -100,7 +103,13 @@
     <string name="dlg.title.delete_file">Видалити?</string>
     <string name="dlg.hint.new_name">Нова назва</string>
     <string name="dlg.title.project_config">Налаштування проєкту</string>
+    <string name="dlg.section.apk">APK</string>
     <string name="dlg.hint.package">Android-пакет (APK)</string>
+    <string name="dlg.hint.app_label">Назва під іконкою</string>
+    <string name="dlg.hint.app_label_empty">Порожньо: береться назва MIDlet</string>
+    <string name="dlg.hint.version_code">Код версії APK</string>
+    <string name="dlg.hint.version_code_empty">Порожньо: виводиться з MIDlet-Version</string>
+    <string name="dlg.hint.icon_background">Фон іконки, #RRGGBB</string>
     <string name="dlg.option.apk_orientation">Орієнтація APK</string>
     <string name="dlg.option.apk_keyboard">Екранна клавіатура в APK</string>
     <string name="dlg.msg.delete_file">"%s" буде видалено</string>

@@ -15,8 +15,9 @@ import kotlin.math.roundToInt
  * A midlet icon is a sprite of 16 to 64 pixels and Android asks for 108dp of adaptive icon, so
  * something has to do the scaling. Left to the launcher it is done with smoothing, which turns
  * pixel art into mush; here it is scaled by a whole number instead, with filtering off, and
- * placed in the part of the foreground layer that no launcher mask can crop. The layer below
- * it is a flat colour that ships with the template and never changes.
+ * placed in the part of the foreground layer that no launcher mask can crop. The layer below it
+ * is a flat colour, drawn here as well rather than read from the template, so that two exported
+ * midlets do not have to share one tile.
  */
 object LauncherIcon {
 
@@ -24,6 +25,17 @@ object LauncherIcon {
     // every mask shape
     const val CANVAS_SIZE = 432
     const val SAFE_ZONE_SIZE = 264
+
+    /** The background layer: the whole grid in one opaque colour. */
+    fun background(color: Int): ByteArray {
+        val target = Bitmap.createBitmap(CANVAS_SIZE, CANVAS_SIZE, Bitmap.Config.ARGB_8888)
+
+        // a launcher shifts the background around to parallax it, so anything transparent would
+        // show through at the edges
+        Canvas(target).drawColor(color or OPAQUE)
+
+        return target.toPng().also { target.recycle() }
+    }
 
     fun compose(icon: File): ByteArray? {
         val source = BitmapFactory.decodeFile(icon.path) ?: return null
@@ -56,11 +68,7 @@ object LauncherIcon {
             paint
         )
 
-        val png =
-            ByteArrayOutputStream().let { output ->
-                target.compress(Bitmap.CompressFormat.PNG, 100, output)
-                output.toByteArray()
-            }
+        val png = target.toPng()
 
         source.recycle()
         target.recycle()
@@ -85,4 +93,12 @@ object LauncherIcon {
 
         return if (whole * 4 >= safeSize * 3) whole else safeSize
     }
+
+    private const val OPAQUE = 0xFF shl 24
+
+    private fun Bitmap.toPng(): ByteArray =
+        ByteArrayOutputStream().let { output ->
+            compress(Bitmap.CompressFormat.PNG, 100, output)
+            output.toByteArray()
+        }
 }

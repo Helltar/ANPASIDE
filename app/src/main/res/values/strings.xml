@@ -32,6 +32,9 @@
     <string name="err.invalid_file_name">File name cannot contain path separators</string>
     <string name="err.invalid_midlet_metadata">MIDlet name, vendor and version must be non-empty single-line values; the name cannot contain path separators</string>
     <string name="err.invalid_package_name">At least two parts separated by dots, letters, digits and underscores only, each part starting with a letter — for example midlet.tank</string>
+    <string name="err.invalid_version_code">A whole number of at least 1, or empty</string>
+    <string name="err.invalid_icon_background">A colour as #RRGGBB — for example #3F444C</string>
+    <string name="err.invalid_apk_settings">Check the APK package, version code and icon colour</string>
     <string name="err.failed_create_archive">Failed to create the archive</string>
     <string name="err.file_not_found">File not found</string>
     <string name="err.del_project">Failed to delete the project</string>
@@ -99,7 +102,13 @@
     <string name="dlg.title.delete_file">Delete?</string>
     <string name="dlg.hint.new_name">New name</string>
     <string name="dlg.title.project_config">Project settings</string>
+    <string name="dlg.section.apk">APK</string>
     <string name="dlg.hint.package">Android package (APK)</string>
+    <string name="dlg.hint.app_label">Name under the launcher icon</string>
+    <string name="dlg.hint.app_label_empty">Empty: the MIDlet name is used</string>
+    <string name="dlg.hint.version_code">APK version code</string>
+    <string name="dlg.hint.version_code_empty">Empty: derived from MIDlet-Version</string>
+    <string name="dlg.hint.icon_background">Icon background, #RRGGBB</string>
     <string name="dlg.option.apk_orientation">APK orientation</string>
     <string name="dlg.option.apk_keyboard">On-screen keypad in APK</string>
     <string name="dlg.msg.delete_file">"%s" will be deleted</string>

@@ -33,6 +33,16 @@ object ProjectNames {
 
     fun isValidPackageName(name: String): Boolean = packageName.matches(name)
 
+    // an empty label is the "use the MIDlet name" case, so only a label that is actually there
+    // has to survive going into a manifest
+    fun isValidAppLabel(label: String): Boolean = label.isEmpty() || label.isValidManifestValue()
+
+    fun isValidApkSettings(settings: ApkSettings): Boolean =
+        isValidPackageName(settings.packageName) &&
+                isValidAppLabel(settings.label) &&
+                HexColor.isValid(settings.iconBackground) &&
+                (settings.versionCode == null || settings.versionCode >= Project.MIN_VERSION_CODE)
+
     // android needs at least two segments, each starting with a letter, and nothing but the
     // midlet name is known here to build one from
     fun defaultPackageName(midletName: String): String {

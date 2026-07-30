@@ -42,9 +42,10 @@ object ApkTemplate {
 
     const val ASSET_PATH = "player/template.apk"
     const val MANIFEST_ENTRY = "AndroidManifest.xml"
-    // only the foreground layer of the adaptive icon is replaced; its background colour and the
-    // adaptive-icon xml that ties the two together stay as the template built them
+    // both layers of the adaptive icon are pngs so both can be replaced by name; the
+    // adaptive-icon xml that ties them together stays as the template built it
     const val ICON_ENTRY = "res/mipmap-xxxhdpi-v4/midlet_icon_foreground.png"
+    const val ICON_BACKGROUND_ENTRY = "res/mipmap-xxxhdpi-v4/midlet_icon_background.png"
     const val RESOURCE_TABLE_ENTRY = "resources.arsc"
     const val MIDLET_ASSET_DIRECTORY = "assets/midlet/"
 

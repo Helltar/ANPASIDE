@@ -26,6 +26,7 @@ import com.github.helltar.anpaside.foundation.TextFileStore
 import com.github.helltar.anpaside.preferences.AppPreferences
 import com.github.helltar.anpaside.preferences.EditorPreferences
 import com.github.helltar.anpaside.project.ApkOrientation
+import com.github.helltar.anpaside.project.ApkSettings
 import com.github.helltar.anpaside.project.CreationResult
 import com.github.helltar.anpaside.project.MidletMetadata
 import com.github.helltar.anpaside.project.Project
@@ -282,18 +283,11 @@ class WorkspaceViewModel(
     fun currentProjectMetadata(): MidletMetadata =
         project?.metadata ?: MidletMetadata("", "", "")
 
-    fun currentPackageName(): String = project?.packageName.orEmpty()
-
-    fun currentApkKeyboardEnabled(): Boolean = project?.apkKeyboardEnabled ?: false
-
-    fun currentApkOrientation(): ApkOrientation =
-        project?.apkOrientation ?: ApkOrientation.PORTRAIT
+    fun currentApkSettings(): ApkSettings = project?.apkSettings ?: DEFAULT_APK_SETTINGS
 
     fun saveProjectMetadata(
         metadata: MidletMetadata,
-        packageName: String,
-        apkOrientation: ApkOrientation,
-        apkKeyboardEnabled: Boolean,
+        apkSettings: ApkSettings,
         onComplete: (Boolean) -> Unit = {}
     ) {
         val activeProject = project ?: return onComplete(false)
@@ -304,32 +298,26 @@ class WorkspaceViewModel(
             return
         }
 
-        if (!ProjectNames.isValidPackageName(packageName)) {
-            logger.error(strings.get(R.string.err_invalid_package_name))
+        if (!ProjectNames.isValidApkSettings(apkSettings)) {
+            logger.error(strings.get(R.string.err_invalid_apk_settings))
             onComplete(false)
             return
         }
 
         val previous = activeProject.metadata
-        val previousPackage = activeProject.packageName
-        val previousApkOrientation = activeProject.apkOrientation
-        val previousApkKeyboardEnabled = activeProject.apkKeyboardEnabled
+        val previousApkSettings = activeProject.apkSettings
 
         viewModelScope.launch {
             val saved =
                 runCatching {
                     withContext(ioDispatcher) {
                         activeProject.updateMetadata(metadata)
-                        activeProject.updatePackageName(packageName)
-                        activeProject.updateApkOrientation(apkOrientation)
-                        activeProject.updateApkKeyboard(apkKeyboardEnabled)
+                        activeProject.updateApkSettings(apkSettings)
                         activeProject.save()
                     }
                 }.onFailure { error ->
                     activeProject.updateMetadata(previous)
-                    activeProject.updatePackageName(previousPackage)
-                    activeProject.updateApkOrientation(previousApkOrientation)
-                    activeProject.updateApkKeyboard(previousApkKeyboardEnabled)
+                    activeProject.updateApkSettings(previousApkSettings)
                     logger.error(error)
                 }.isSuccess
 
@@ -487,8 +475,8 @@ class WorkspaceViewModel(
                                     converter.convert(
                                         builtMidlet.jarPath,
                                         builtMidlet.projectName,
-                                        activeProject.apkKeyboardEnabled,
-                                        activeProject.apkOrientation
+                                        activeProject.apkSettings.keyboardEnabled,
+                                        activeProject.apkSettings.orientation
                                     )
                                 )
                             )
@@ -499,7 +487,7 @@ class WorkspaceViewModel(
                     strings.get(R.string.msg_apk_exported) + "\n" +
                             "${ProjectLayout.BINARY_DIRECTORY}/${apk.name}\n" +
                             "${apk.length() / 1024} KB\n" +
-                            activeProject.packageName
+                            activeProject.apkSettings.packageName
                 )
 
                 refreshProjectTree()
@@ -510,20 +498,27 @@ class WorkspaceViewModel(
         }
     }
 
-    private fun exportRequest(project: Project, midletFiles: Map<String, File>) =
-        ApkExportRequest(
+    private fun exportRequest(project: Project, midletFiles: Map<String, File>): ApkExportRequest {
+        val settings = project.apkSettings
+        val metadata = project.metadata
+
+        return ApkExportRequest(
             application =
                 ApkApplication(
-                    packageName = project.packageName,
-                    label = project.metadata.name,
-                    versionName = project.metadata.version,
-                    versionCode = ApkVersions.codeOf(project.metadata.version)
+                    packageName = settings.packageName,
+                    label = settings.labelOr(metadata.name),
+                    versionName = metadata.version,
+                    // a project that never set one follows the MIDlet version, the way every
+                    // export did before the field existed
+                    versionCode = settings.versionCode ?: ApkVersions.codeOf(metadata.version)
                 ),
             midletFiles = midletFiles,
             // the same file the midlet manifest points at, so the app and the midlet share it
             icon = project.resourcesDirectory.resolve(MIDLET_ICON).takeIf(File::isFile),
+            iconBackground = settings.iconBackgroundColor,
             target = project.outputApk
         )
+    }
 
     private suspend fun installAssetsIfNeeded() {
         val firstInstall = !appPreferences.assetsInstalled
@@ -631,5 +626,16 @@ class WorkspaceViewModel(
     private companion object {
         const val MAX_LOG_ENTRIES = 200
         const val MIDLET_ICON = "icon.png"
+
+        // what the config dialog shows with no project open; it cannot be saved anywhere
+        val DEFAULT_APK_SETTINGS =
+            ApkSettings(
+                packageName = "",
+                label = "",
+                versionCode = null,
+                iconBackground = ApkSettings.DEFAULT_ICON_BACKGROUND,
+                orientation = ApkOrientation.PORTRAIT,
+                keyboardEnabled = false
+            )
     }
 }

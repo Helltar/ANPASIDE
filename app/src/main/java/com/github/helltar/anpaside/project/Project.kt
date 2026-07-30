@@ -28,6 +28,37 @@ enum class ApkOrientation(val propertyValue: String) {
     }
 }
 
+/**
+ * Everything an exported apk carries that the MIDlet manifest does not decide.
+ *
+ * [label] and [versionCode] are optional overrides, because both used to be taken from the MIDlet
+ * metadata and that name does four jobs at once - it is the MIDlet-Name, the name of the jar, the
+ * name of the apk and the name under the launcher icon. A blank label keeps the old behaviour,
+ * and so does a null version code.
+ */
+data class ApkSettings(
+    val packageName: String,
+    val label: String,
+    val versionCode: Int?,
+    val iconBackground: String,
+    val orientation: ApkOrientation,
+    val keyboardEnabled: Boolean
+) {
+
+    val iconBackgroundColor: Int
+        get() = HexColor.parse(iconBackground) ?: DEFAULT_ICON_BACKGROUND_COLOR
+
+    fun labelOr(midletName: String): String = label.ifBlank { midletName }
+
+    companion object {
+        // the tile every exported icon used to sit on, when it was a colour resource of the
+        // player template rather than a layer the export draws
+        const val DEFAULT_ICON_BACKGROUND = "#3F444C"
+
+        val DEFAULT_ICON_BACKGROUND_COLOR = HexColor.parse(DEFAULT_ICON_BACKGROUND)!!
+    }
+}
+
 // a project is an .aproj properties file plus the directory tree derived from its location
 class Project private constructor(val configFile: File, private val properties: Properties) {
 
@@ -59,13 +90,27 @@ class Project private constructor(val configFile: File, private val properties: 
                     properties.getProperty(KEY_CANVAS_TYPE)?.toIntOrNull() ?: DEFAULT_CANVAS_TYPE
             )
 
-    val apkKeyboardEnabled: Boolean
+    val apkSettings: ApkSettings
         get() =
-            properties.getProperty(KEY_APK_KEYBOARD)?.toBooleanStrictOrNull()
-                ?: DEFAULT_APK_KEYBOARD
-
-    val apkOrientation: ApkOrientation
-        get() = ApkOrientation.fromProperty(properties.getProperty(KEY_APK_ORIENTATION))
+            ApkSettings(
+                packageName = packageName,
+                label = properties.getProperty(KEY_APP_LABEL).orEmpty().trim(),
+                // a version code below one cannot be installed, so a broken value is treated as
+                // absent and the code is derived from the MIDlet version again
+                versionCode =
+                    properties.getProperty(KEY_APK_VERSION_CODE)
+                        ?.toIntOrNull()
+                        ?.takeIf { code -> code >= MIN_VERSION_CODE },
+                iconBackground =
+                    properties.getProperty(KEY_ICON_BACKGROUND)
+                        ?.takeIf(HexColor::isValid)
+                        ?: ApkSettings.DEFAULT_ICON_BACKGROUND,
+                orientation =
+                    ApkOrientation.fromProperty(properties.getProperty(KEY_APK_ORIENTATION)),
+                keyboardEnabled =
+                    properties.getProperty(KEY_APK_KEYBOARD)?.toBooleanStrictOrNull()
+                        ?: DEFAULT_APK_KEYBOARD
+            )
 
     val mainModule: File
         get() {
@@ -110,12 +155,25 @@ class Project private constructor(val configFile: File, private val properties: 
         properties.setProperty(KEY_PACKAGE, name)
     }
 
-    fun updateApkKeyboard(enabled: Boolean) {
-        properties.setProperty(KEY_APK_KEYBOARD, enabled.toString())
-    }
+    fun updateApkSettings(settings: ApkSettings) {
+        require(ProjectNames.isValidApkSettings(settings)) { "Invalid APK settings" }
+        updatePackageName(settings.packageName)
+        properties.setProperty(KEY_APP_LABEL, settings.label)
+        properties.setProperty(KEY_ICON_BACKGROUND, settings.iconBackground)
+        properties.setProperty(KEY_APK_ORIENTATION, settings.orientation.propertyValue)
+        properties.setProperty(KEY_APK_KEYBOARD, settings.keyboardEnabled.toString())
 
-    fun updateApkOrientation(orientation: ApkOrientation) {
-        properties.setProperty(KEY_APK_ORIENTATION, orientation.propertyValue)
+        // an absent key is what makes the version code follow the MIDlet version, so clearing
+        // the field has to remove it rather than write something out. not an elvis over let:
+        // setProperty answers with the previous value, which is null for a key being added, and
+        // that would take the branch that deletes what was just written
+        val versionCode = settings.versionCode
+
+        if (versionCode == null) {
+            properties.remove(KEY_APK_VERSION_CODE)
+        } else {
+            properties.setProperty(KEY_APK_VERSION_CODE, versionCode.toString())
+        }
     }
 
     fun updateMainModule(name: String) {
@@ -165,11 +223,22 @@ class Project private constructor(val configFile: File, private val properties: 
                     KEY_APK_ORIENTATION,
                     ApkOrientation.PORTRAIT.propertyValue
                 )
+                properties.setProperty(
+                    KEY_ICON_BACKGROUND,
+                    ApkSettings.DEFAULT_ICON_BACKGROUND
+                )
+                // AppLabel and ApkVersionCode are left out on purpose: absent means "follow the
+                // MIDlet metadata", which is what a new project wants
                 updateMetadata(MidletMetadata(name, DEFAULT_VENDOR, "1.0"))
             }
 
+        const val MIN_VERSION_CODE = 1
+
         private const val KEY_MAIN_MODULE = "MainModule"
         private const val KEY_PACKAGE = "Package"
+        private const val KEY_APP_LABEL = "AppLabel"
+        private const val KEY_APK_VERSION_CODE = "ApkVersionCode"
+        private const val KEY_ICON_BACKGROUND = "IconBackground"
         private const val KEY_APK_KEYBOARD = "ApkKeyboard"
         private const val KEY_APK_ORIENTATION = "ApkOrientation"
         private const val KEY_MATH_TYPE = "MathType"
