@@ -2,16 +2,15 @@ package com.github.helltar.anpaside.ui.apk
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardOptions
@@ -19,6 +18,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
@@ -34,6 +34,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.github.helltar.anpaside.R
@@ -44,18 +46,6 @@ import com.github.helltar.anpaside.project.Project
 import com.github.helltar.anpaside.project.ProjectNames
 import com.github.helltar.anpaside.ui.components.BackButton
 import com.github.helltar.anpaside.ui.editor.WorkspaceViewModel
-
-// tiles a pixel sprite reads well on: the grey every export used to share, near black, four
-// muted colours. anything else is typed into the field by hand
-private val iconBackgroundPresets =
-    listOf(
-        ApkSettings.DEFAULT_ICON_BACKGROUND,
-        "#1F2933",
-        "#2E5E4E",
-        "#7A3B2E",
-        "#3B3A6B",
-        "#E8E4D9"
-    )
 
 /**
  * Everything about the apk an export produces, for the open project.
@@ -84,6 +74,7 @@ fun ApkSettingsScreen(
     var iconBackground by rememberSaveable { mutableStateOf(settings.iconBackground) }
     var orientation by rememberSaveable { mutableStateOf(settings.orientation) }
     var keyboardEnabled by rememberSaveable { mutableStateOf(settings.keyboardEnabled) }
+    var pickerOpen by rememberSaveable { mutableStateOf(false) }
 
     val packageValid = ProjectNames.isValidPackageName(packageName.trim())
     val parsedVersionCode = versionCode.trim().toIntOrNull()
@@ -126,7 +117,7 @@ fun ApkSettingsScreen(
             SettingsField(
                 value = packageName,
                 onValueChange = { packageName = it; apply() },
-                label = stringResource(R.string.dlg_hint_package),
+                label = stringResource(R.string.text_apk_package),
                 modifier = Modifier.padding(top = 16.dp),
                 isError = !packageValid,
                 supportingText = stringResource(R.string.err_invalid_package_name)
@@ -136,16 +127,16 @@ fun ApkSettingsScreen(
             SettingsField(
                 value = label,
                 onValueChange = { label = it; apply() },
-                label = stringResource(R.string.dlg_hint_app_label),
+                label = stringResource(R.string.text_apk_label),
                 modifier = Modifier.padding(top = 8.dp),
-                supportingText = stringResource(R.string.dlg_hint_app_label_empty)
+                supportingText = stringResource(R.string.text_apk_label_hint)
                     .takeIf { label.isBlank() }
             )
 
             SettingsField(
                 value = versionCode,
                 onValueChange = { versionCode = it; apply() },
-                label = stringResource(R.string.dlg_hint_version_code),
+                label = stringResource(R.string.text_apk_version_code),
                 modifier = Modifier.padding(top = 8.dp),
                 keyboardType = KeyboardType.Number,
                 isError = !versionCodeValid,
@@ -153,7 +144,7 @@ fun ApkSettingsScreen(
                     when {
                         !versionCodeValid -> stringResource(R.string.err_invalid_version_code)
                         versionCode.isBlank() ->
-                            stringResource(R.string.dlg_hint_version_code_empty)
+                            stringResource(R.string.text_apk_version_code_hint)
 
                         else -> null
                     }
@@ -164,30 +155,26 @@ fun ApkSettingsScreen(
             SettingsField(
                 value = iconBackground,
                 onValueChange = { iconBackground = it; apply() },
-                label = stringResource(R.string.dlg_hint_icon_background),
+                label = stringResource(R.string.text_apk_icon_background),
                 isError = !iconBackgroundValid,
                 supportingText = stringResource(R.string.err_invalid_icon_background)
-                    .takeIf { !iconBackgroundValid }
-            )
-
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                for (preset in iconBackgroundPresets) {
-                    ColorSwatch(
-                        color = preset,
-                        selected = preset.equals(iconBackground.trim(), ignoreCase = true),
-                        onClick = { iconBackground = preset; apply() },
-                        modifier = Modifier.weight(1f)
-                    )
+                    .takeIf { !iconBackgroundValid },
+                // the swatch is the button: it shows the colour the field spells out and opens
+                // the picker, which is the only other way to change it
+                trailingIcon = {
+                    IconButton(onClick = { pickerOpen = true }) {
+                        ColorSwatch(
+                            color = HexColor.parse(iconBackground.trim()),
+                            description = stringResource(R.string.text_apk_pick_colour)
+                        )
+                    }
                 }
-            }
+            )
 
             HorizontalDivider(Modifier.padding(vertical = 16.dp))
 
             Text(
-                text = stringResource(R.string.dlg_option_apk_orientation),
+                text = stringResource(R.string.text_apk_orientation),
                 style = MaterialTheme.typography.titleSmall
             )
 
@@ -212,7 +199,7 @@ fun ApkSettingsScreen(
                 modifier = Modifier.fillMaxWidth().padding(top = 16.dp, bottom = 24.dp)
             ) {
                 Text(
-                    text = stringResource(R.string.dlg_option_apk_keyboard),
+                    text = stringResource(R.string.text_apk_keyboard),
                     modifier = Modifier.weight(1f)
                 )
                 Switch(
@@ -222,32 +209,31 @@ fun ApkSettingsScreen(
             }
         }
     }
+
+    if (pickerOpen) {
+        ColorPickerDialog(
+            // a half typed colour in the field is no reason to open on black
+            initialColor = HexColor.parse(iconBackground.trim())
+                ?: ApkSettings.DEFAULT_ICON_BACKGROUND_COLOR,
+            onPick = { picked ->
+                iconBackground = HexColor.format(picked)
+                pickerOpen = false
+                apply()
+            },
+            onDismiss = { pickerOpen = false }
+        )
+    }
 }
 
+// an unparseable colour leaves an empty ring rather than nothing to press
 @Composable
-private fun ColorSwatch(
-    color: String,
-    selected: Boolean,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    val parsed = HexColor.parse(color) ?: return
-
+private fun ColorSwatch(color: Int?, description: String) {
     Box(
-        modifier
-            .aspectRatio(1f)
-            .background(Color(parsed), CircleShape)
-            .border(
-                width = if (selected) 3.dp else 1.dp,
-                color =
-                    if (selected) {
-                        MaterialTheme.colorScheme.primary
-                    } else {
-                        MaterialTheme.colorScheme.outlineVariant
-                    },
-                shape = CircleShape
-            )
-            .clickable(onClick = onClick)
+        Modifier
+            .size(24.dp)
+            .semantics { contentDescription = description }
+            .background(color?.let(::Color) ?: Color.Transparent, CircleShape)
+            .border(1.dp, MaterialTheme.colorScheme.outlineVariant, CircleShape)
     )
 }
 
@@ -259,7 +245,8 @@ private fun SettingsField(
     modifier: Modifier = Modifier,
     keyboardType: KeyboardType = KeyboardType.Text,
     isError: Boolean = false,
-    supportingText: String? = null
+    supportingText: String? = null,
+    trailingIcon: @Composable (() -> Unit)? = null
 ) {
     OutlinedTextField(
         value = value,
@@ -269,6 +256,7 @@ private fun SettingsField(
         isError = isError,
         keyboardOptions = KeyboardOptions(keyboardType = keyboardType),
         supportingText = supportingText?.let { text -> { Text(text) } },
+        trailingIcon = trailingIcon,
         modifier = modifier.fillMaxWidth()
     )
 }

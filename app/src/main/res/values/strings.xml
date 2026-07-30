@@ -102,14 +102,6 @@
     <string name="dlg.title.rename">Rename</string>
     <string name="dlg.title.delete_file">Delete?</string>
     <string name="dlg.hint.new_name">New name</string>
-    <string name="dlg.hint.package">Android package (APK)</string>
-    <string name="dlg.hint.app_label">Name under the launcher icon</string>
-    <string name="dlg.hint.app_label_empty">Empty: the MIDlet name is used</string>
-    <string name="dlg.hint.version_code">APK version code</string>
-    <string name="dlg.hint.version_code_empty">Empty: derived from MIDlet-Version</string>
-    <string name="dlg.hint.icon_background">Icon background, #RRGGBB</string>
-    <string name="dlg.option.apk_orientation">APK orientation</string>
-    <string name="dlg.option.apk_keyboard">On-screen keypad in APK</string>
     <string name="dlg.msg.delete_file">"%s" will be deleted</string>
 
     <!-- settings -->
@@ -127,6 +119,19 @@
     <string name="lbl.screen_device_resolution">Native resolution (1:1)</string>
     <string name="lbl.orientation.portrait">Portrait</string>
     <string name="lbl.orientation.landscape">Landscape</string>
+
+    <!-- apk settings -->
+
+    <string name="text.apk.package">Android package</string>
+    <string name="text.apk.label">Name under the launcher icon</string>
+    <string name="text.apk.label_hint">Empty: taken from MIDlet-Name</string>
+    <string name="text.apk.version_code">Version code</string>
+    <string name="text.apk.version_code_hint">Empty: derived from MIDlet-Version</string>
+    <string name="text.apk.icon_background">Icon background</string>
+    <string name="text.apk.orientation">Orientation</string>
+    <string name="text.apk.keyboard">On-screen keypad</string>
+    <string name="text.apk.pick_colour">Pick a colour</string>
+
     <string name="text.global.directory.libs">Global library directory</string>
 
     <!-- buttons -->
