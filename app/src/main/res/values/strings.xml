@@ -86,6 +86,7 @@
     <string name="lbl.open_file_to_edit">Open a file to start editing</string>
     <string name="lbl.no_projects">No projects yet</string>
     <string name="lbl.projects">Projects</string>
+    <string name="lbl.apk_settings">APK settings</string>
     <string name="lbl.workdir">Working directory</string>
 
     <!-- dialogs -->
@@ -101,8 +102,6 @@
     <string name="dlg.title.rename">Rename</string>
     <string name="dlg.title.delete_file">Delete?</string>
     <string name="dlg.hint.new_name">New name</string>
-    <string name="dlg.title.project_config">Project settings</string>
-    <string name="dlg.section.apk">APK</string>
     <string name="dlg.hint.package">Android package (APK)</string>
     <string name="dlg.hint.app_label">Name under the launcher icon</string>
     <string name="dlg.hint.app_label_empty">Empty: the MIDlet name is used</string>

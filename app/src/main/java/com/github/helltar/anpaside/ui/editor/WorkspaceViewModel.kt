@@ -287,7 +287,6 @@ class WorkspaceViewModel(
 
     fun saveProjectMetadata(
         metadata: MidletMetadata,
-        apkSettings: ApkSettings,
         onComplete: (Boolean) -> Unit = {}
     ) {
         val activeProject = project ?: return onComplete(false)
@@ -298,26 +297,17 @@ class WorkspaceViewModel(
             return
         }
 
-        if (!ProjectNames.isValidApkSettings(apkSettings)) {
-            logger.error(strings.get(R.string.err_invalid_apk_settings))
-            onComplete(false)
-            return
-        }
-
         val previous = activeProject.metadata
-        val previousApkSettings = activeProject.apkSettings
 
         viewModelScope.launch {
             val saved =
                 runCatching {
                     withContext(ioDispatcher) {
                         activeProject.updateMetadata(metadata)
-                        activeProject.updateApkSettings(apkSettings)
                         activeProject.save()
                     }
                 }.onFailure { error ->
                     activeProject.updateMetadata(previous)
-                    activeProject.updateApkSettings(previousApkSettings)
                     logger.error(error)
                 }.isSuccess
 
@@ -326,6 +316,35 @@ class WorkspaceViewModel(
             }
 
             onComplete(saved)
+        }
+    }
+
+    /**
+     * Writes the apk settings of the open project, if they are complete enough to write.
+     *
+     * The apk settings screen applies every change as it is made, so this is called while fields
+     * are being typed into and has to ignore what it cannot store - an unfinished package name is
+     * not an error worth logging, it is a field the user is still in the middle of.
+     */
+    fun saveApkSettings(settings: ApkSettings) {
+        val activeProject = project ?: return
+
+        if (settings == activeProject.apkSettings || !ProjectNames.isValidApkSettings(settings)) {
+            return
+        }
+
+        val previous = activeProject.apkSettings
+
+        viewModelScope.launch {
+            runCatching {
+                withContext(ioDispatcher) {
+                    activeProject.updateApkSettings(settings)
+                    activeProject.save()
+                }
+            }.onFailure { error ->
+                activeProject.updateApkSettings(previous)
+                logger.error(error)
+            }
         }
     }
 

@@ -43,7 +43,8 @@ fun ProjectFilesDrawer(
     workspace: WorkspaceViewModel,
     onOpenProjects: () -> Unit,
     onNewModule: () -> Unit,
-    onProjectConfig: () -> Unit,
+    onMidletManifest: () -> Unit,
+    onApkSettings: () -> Unit,
     onExportApk: () -> Unit,
     onImportInto: (String) -> Unit,
     onShare: (String) -> Unit,
@@ -69,7 +70,7 @@ fun ProjectFilesDrawer(
                     isCurrent = node.path == workspace.selectedDocument?.path,
                     onOpen = {
                         if (node.isProjectConfiguration) {
-                            onProjectConfig()
+                            onMidletManifest()
                             onClose()
                         } else if (node.isDirectory) {
                             workspace.toggleDirectory(node.path)
@@ -91,7 +92,8 @@ fun ProjectFilesDrawer(
         DrawerFooter(
             isProjectOpen = workspace.isProjectOpen,
             onNewModule = onNewModule,
-            onProjectConfig = onProjectConfig,
+            onMidletManifest = onMidletManifest,
+            onApkSettings = onApkSettings,
             onExportApk = onExportApk,
             onOpenProjects = onOpenProjects
         )
@@ -139,7 +141,8 @@ private data class FooterTile(
 private fun DrawerFooter(
     isProjectOpen: Boolean,
     onNewModule: () -> Unit,
-    onProjectConfig: () -> Unit,
+    onMidletManifest: () -> Unit,
+    onApkSettings: () -> Unit,
     onExportApk: () -> Unit,
     onOpenProjects: () -> Unit
 ) {
@@ -149,8 +152,16 @@ private fun DrawerFooter(
             add(
                 FooterTile(
                     R.drawable.ic_description,
-                    stringResource(R.string.dlg_title_project_config),
-                    onProjectConfig
+                    // the name of the file it edits, so it needs no translation
+                    "MANIFEST.MF",
+                    onMidletManifest
+                )
+            )
+            add(
+                FooterTile(
+                    R.drawable.ic_tune,
+                    stringResource(R.string.lbl_apk_settings),
+                    onApkSettings
                 )
             )
             add(

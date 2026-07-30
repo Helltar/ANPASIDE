@@ -66,6 +66,7 @@ fun EditorScreen(
     workspaceViewModel: WorkspaceViewModel,
     settingsViewModel: SettingsViewModel,
     onOpenProjects: () -> Unit,
+    onOpenApkSettings: () -> Unit,
     onOpenSettings: () -> Unit,
     onOpenLicenses: () -> Unit,
     modifier: Modifier = Modifier
@@ -173,9 +174,13 @@ fun EditorScreen(
                     closeDrawer()
                     dialog = EditorDialog.NewModule
                 },
-                onProjectConfig = {
+                onMidletManifest = {
                     closeDrawer()
-                    dialog = EditorDialog.ProjectMetadata
+                    dialog = EditorDialog.MidletManifest
+                },
+                onApkSettings = {
+                    closeDrawer()
+                    onOpenApkSettings()
                 },
                 onExportApk = {
                     closeDrawer()

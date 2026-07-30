@@ -12,6 +12,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.github.helltar.anpaside.AnpasideApplication
 import com.github.helltar.anpaside.ui.about.LicensesScreen
 import com.github.helltar.anpaside.ui.about.LicensesViewModel
+import com.github.helltar.anpaside.ui.apk.ApkSettingsScreen
 import com.github.helltar.anpaside.ui.editor.EditorScreen
 import com.github.helltar.anpaside.ui.editor.WorkspaceViewModel
 import com.github.helltar.anpaside.ui.projects.ProjectsScreen
@@ -20,7 +21,7 @@ import com.github.helltar.anpaside.ui.settings.SettingsScreen
 import com.github.helltar.anpaside.ui.settings.SettingsViewModel
 
 // the editor is the app: the other screens are opened from it and lead back to it
-private enum class AppScreen { EDITOR, PROJECTS, SETTINGS, LICENSES }
+private enum class AppScreen { EDITOR, PROJECTS, APK_SETTINGS, SETTINGS, LICENSES }
 
 @Composable
 fun AppRoot() {
@@ -42,6 +43,7 @@ fun AppRoot() {
             workspaceViewModel = workspaceViewModel,
             settingsViewModel = settingsViewModel,
             onOpenProjects = { screen = AppScreen.PROJECTS },
+            onOpenApkSettings = { screen = AppScreen.APK_SETTINGS },
             onOpenSettings = { screen = AppScreen.SETTINGS },
             onOpenLicenses = { screen = AppScreen.LICENSES }
         )
@@ -50,6 +52,11 @@ fun AppRoot() {
             projectsViewModel = projectsViewModel,
             workspaceViewModel = workspaceViewModel,
             onProjectOpened = { screen = AppScreen.EDITOR },
+            onBack = { screen = AppScreen.EDITOR }
+        )
+
+        AppScreen.APK_SETTINGS -> ApkSettingsScreen(
+            workspace = workspaceViewModel,
             onBack = { screen = AppScreen.EDITOR }
         )
 

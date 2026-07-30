@@ -14,7 +14,7 @@ import com.github.helltar.anpaside.ui.components.TextInputDialog
 sealed interface EditorDialog {
     data object NewModule : EditorDialog
     data class OverwriteModule(val name: String) : EditorDialog
-    data object ProjectMetadata : EditorDialog
+    data object MidletManifest : EditorDialog
     data object About : EditorDialog
     data object NoJarHandler : EditorDialog
     data object Exit : EditorDialog
@@ -70,12 +70,11 @@ fun EditorDialogHost(
                 onDismiss = { onDialogChange(null) }
             )
 
-        EditorDialog.ProjectMetadata ->
-            ProjectMetadataDialog(
+        EditorDialog.MidletManifest ->
+            MidletManifestDialog(
                 metadata = workspace.currentProjectMetadata(),
-                apkSettings = workspace.currentApkSettings(),
-                onSave = { metadata, apkSettings ->
-                    workspace.saveProjectMetadata(metadata, apkSettings) { saved ->
+                onSave = { metadata ->
+                    workspace.saveProjectMetadata(metadata) { saved ->
                         if (saved) {
                             onDialogChange(null)
                         }
