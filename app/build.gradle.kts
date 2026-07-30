@@ -3,27 +3,44 @@ plugins {
     alias(libs.plugins.kotlin.compose)
 }
 
+// what the player module publishes its apk under; the same attribute is declared there
+val artifactType = Attribute.of("com.github.helltar.anpaside.artifact", String::class.java)
+
+val playerApk = configurations.dependencyScope("playerApk")
+
+val playerApkArtifact =
+    configurations.resolvable("playerApkArtifact") {
+        extendsFrom(playerApk.get())
+        attributes {
+            attribute(artifactType, "player-apk")
+        }
+    }
+
 /**
  * Puts the player module's apk into this module's assets, where the apk exporter reads it as
  * the template for every exported midlet.
  *
  * The player is a separate application module, so its apk cannot be consumed as an ordinary
- * dependency; it is taken from its output directory after `:player:assembleRelease` ran.
+ * dependency; it arrives through the `playerApk` configuration as AGP's own apk artifact, which
+ * brings the task that packages it along. This replaced reading `player/build/outputs/apk/release`
+ * by path, which stopped the build for good once a Gradle upgrade had emptied that directory while
+ * `:player:packageRelease` still reported itself up to date.
  */
 abstract class BundlePlayerTemplate : DefaultTask() {
 
-    @get:InputDirectory
-    abstract val playerOutputDirectory: DirectoryProperty
+    @get:InputFiles
+    @get:PathSensitive(PathSensitivity.RELATIVE)
+    abstract val playerApkDirectory: ConfigurableFileCollection
 
     @get:OutputDirectory
     abstract val assetDirectory: DirectoryProperty
 
     @TaskAction
     fun bundle() {
-        val outputs = playerOutputDirectory.get().asFile
+        // the artifact is a directory: the apk itself, its metadata and any baseline profiles
         val apk =
-            outputs.listFiles().orEmpty().singleOrNull { it.name.endsWith(".apk") }
-                ?: error("Expected exactly one player apk in $outputs")
+            playerApkDirectory.asFileTree.matching { include("*.apk") }.files.singleOrNull()
+                ?: error("Expected exactly one player apk in ${playerApkDirectory.files}")
 
         val target = assetDirectory.get().asFile.resolve("player")
         target.mkdirs()
@@ -33,10 +50,7 @@ abstract class BundlePlayerTemplate : DefaultTask() {
 
 val bundlePlayerTemplate =
     tasks.register<BundlePlayerTemplate>("bundlePlayerTemplate") {
-        dependsOn(":player:assembleRelease")
-        playerOutputDirectory.set(
-            project(":player").layout.buildDirectory.dir("outputs/apk/release")
-        )
+        playerApkDirectory.from(playerApkArtifact)
     }
 
 androidComponents {
@@ -98,6 +112,9 @@ android {
 }
 
 dependencies {
+    // the export template, bundled into the assets by bundlePlayerTemplate above
+    add(playerApk.name, project(":player"))
+
     implementation(project(":j2me"))
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.activity.compose)

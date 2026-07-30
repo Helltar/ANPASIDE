@@ -1,3 +1,5 @@
+import com.android.build.api.artifact.SingleArtifact
+
 // the template for "export apk": one midlet plus the embedded runtime and nothing of the ide.
 // the ide carries this apk in its assets, and for every export it rewrites the package name,
 // the label, the version and the launcher icon in a copy of it, then signs the result.
@@ -5,6 +7,24 @@
 
 plugins {
     alias(libs.plugins.android.application)
+}
+
+// what the ide module asks for when it bundles the template; the same attribute is declared there
+val artifactType = Attribute.of("com.github.helltar.anpaside.artifact", String::class.java)
+
+val playerApkElements =
+    configurations.consumable("playerApkElements") {
+        attributes {
+            attribute(artifactType, "player-apk")
+        }
+    }
+
+androidComponents {
+    onVariants(selector().withBuildType("release")) { variant ->
+        // agp's own apk artifact, which carries the packaging task with it. handing this out
+        // instead of a path is what keeps the ide from reading a stale or wiped output directory
+        project.artifacts.add(playerApkElements.name, variant.artifacts.get(SingleArtifact.APK))
+    }
 }
 
 android {
