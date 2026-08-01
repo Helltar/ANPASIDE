@@ -1,0 +1,1 @@
+- Fixed line numbers drawing over the editor tabs while scrolling
