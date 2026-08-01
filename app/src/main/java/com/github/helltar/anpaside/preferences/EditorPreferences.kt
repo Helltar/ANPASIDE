@@ -5,6 +5,7 @@ import androidx.core.content.edit
 
 interface EditorSessionPreferences {
     var recentFiles: List<String>
+    var foldedBlockOffsets: Map<String, Set<Int>>
     var lastProject: String
 }
 
@@ -34,6 +35,12 @@ class EditorPreferences(context: Context) : EditorSessionPreferences {
         get() = prefs.getString(KEY_LAST_PROJECT, "").orEmpty()
         set(value) = prefs.edit { putString(KEY_LAST_PROJECT, value) }
 
+    override var foldedBlockOffsets: Map<String, Set<Int>>
+        get() = FoldingStateCodec.decode(prefs.getString(KEY_FOLDED_BLOCKS, "").orEmpty())
+        set(value) = prefs.edit {
+            putString(KEY_FOLDED_BLOCKS, FoldingStateCodec.encode(value))
+        }
+
     var fontSize: Int
         get() = prefs.getInt(KEY_FONT_SIZE, DEFAULT_FONT_SIZE)
         set(value) = prefs.edit { putInt(KEY_FONT_SIZE, value) }
@@ -54,6 +61,7 @@ class EditorPreferences(context: Context) : EditorSessionPreferences {
     companion object {
         private const val KEY_RECENT_FILES_LEGACY = "recent_filenames"
         private const val KEY_RECENT_FILES_V2 = "recent_files_v2"
+        private const val KEY_FOLDED_BLOCKS = "folded_blocks_v1"
         private const val KEY_LAST_PROJECT = "last_project"
         private const val KEY_FONT_SIZE = "font_size"
         private const val KEY_HIGHLIGHTER_ENABLED = "highlighter_enabled"
@@ -63,6 +71,83 @@ class EditorPreferences(context: Context) : EditorSessionPreferences {
         const val DEFAULT_FONT_SIZE = 14
         val FONT_SIZE_RANGE = 8..24
     }
+}
+
+internal object FoldingStateCodec {
+
+    fun encode(states: Map<String, Set<Int>>): String =
+        buildString {
+            states.toSortedMap().forEach { (path, offsets) ->
+                if (offsets.isEmpty()) {
+                    return@forEach
+                }
+
+                append(path.length)
+                append(':')
+                append(path)
+                append(offsets.size)
+                append(':')
+                offsets.sorted().forEach { offset ->
+                    append(offset)
+                    append(':')
+                }
+            }
+        }
+
+    fun decode(encoded: String): Map<String, Set<Int>> {
+        val states = mutableMapOf<String, Set<Int>>()
+        var position = 0
+
+        while (position < encoded.length) {
+            val pathLength = encoded.readNumber(position) ?: return emptyMap()
+            position = pathLength.nextPosition
+
+            if (pathLength.value > encoded.length - position) {
+                return emptyMap()
+            }
+
+            val pathEnd = position + pathLength.value
+            val path = encoded.substring(position, pathEnd)
+            position = pathEnd
+
+            val count = encoded.readNumber(position) ?: return emptyMap()
+            position = count.nextPosition
+
+            if (count.value > (encoded.length - position) / 2) {
+                return emptyMap()
+            }
+
+            val offsets = mutableSetOf<Int>()
+
+            repeat(count.value) {
+                val offset = encoded.readNumber(position) ?: return emptyMap()
+                offsets += offset.value
+                position = offset.nextPosition
+            }
+
+            if (offsets.isNotEmpty()) {
+                states[path] = offsets
+            }
+        }
+
+        return states
+    }
+
+    private fun String.readNumber(start: Int): EncodedNumber? {
+        val separator = indexOf(':', start)
+
+        if (separator < 0) {
+            return null
+        }
+
+        val value = substring(start, separator).toIntOrNull()?.takeIf { it >= 0 } ?: return null
+        return EncodedNumber(value = value, nextPosition = separator + 1)
+    }
+
+    private data class EncodedNumber(
+        val value: Int,
+        val nextPosition: Int
+    )
 }
 
 internal object RecentFilesCodec {

@@ -2,7 +2,6 @@ package com.github.helltar.anpaside.ui.editor
 
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.input.OffsetMapping
 import androidx.compose.ui.text.input.TransformedText
 import androidx.compose.ui.text.input.VisualTransformation
 import com.github.helltar.anpaside.ui.theme.SyntaxColors
@@ -175,19 +174,27 @@ object PascalHighlighter {
     private fun Char.isIdentifierPart() = this == '_' || isLetterOrDigit()
 }
 
-// the highlighter only paints the text, it never changes it, so offsets map one to one
-class PascalVisualTransformation(private val colors: SyntaxColors) : VisualTransformation {
+// syntax highlighting only paints; optional folding supplies its own source offset mapping
+internal class PascalVisualTransformation(
+    private val colors: SyntaxColors?,
+    private val activeFoldBlocks: List<PascalFoldBlock> = emptyList()
+) : VisualTransformation {
 
     private var lastText: String? = null
     private var lastResult: AnnotatedString? = null
 
     override fun filter(text: AnnotatedString): TransformedText {
-        val highlighted = lastResult.takeIf { text.text == lastText }
-            ?: PascalHighlighter.highlight(text.text, colors).also {
-                lastText = text.text
-                lastResult = it
+        val highlighted =
+            if (colors == null) {
+                text
+            } else {
+                lastResult.takeIf { text.text == lastText }
+                    ?: PascalHighlighter.highlight(text.text, colors).also {
+                        lastText = text.text
+                        lastResult = it
+                    }
             }
 
-        return TransformedText(highlighted, OffsetMapping.Identity)
+        return PascalFolding.transform(highlighted, activeFoldBlocks)
     }
 }

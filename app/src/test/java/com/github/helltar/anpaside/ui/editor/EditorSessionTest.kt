@@ -75,6 +75,56 @@ class EditorSessionTest {
         )
     }
 
+    @Test
+    fun restoresFoldedBlocksAfterSessionRestart() = runBlocking {
+        val source = "begin\n    value := 1;\nend."
+        val file = temporaryFolder.newFile("main.pas").apply { writeText(source) }
+        val preferences = FakePreferences()
+        val firstSession = session(preferences)
+        firstSession.open(file.path)
+        val block = PascalFolding.findBlocks(source).single()
+
+        firstSession.selectedDocument?.toggleFold(block)
+
+        assertEquals(setOf(block.startOffset), preferences.foldedBlockOffsets[file.path])
+
+        val restoredSession = session(preferences)
+        restoredSession.restoreRecentDocuments()
+
+        assertEquals(setOf(block.startOffset), restoredSession.selectedDocument?.collapsedFoldStarts)
+    }
+
+    @Test
+    fun closeRemovesPersistedFoldState() = runBlocking {
+        val source = "begin\n    value := 1;\nend."
+        val file = temporaryFolder.newFile("main.pas").apply { writeText(source) }
+        val preferences = FakePreferences()
+        val session = session(preferences)
+        session.open(file.path)
+        session.selectedDocument?.toggleFold(PascalFolding.findBlocks(source).single())
+
+        session.close(0)
+
+        assertTrue(preferences.foldedBlockOffsets.isEmpty())
+    }
+
+    @Test
+    fun relocateMovesPersistedFoldState() = runBlocking {
+        val source = "begin\n    value := 1;\nend."
+        val file = temporaryFolder.newFile("main.pas").apply { writeText(source) }
+        val preferences = FakePreferences()
+        val session = session(preferences)
+        session.open(file.path)
+        val block = PascalFolding.findBlocks(source).single()
+        session.selectedDocument?.toggleFold(block)
+        val target = temporaryFolder.root.resolve("renamed.pas")
+
+        session.relocate(file.path, target.path)
+
+        assertEquals(setOf(block.startOffset), preferences.foldedBlockOffsets[target.path])
+        assertFalse(preferences.foldedBlockOffsets.containsKey(file.path))
+    }
+
     private fun session(preferences: FakePreferences) =
         EditorSession(
             files = TextFileStore(),
@@ -85,6 +135,7 @@ class EditorSessionTest {
 
     private class FakePreferences : EditorSessionPreferences {
         override var recentFiles: List<String> = emptyList()
+        override var foldedBlockOffsets: Map<String, Set<Int>> = emptyMap()
         override var lastProject: String = ""
     }
 }

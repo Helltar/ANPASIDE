@@ -67,4 +67,56 @@ class EditorDocumentTest {
         assertEquals(TextRange(3), file.value.selection)
         assertTrue(file.isModified)
     }
+
+    @Test
+    fun collapsedBlockMovesWithAnEditBeforeIt() {
+        val source = "header\nbegin\n    value := 1;\nend."
+        val file = EditorDocument("/project/src/main.pas", source)
+        val block = PascalFolding.findBlocks(source).single()
+        file.toggleFold(block)
+
+        file.onValueChange(TextFieldValue("x$source"))
+
+        assertEquals(setOf(block.startOffset + 1), file.collapsedFoldStarts)
+    }
+
+    @Test
+    fun externalCaretMoveExpandsContainingBlock() {
+        val source = "begin\n    value := 1;\nend."
+        val file = EditorDocument("/project/src/main.pas", source)
+        file.toggleFold(PascalFolding.findBlocks(source).single())
+
+        file.moveCaretToLine(2)
+
+        assertTrue(file.collapsedFoldStarts.isEmpty())
+        assertEquals(TextRange(6), file.value.selection)
+        assertFalse(file.isModified)
+    }
+
+    @Test
+    fun editInsideCollapsedBlockExpandsIt() {
+        val source = "begin\n    value := 1;\nend."
+        val file = EditorDocument("/project/src/main.pas", source)
+        val block = PascalFolding.findBlocks(source).single()
+        file.toggleFold(block)
+        val insertion = source.indexOf("value")
+
+        file.onValueChange(TextFieldValue(source.substring(0, insertion) + "x" + source.substring(insertion)))
+
+        assertTrue(file.collapsedFoldStarts.isEmpty())
+        assertTrue(file.isModified)
+    }
+
+    @Test
+    fun movingCaretToFoldPlaceholderExpandsIt() {
+        val source = "begin\n    value := 1;\nend."
+        val file = EditorDocument("/project/src/main.pas", source)
+        val block = PascalFolding.findBlocks(source).single()
+        file.toggleFold(block)
+
+        file.onValueChange(file.value.copy(selection = TextRange(block.hiddenEnd)))
+
+        assertTrue(file.collapsedFoldStarts.isEmpty())
+        assertFalse(file.isModified)
+    }
 }

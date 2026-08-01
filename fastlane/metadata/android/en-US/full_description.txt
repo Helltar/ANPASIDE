@@ -3,7 +3,7 @@
 <p>Features:</p>
 
 <ul>
-<li>Pascal editor with syntax highlighting, line numbers, tabs, and word wrap</li>
+<li>Pascal editor with syntax highlighting, line numbers, tabs, and persistent code folding</li>
 <li>Project navigator for source files, resources, libraries, and build output</li>
 <li>Bundled MIDletPascal compiler and Java ME runtime classes</li>
 <li>Built-in J2ME emulator with configurable screen size and on-screen keypad</li>

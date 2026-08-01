@@ -25,6 +25,8 @@ class EditorSession(
 ) {
 
     private val openingPaths = mutableSetOf<String>()
+    private val foldedBlockOffsets = preferences.foldedBlockOffsets
+        .mapValuesTo(mutableMapOf()) { (_, offsets) -> offsets.toSet() }
 
     val documents = mutableStateListOf<EditorDocument>()
 
@@ -43,6 +45,7 @@ class EditorSession(
                 preferences.recentFiles.distinct().filter { File(it).isFile }
             }
 
+        retainFoldStates(paths.toSet())
         paths.forEach { open(it) }
     }
 
@@ -70,9 +73,16 @@ class EditorSession(
                 openingPaths.remove(path)
             }
 
-        val document = EditorDocument(path, text)
+        val document =
+            EditorDocument(
+                path = path,
+                text = text,
+                collapsedFoldStarts = foldedBlockOffsets[path].orEmpty(),
+                onFoldStateChange = ::persistFoldState
+            )
         documents.add(document)
         selectedIndex = documents.lastIndex
+        persistFoldState(path, document.collapsedFoldStarts)
         persist()
         document.moveCaretToLineIfRequested(line)
         return true
@@ -177,10 +187,13 @@ class EditorSession(
         }
 
         selectedIndex = selectedIndex.coerceAtMost(documents.lastIndex)
+        removeFoldStatesUnder(path)
         persist()
     }
 
     fun relocate(oldPath: String, newPath: String) {
+        relocateFoldStates(oldPath, newPath)
+
         documents.forEach { document ->
             when {
                 document.path == oldPath -> document.relocate(newPath)
@@ -200,6 +213,7 @@ class EditorSession(
         }
 
         documents.removeAt(index)
+        removeFoldState(document.path)
         selectedIndex =
             when {
                 documents.isEmpty() -> -1
@@ -213,6 +227,67 @@ class EditorSession(
 
     private fun persist() {
         preferences.recentFiles = documents.map(EditorDocument::path)
+    }
+
+    private fun persistFoldState(path: String, starts: Set<Int>) {
+        val changed =
+            if (starts.isEmpty()) {
+                foldedBlockOffsets.remove(path) != null
+            } else if (foldedBlockOffsets[path] != starts) {
+                foldedBlockOffsets[path] = starts.toSet()
+                true
+            } else {
+                false
+            }
+
+        if (changed) {
+            persistFoldStates()
+        }
+    }
+
+    private fun removeFoldState(path: String) {
+        if (foldedBlockOffsets.remove(path) != null) {
+            persistFoldStates()
+        }
+    }
+
+    private fun removeFoldStatesUnder(path: String) {
+        val removed = foldedBlockOffsets.keys.removeAll { key ->
+            key == path || key.startsWith("$path/")
+        }
+
+        if (removed) {
+            persistFoldStates()
+        }
+    }
+
+    private fun retainFoldStates(paths: Set<String>) {
+        val removed = foldedBlockOffsets.keys.removeAll { it !in paths }
+
+        if (removed) {
+            persistFoldStates()
+        }
+    }
+
+    private fun relocateFoldStates(oldPath: String, newPath: String) {
+        val relocated = foldedBlockOffsets.filterKeys { path ->
+            path == oldPath || path.startsWith("$oldPath/")
+        }
+
+        if (relocated.isEmpty()) {
+            return
+        }
+
+        relocated.keys.forEach(foldedBlockOffsets::remove)
+        relocated.forEach { (path, starts) ->
+            foldedBlockOffsets[newPath + path.removePrefix(oldPath)] = starts
+        }
+        persistFoldStates()
+    }
+
+    private fun persistFoldStates() {
+        preferences.foldedBlockOffsets =
+            foldedBlockOffsets.mapValues { (_, offsets) -> offsets.toSet() }
     }
 
     private fun EditorDocument.moveCaretToLineIfRequested(line: Int) {
