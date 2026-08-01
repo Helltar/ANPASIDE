@@ -34,7 +34,6 @@ class ProjectBuildPipeline(
     private val project: Project,
     private val compilerExecutable: File,
     private val runtimeLibraryDirectory: File,
-    private val globalLibrariesDirectory: File,
     private val processRunner: ProcessRunner = SystemProcessRunner()
 ) {
 
@@ -135,7 +134,7 @@ class ProjectBuildPipeline(
             compilerExecutable.path,
             "-s", file.path,
             "-o", project.buildDirectory.path,
-            "-l", globalLibrariesDirectory.path,
+            "-l", project.librariesDirectory.path,
             "-p", project.librariesDirectory.path,
             "-m", compilerSettings.mathType.toString(),
             "-c", compilerSettings.canvasType.toString()
@@ -187,16 +186,14 @@ class ProjectBuildPipeline(
         CompilerOutput.libraries(output).all { library ->
             val fileName = "Lib_$library${ProjectLayout.CLASS_EXTENSION}"
 
-            // project libs first, then global - the same order the compiler resolves them
             val source =
                 project.librariesDirectory.requireDirectChildName(fileName).takeIf(File::exists)
-                    ?: globalLibrariesDirectory.requireDirectChildName(fileName).takeIf(File::exists)
 
             if (source == null) {
                 error(
                     messages.fileNotFound +
                             ": " +
-                            globalLibrariesDirectory.resolve(fileName).path
+                            project.librariesDirectory.resolve(fileName).path
                 )
                 return@all false
             }

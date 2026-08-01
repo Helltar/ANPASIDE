@@ -42,8 +42,7 @@ class AppViewModelFactory(
             modelClass == SettingsViewModel::class.java ->
                 SettingsViewModel(
                     editorPreferences = container.editorPreferences,
-                    appPreferences = container.appPreferences,
-                    directories = container.directories
+                    appPreferences = container.appPreferences
                 )
 
             modelClass == LicensesViewModel::class.java ->

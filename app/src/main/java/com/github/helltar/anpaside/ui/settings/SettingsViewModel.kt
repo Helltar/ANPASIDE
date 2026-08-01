@@ -4,7 +4,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
-import com.github.helltar.anpaside.foundation.AppDirectories
 import com.github.helltar.anpaside.preferences.EditorPreferences
 import com.github.helltar.anpaside.preferences.AppPreferences
 import com.github.helltar.anpaside.preferences.ScreenSize
@@ -16,17 +15,14 @@ data class SettingsUiState(
     val wordWrap: Boolean,
     val builtInEmulator: Boolean,
     val screenSize: ScreenSize,
-    val virtualKeyboard: Boolean,
-    val globalLibrariesDirectory: String
+    val virtualKeyboard: Boolean
 )
 
 class SettingsViewModel(
     private val editorPreferences: EditorPreferences,
-    private val appPreferences: AppPreferences,
-    directories: AppDirectories
+    private val appPreferences: AppPreferences
 ) : ViewModel() {
 
-    val workspaceDirectory: String = directories.workspaceDirectory.path
     val availableScreenSizes: List<ScreenSize> = AppPreferences.availableScreenSizes
     val fontSizeRange: IntRange = EditorPreferences.FONT_SIZE_RANGE
 
@@ -70,11 +66,6 @@ class SettingsViewModel(
         state = state.copy(virtualKeyboard = enabled)
     }
 
-    fun setGlobalLibrariesDirectory(path: String) {
-        appPreferences.globalLibrariesDirectory = path
-        state = state.copy(globalLibrariesDirectory = path)
-    }
-
     private fun loadState(): SettingsUiState =
         SettingsUiState(
             fontSize = editorPreferences.fontSize.coerceIn(EditorPreferences.FONT_SIZE_RANGE),
@@ -83,7 +74,6 @@ class SettingsViewModel(
             wordWrap = editorPreferences.wordWrapEnabled,
             builtInEmulator = appPreferences.builtInEmulatorEnabled,
             screenSize = ScreenSize(appPreferences.screenWidth, appPreferences.screenHeight),
-            virtualKeyboard = appPreferences.virtualKeyboardEnabled,
-            globalLibrariesDirectory = appPreferences.globalLibrariesDirectory
+            virtualKeyboard = appPreferences.virtualKeyboardEnabled
         )
 }

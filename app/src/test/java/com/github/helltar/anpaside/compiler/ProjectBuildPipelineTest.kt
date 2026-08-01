@@ -29,6 +29,15 @@ class ProjectBuildPipelineTest {
 
         val runner =
             ProcessRunner { arguments ->
+                assertEquals(
+                    fixture.project.librariesDirectory.path,
+                    arguments.valueAfter("-l")
+                )
+                assertEquals(
+                    fixture.project.librariesDirectory.path,
+                    arguments.valueAfter("-p")
+                )
+
                 val source = File(arguments.valueAfter("-s"))
                 val output = File(arguments.valueAfter("-o"))
                 val detecting = "-d" in arguments
@@ -196,16 +205,14 @@ class ProjectBuildPipelineTest {
         File(runtime, "FW.class").writeBytes(byteArrayOf(1))
         File(runtime, "F.class").writeBytes(byteArrayOf(2))
         val compiler = temporaryFolder.newFile("compiler-${System.nanoTime()}")
-        val globalLibraries = temporaryFolder.newFolder("libs-${System.nanoTime()}")
 
-        return Fixture(project, compiler, runtime, globalLibraries)
+        return Fixture(project, compiler, runtime)
     }
 
     private data class Fixture(
         val project: Project,
         val compiler: File,
-        val runtime: File,
-        val globalLibraries: File
+        val runtime: File
     ) {
         fun pipeline(runner: ProcessRunner) =
             ProjectBuildPipeline(
@@ -213,7 +220,6 @@ class ProjectBuildPipelineTest {
                 project = project,
                 compilerExecutable = compiler,
                 runtimeLibraryDirectory = runtime,
-                globalLibrariesDirectory = globalLibraries,
                 processRunner = runner
             )
     }

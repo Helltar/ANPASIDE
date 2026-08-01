@@ -78,7 +78,6 @@ class ProjectRepositoryTest {
                 compilerExecutable = File(root, "mp3cc"),
                 workspaceDirectory = workspace,
                 projectsDirectory = File(workspace, "projects"),
-                globalLibrariesDirectory = File(workspace, "libs"),
                 exportDirectory = File(root, "exports")
             )
 

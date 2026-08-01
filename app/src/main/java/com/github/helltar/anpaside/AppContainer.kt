@@ -18,7 +18,6 @@ import com.github.helltar.anpaside.project.Project
 import com.github.helltar.anpaside.project.ProjectFileManager
 import com.github.helltar.anpaside.project.ProjectRepository
 import com.github.helltar.anpaside.project.ProjectTemplates
-import java.io.File
 
 /**
  * Application-wide composition root.
@@ -31,8 +30,7 @@ class AppContainer(private val application: Application) {
     val strings = StringResources(application)
     val logger = IdeLogger()
     val editorPreferences = EditorPreferences(application)
-    val appPreferences =
-        AppPreferences(application, directories.globalLibrariesDirectory)
+    val appPreferences = AppPreferences(application)
     val projectRepository = ProjectRepository(directories)
     val projectFileManager = ProjectFileManager()
     val textFileStore = TextFileStore()
@@ -66,15 +64,11 @@ class AppContainer(private val application: Application) {
                 buildSucceeded = strings.get(R.string.msg_build_successfully)
             )
 
-    fun createBuildPipeline(
-        project: Project,
-        globalLibrariesDirectory: File
-    ): ProjectBuildPipeline =
+    fun createBuildPipeline(project: Project): ProjectBuildPipeline =
         ProjectBuildPipeline(
             messages = buildMessages,
             project = project,
             compilerExecutable = directories.compilerExecutable,
-            runtimeLibraryDirectory = directories.runtimeLibraryDirectory,
-            globalLibrariesDirectory = globalLibrariesDirectory
+            runtimeLibraryDirectory = directories.runtimeLibraryDirectory
         )
 }

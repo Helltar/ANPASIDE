@@ -2,12 +2,8 @@ package com.github.helltar.anpaside.preferences
 
 import android.content.Context
 import androidx.core.content.edit
-import java.io.File
 
-class AppPreferences(
-    context: Context,
-    private val defaultGlobalLibrariesDirectory: File
-) {
+class AppPreferences(context: Context) {
 
     private val prefs = context.getSharedPreferences("ide_config", Context.MODE_PRIVATE)
 
@@ -18,13 +14,6 @@ class AppPreferences(
     var assetsVersion: Int
         get() = prefs.getInt(KEY_ASSETS_VERSION, 0)
         set(value) = prefs.edit { putInt(KEY_ASSETS_VERSION, value) }
-
-    var globalLibrariesDirectory: String
-        get() =
-            prefs.getString(KEY_GLOBAL_LIBS_DIR, defaultGlobalLibrariesDirectory.path)
-                ?.takeIf(String::isNotBlank)
-                ?: defaultGlobalLibrariesDirectory.path
-        set(value) = prefs.edit { putString(KEY_GLOBAL_LIBS_DIR, value) }
 
     // when off, the built jar is handed to whatever app the user has for .jar files
     var builtInEmulatorEnabled: Boolean
@@ -49,7 +38,6 @@ class AppPreferences(
     companion object {
         private const val KEY_INSTALL = "install"
         private const val KEY_ASSETS_VERSION = "update_assets"
-        private const val KEY_GLOBAL_LIBS_DIR = "global_libs_dir"
         private const val KEY_EMBEDDED_EMULATOR = "embedded_emulator"
         private const val KEY_MIDLET_SCREEN_WIDTH = "midlet_screen_width"
         private const val KEY_MIDLET_SCREEN_HEIGHT = "midlet_screen_height"

@@ -87,7 +87,6 @@
     <string name="lbl.no_projects">No projects yet</string>
     <string name="lbl.projects">Projects</string>
     <string name="lbl.apk_settings">APK settings</string>
-    <string name="lbl.workdir">Working directory</string>
 
     <!-- dialogs -->
 
@@ -132,7 +131,6 @@
     <string name="text.apk.keyboard">On-screen keypad</string>
     <string name="text.apk.pick_color">Pick a color</string>
 
-    <string name="text.global.directory.libs">Global library directory</string>
 
     <!-- buttons -->
 

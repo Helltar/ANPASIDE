@@ -166,10 +166,6 @@ fun EditorScreen(
         drawerContent = {
             ProjectFilesDrawer(
                 workspace = workspaceViewModel,
-                onOpenProjects = {
-                    closeDrawer()
-                    onOpenProjects()
-                },
                 onNewModule = {
                     closeDrawer()
                     dialog = EditorDialog.NewModule
@@ -290,6 +286,7 @@ fun EditorScreen(
                             EditorOverflowMenu(
                                 expanded = menuExpanded,
                                 onDismiss = { menuExpanded = false },
+                                onOpenProjects = onOpenProjects,
                                 onToggleLog = { logVisible = !logVisible },
                                 onOpenSettings = onOpenSettings,
                                 onDocumentation = { uriHandler.openUri(DOCS_URL) },

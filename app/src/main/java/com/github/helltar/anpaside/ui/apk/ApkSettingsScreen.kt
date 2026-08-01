@@ -18,7 +18,6 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -154,12 +153,11 @@ fun ApkSettingsScreen(
                     }
             )
 
-            HorizontalDivider(Modifier.padding(vertical = 16.dp))
-
             SettingsField(
                 value = iconBackground,
                 onValueChange = { iconBackground = it; apply() },
                 label = stringResource(R.string.text_apk_icon_background),
+                modifier = Modifier.padding(top = 8.dp),
                 isError = !iconBackgroundValid,
                 supportingText = stringResource(R.string.err_invalid_icon_background)
                     .takeIf { !iconBackgroundValid },
@@ -175,11 +173,10 @@ fun ApkSettingsScreen(
                 }
             )
 
-            HorizontalDivider(Modifier.padding(vertical = 16.dp))
-
             Text(
                 text = stringResource(R.string.text_apk_orientation),
-                style = MaterialTheme.typography.titleSmall
+                style = MaterialTheme.typography.titleSmall,
+                modifier = Modifier.padding(top = 24.dp)
             )
 
             Row(

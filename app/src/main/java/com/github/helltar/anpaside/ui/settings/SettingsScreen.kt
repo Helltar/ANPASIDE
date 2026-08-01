@@ -15,7 +15,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Switch
@@ -148,23 +147,6 @@ fun SettingsScreen(
                 checked = state.virtualKeyboard,
                 onCheckedChange = viewModel::setVirtualKeyboard,
                 enabled = state.builtInEmulator
-            )
-
-            HorizontalDivider(Modifier.padding(vertical = 16.dp))
-
-            OutlinedTextField(
-                value = state.globalLibrariesDirectory,
-                onValueChange = viewModel::setGlobalLibrariesDirectory,
-                label = { Text(stringResource(R.string.text_global_directory_libs)) },
-                singleLine = true,
-                modifier = Modifier.fillMaxWidth()
-            )
-
-            Text(
-                text = stringResource(R.string.lbl_workdir) + ": " + viewModel.workspaceDirectory,
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.padding(vertical = 24.dp)
             )
         }
     }

@@ -88,7 +88,6 @@
     <string name="lbl.no_projects">Проектов пока нет</string>
     <string name="lbl.projects">Проекты</string>
     <string name="lbl.apk_settings">Настройки APK</string>
-    <string name="lbl.workdir">Рабочий каталог</string>
 
     <!-- dialogs -->
 
@@ -133,7 +132,6 @@
     <string name="text.apk.keyboard">Экранная клавиатура</string>
     <string name="text.apk.pick_color">Выбрать цвет</string>
 
-    <string name="text.global.directory.libs">Каталог глобальных библиотек</string>
 
     <!-- buttons -->
 

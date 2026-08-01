@@ -73,7 +73,7 @@ class WorkspaceViewModel(
     private val contentResolver: ContentResolver,
     private val strings: StringResources,
     private val logger: IdeLogger,
-    private val buildPipeline: (Project, File) -> ProjectBuildPipeline,
+    private val buildPipeline: (Project) -> ProjectBuildPipeline,
     private val apkExporter: ApkExporter,
     private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : ViewModel() {
@@ -439,10 +439,7 @@ class WorkspaceViewModel(
 
                 val report =
                     withContext(ioDispatcher) {
-                        buildPipeline(
-                            activeProject,
-                            File(appPreferences.globalLibrariesDirectory)
-                        ).build()
+                        buildPipeline(activeProject).build()
                     }
 
                 report.logEntries.forEach { entry ->

@@ -18,7 +18,6 @@ data class AppDirectories(
     val compilerExecutable: File,
     val workspaceDirectory: File,
     val projectsDirectory: File,
-    val globalLibrariesDirectory: File,
     val exportDirectory: File
 ) {
 
@@ -51,8 +50,6 @@ data class AppDirectories(
                     File(context.applicationInfo.nativeLibraryDir, COMPILER_EXECUTABLE),
                 workspaceDirectory = workspaceDirectory,
                 projectsDirectory = workspaceDirectory.resolve(PROJECTS_DIRECTORY),
-                globalLibrariesDirectory =
-                    workspaceDirectory.resolve(ProjectLayout.LIBRARIES_DIRECTORY),
                 // exports are shared immediately and may be cleaned by the system afterwards
                 exportDirectory = context.cacheDir.resolve(EXPORT_DIRECTORY)
             )

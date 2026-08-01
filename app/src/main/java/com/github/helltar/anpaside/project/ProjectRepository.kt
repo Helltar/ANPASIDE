@@ -82,7 +82,6 @@ class ProjectRepository(
             project.mainModule.writeText(templates.mainModule.format(project.mainModuleName))
             stagingDirectory.resolve(".gitignore").writeText(templates.gitIgnore)
             directories.templateIcon.copyToDirectory(project.resourcesDirectory)
-            directories.globalLibrariesDirectory.createDirectories()
 
             replaceDirectory(stagingDirectory, targetDirectory, backupDirectory)
             return open(name)

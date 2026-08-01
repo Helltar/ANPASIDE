@@ -27,6 +27,7 @@ import com.github.helltar.anpaside.R
 fun EditorOverflowMenu(
     expanded: Boolean,
     onDismiss: () -> Unit,
+    onOpenProjects: () -> Unit,
     onToggleLog: () -> Unit,
     onOpenSettings: () -> Unit,
     onDocumentation: () -> Unit,
@@ -56,6 +57,7 @@ fun EditorOverflowMenu(
     }
 
     DropdownMenu(expanded = expanded, onDismissRequest = onDismiss) {
+        item(R.drawable.ic_folder, R.string.lbl_projects, onOpenProjects)
         item(R.drawable.ic_subject, R.string.lbl_log, onToggleLog)
         item(R.drawable.ic_settings, R.string.menu_settings, onOpenSettings)
         item(R.drawable.ic_help, R.string.menu_documentation, onDocumentation)

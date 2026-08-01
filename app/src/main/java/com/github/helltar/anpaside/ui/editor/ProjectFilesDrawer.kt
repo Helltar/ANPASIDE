@@ -41,7 +41,6 @@ import com.github.helltar.anpaside.ui.components.TextInputDialog
 @Composable
 fun ProjectFilesDrawer(
     workspace: WorkspaceViewModel,
-    onOpenProjects: () -> Unit,
     onNewModule: () -> Unit,
     onMidletManifest: () -> Unit,
     onApkSettings: () -> Unit,
@@ -87,16 +86,16 @@ fun ProjectFilesDrawer(
             }
         }
 
-        HorizontalDivider()
+        if (workspace.isProjectOpen) {
+            HorizontalDivider()
 
-        DrawerFooter(
-            isProjectOpen = workspace.isProjectOpen,
-            onNewModule = onNewModule,
-            onMidletManifest = onMidletManifest,
-            onApkSettings = onApkSettings,
-            onExportApk = onExportApk,
-            onOpenProjects = onOpenProjects
-        )
+            DrawerFooter(
+                onNewModule = onNewModule,
+                onMidletManifest = onMidletManifest,
+                onApkSettings = onApkSettings,
+                onExportApk = onExportApk
+            )
+        }
     }
 
     nodeToRename?.let { node ->
@@ -136,44 +135,38 @@ private data class FooterTile(
     val onClick: () -> Unit
 )
 
-// footer: icon tiles are laid out three to a row, with project actions first
+// footer: project action tiles are laid out three to a row
 @Composable
 private fun DrawerFooter(
-    isProjectOpen: Boolean,
     onNewModule: () -> Unit,
     onMidletManifest: () -> Unit,
     onApkSettings: () -> Unit,
-    onExportApk: () -> Unit,
-    onOpenProjects: () -> Unit
+    onExportApk: () -> Unit
 ) {
     val tiles = buildList {
-        if (isProjectOpen) {
-            add(FooterTile(R.drawable.ic_add, stringResource(R.string.menu_create_module), onNewModule))
-            add(
-                FooterTile(
-                    R.drawable.ic_description,
-                    // the name of the file it edits, so it needs no translation
-                    "MANIFEST.MF",
-                    onMidletManifest
-                )
+        add(FooterTile(R.drawable.ic_add, stringResource(R.string.menu_create_module), onNewModule))
+        add(
+            FooterTile(
+                R.drawable.ic_description,
+                // the name of the file it edits, so it needs no translation
+                "MANIFEST.MF",
+                onMidletManifest
             )
-            add(
-                FooterTile(
-                    R.drawable.ic_tune,
-                    stringResource(R.string.lbl_apk_settings),
-                    onApkSettings
-                )
+        )
+        add(
+            FooterTile(
+                R.drawable.ic_tune,
+                stringResource(R.string.lbl_apk_settings),
+                onApkSettings
             )
-            add(
-                FooterTile(
-                    R.drawable.ic_android,
-                    stringResource(R.string.menu_export_apk),
-                    onExportApk
-                )
+        )
+        add(
+            FooterTile(
+                R.drawable.ic_android,
+                stringResource(R.string.menu_export_apk),
+                onExportApk
             )
-        }
-
-        add(FooterTile(R.drawable.ic_folder, stringResource(R.string.lbl_projects), onOpenProjects))
+        )
     }
     val columnCount = 3
 
