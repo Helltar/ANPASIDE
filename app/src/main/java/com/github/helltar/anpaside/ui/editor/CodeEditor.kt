@@ -27,6 +27,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
@@ -238,6 +239,9 @@ fun CodeEditor(
             Modifier
                 .fillMaxHeight()
                 .width(gutterWidth)
+                // drawBehind is not clipped on its own, and a half-scrolled line is drawn from its
+                // baseline, so without this the top number reaches above the editor onto the tabs
+                .clipToBounds()
                 .pointerInput(file, layout) {
                     detectTapGestures { position ->
                         if (layout == null || position.x < size.width - FoldGutterWidth.toPx()) {
