@@ -1,0 +1,2 @@
+- Fold and expand begin/end blocks from the editor gutter
+- Folded blocks stay collapsed after restarting the app
