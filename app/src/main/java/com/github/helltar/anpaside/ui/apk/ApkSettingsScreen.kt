@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
@@ -109,9 +110,12 @@ fun ApkSettingsScreen(
         Column(
             Modifier
                 .padding(innerPadding)
+                // the ime inset covers the navigation bar the scaffold already padded for
+                .consumeWindowInsets(innerPadding)
                 .fillMaxSize()
-                .verticalScroll(rememberScrollState())
+                // shrink the scroll viewport instead of letting the keyboard cover it
                 .imePadding()
+                .verticalScroll(rememberScrollState())
                 .padding(horizontal = 24.dp)
         ) {
             SettingsField(
