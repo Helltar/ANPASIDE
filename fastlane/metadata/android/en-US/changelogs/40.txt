@@ -1,0 +1,3 @@
+- Moved Projects to the main menu and kept the drawer focused on the open project
+- Removed the unusable global library path; libraries now stay inside each project
+- APK settings stay scrollable while the keyboard is open
