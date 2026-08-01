@@ -33,7 +33,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
 import com.github.helltar.anpaside.R
 import com.github.helltar.anpaside.ui.components.BackButton
 import com.github.helltar.anpaside.ui.components.ConfirmDialog
@@ -145,14 +144,6 @@ fun ProjectsScreen(
                     }
                 }
             }
-
-            Text(
-                text = projectsViewModel.projectsDirectory,
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                // keep the path clear of the floating action button
-                modifier = Modifier.padding(start = 16.dp, top = 16.dp, end = 88.dp, bottom = 16.dp)
-            )
         }
     }
 
