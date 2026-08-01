@@ -81,6 +81,16 @@ fun ApkSettingsScreen(
     val versionCodeValid =
         versionCode.isBlank() || (parsedVersionCode ?: 0) >= Project.MIN_VERSION_CODE
     val iconBackgroundValid = HexColor.isValid(iconBackground.trim())
+    val packageSupportingText =
+        stringResource(R.string.err_invalid_package_name).takeIf { !packageValid }
+    val labelSupportingText =
+        stringResource(R.string.text_apk_label_hint).takeIf { label.isBlank() }
+    val versionCodeSupportingText =
+        when {
+            !versionCodeValid -> stringResource(R.string.err_invalid_version_code)
+            versionCode.isBlank() -> stringResource(R.string.text_apk_version_code_hint)
+            else -> null
+        }
 
     // every value is read from the state here rather than from what composition computed: this
     // runs inside onValueChange, before the recomposition that would refresh a captured val
@@ -123,41 +133,38 @@ fun ApkSettingsScreen(
                 label = stringResource(R.string.text_apk_package),
                 modifier = Modifier.padding(top = 16.dp),
                 isError = !packageValid,
-                supportingText = stringResource(R.string.err_invalid_package_name)
-                    .takeIf { !packageValid }
+                supportingText = packageSupportingText
             )
 
             SettingsField(
                 value = label,
                 onValueChange = { label = it; apply() },
                 label = stringResource(R.string.text_apk_label),
-                modifier = Modifier.padding(top = 8.dp),
-                supportingText = stringResource(R.string.text_apk_label_hint)
-                    .takeIf { label.isBlank() }
+                modifier = Modifier.padding(
+                    top = if (packageSupportingText == null) 8.dp else 16.dp
+                ),
+                supportingText = labelSupportingText
             )
 
             SettingsField(
                 value = versionCode,
                 onValueChange = { versionCode = it; apply() },
                 label = stringResource(R.string.text_apk_version_code),
-                modifier = Modifier.padding(top = 8.dp),
+                modifier = Modifier.padding(
+                    top = if (labelSupportingText == null) 8.dp else 16.dp
+                ),
                 keyboardType = KeyboardType.Number,
                 isError = !versionCodeValid,
-                supportingText =
-                    when {
-                        !versionCodeValid -> stringResource(R.string.err_invalid_version_code)
-                        versionCode.isBlank() ->
-                            stringResource(R.string.text_apk_version_code_hint)
-
-                        else -> null
-                    }
+                supportingText = versionCodeSupportingText
             )
 
             SettingsField(
                 value = iconBackground,
                 onValueChange = { iconBackground = it; apply() },
                 label = stringResource(R.string.text_apk_icon_background),
-                modifier = Modifier.padding(top = 8.dp),
+                modifier = Modifier.padding(
+                    top = if (versionCodeSupportingText == null) 8.dp else 16.dp
+                ),
                 isError = !iconBackgroundValid,
                 supportingText = stringResource(R.string.err_invalid_icon_background)
                     .takeIf { !iconBackgroundValid },
