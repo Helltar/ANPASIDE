@@ -1,0 +1,2 @@
+- Fold and expand whole procedures and functions, not just their begin/end block
+- Fixed the emulator and exported apps sometimes starting with a black screen
