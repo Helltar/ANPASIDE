@@ -25,6 +25,7 @@ internal object PascalFolding {
     fun findBlocks(text: String): List<PascalFoldBlock> {
         val openers = ArrayDeque<Opener>()
         val blocks = mutableListOf<PascalFoldBlock>()
+        var routine: Routine? = null
         var offset = 0
         var line = 1
 
@@ -43,8 +44,32 @@ internal object PascalFolding {
 
             if (text[offset].isIdentifierStart()) {
                 when {
+                    text.tokenEquals(offset, end, "procedure") ||
+                            text.tokenEquals(offset, end, "function") -> {
+                        routine = Routine(offset = offset, line = line)
+                    }
+
+                    text.tokenEquals(offset, end, "forward") ||
+                            text.tokenEquals(offset, end, "external") ||
+                            text.tokenEquals(offset, end, "interface") ||
+                            text.tokenEquals(offset, end, "implementation") ||
+                            text.tokenEquals(offset, end, "initialization") ||
+                            text.tokenEquals(offset, end, "finalization") -> {
+                        routine = null
+                    }
+
                     text.tokenEquals(offset, end, "begin") -> {
-                        openers.addLast(Opener(OpenerKind.BEGIN, offset, end, line))
+                        val bodyRoutine = routine?.takeIf { it.headerEnd != null }
+                        openers.addLast(
+                            Opener(
+                                kind = OpenerKind.BEGIN,
+                                offset = offset,
+                                tokenEnd = end,
+                                line = line,
+                                routine = bodyRoutine
+                            )
+                        )
+                        routine = null
                     }
 
                     text.tokenEquals(offset, end, "case") -> {
@@ -61,14 +86,42 @@ internal object PascalFolding {
                     text.tokenEquals(offset, end, "end") -> {
                         val opener = if (openers.isEmpty()) null else openers.removeLast()
 
-                        if (opener?.kind == OpenerKind.BEGIN && opener.line < line) {
-                            blocks += PascalFoldBlock(
-                                startOffset = opener.offset,
-                                startTokenEnd = opener.tokenEnd,
-                                endOffset = offset,
-                                startLine = opener.line,
-                                endLine = line
-                            )
+                        if (opener?.kind == OpenerKind.BEGIN) {
+                            if (opener.line < line) {
+                                blocks += PascalFoldBlock(
+                                    startOffset = opener.offset,
+                                    startTokenEnd = opener.tokenEnd,
+                                    endOffset = offset,
+                                    startLine = opener.line,
+                                    endLine = line
+                                )
+                            }
+
+                            opener.routine
+                                ?.takeIf { it.line < line }
+                                ?.let { bodyRoutine ->
+                                    blocks += PascalFoldBlock(
+                                        startOffset = bodyRoutine.offset,
+                                        startTokenEnd = requireNotNull(bodyRoutine.headerEnd),
+                                        endOffset = offset,
+                                        startLine = bodyRoutine.line,
+                                        endLine = line
+                                    )
+                                }
+                        }
+                    }
+                }
+            }
+
+            if (end == offset + 1) {
+                when (text[offset]) {
+                    '(' -> routine?.let { it.parenthesisDepth++ }
+                    ')' -> routine?.let {
+                        it.parenthesisDepth = (it.parenthesisDepth - 1).coerceAtLeast(0)
+                    }
+                    ';' -> routine?.let {
+                        if (it.parenthesisDepth == 0 && it.headerEnd == null) {
+                            it.headerEnd = end
                         }
                     }
                 }
@@ -161,7 +214,15 @@ internal object PascalFolding {
         val kind: OpenerKind,
         val offset: Int,
         val tokenEnd: Int,
-        val line: Int
+        val line: Int,
+        val routine: Routine? = null
+    )
+
+    private data class Routine(
+        val offset: Int,
+        val line: Int,
+        var parenthesisDepth: Int = 0,
+        var headerEnd: Int? = null
     )
 
     private enum class OpenerKind {

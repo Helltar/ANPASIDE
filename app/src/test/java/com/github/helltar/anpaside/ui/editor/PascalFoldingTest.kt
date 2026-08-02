@@ -64,6 +64,109 @@ class PascalFoldingTest {
     }
 
     @Test
+    fun findsWholeProcedureAndFunctionAroundTheirBeginBlocks() {
+        val source = """
+            procedure updateValue(value: Integer);
+            var
+                nextValue: Integer;
+            begin
+                nextValue := value + 1;
+            end;
+
+            function doubled(
+                value: Integer;
+                extra: Integer
+            ): Integer;
+            begin
+                doubled := value * 2 + extra;
+            end;
+        """.trimIndent()
+
+        val blocks = PascalFolding.findBlocks(source)
+
+        assertEquals(
+            listOf(1 to 6, 4 to 6, 8 to 14, 12 to 14),
+            blocks.map { it.startLine to it.endLine }
+        )
+    }
+
+    @Test
+    fun findsRoutineWhenItsBeginBlockIsOnOneLine() {
+        val source = """
+            procedure updateValue;
+            begin value := 1; end;
+        """.trimIndent()
+
+        val blocks = PascalFolding.findBlocks(source)
+
+        assertEquals(listOf(1 to 2), blocks.map { it.startLine to it.endLine })
+    }
+
+    @Test
+    fun routineFoldKeepsHeaderAndClosingEndVisible() {
+        val source = """
+            function updatedValue(value: Integer; extra: Integer): Integer;
+            var resultValue: Integer;
+            begin
+                resultValue := value + extra;
+                updatedValue := resultValue;
+            end;
+        """.trimIndent()
+        val routine = PascalFolding.findBlocks(source).first()
+
+        val transformed = PascalFolding.transform(AnnotatedString(source), listOf(routine))
+
+        assertEquals(
+            "function updatedValue(value: Integer; extra: Integer): Integer; … end;",
+            transformed.text.text
+        )
+    }
+
+    @Test
+    fun skipsInterfaceAndForwardRoutineDeclarations() {
+        val source = """
+            unit values;
+            interface
+            procedure declaredOnly;
+            function calculated: Integer;
+            implementation
+
+            procedure declaredOnly;
+            begin
+                value := 1;
+            end;
+
+            procedure forwarded; forward;
+
+            begin
+                declaredOnly;
+            end.
+        """.trimIndent()
+
+        val blocks = PascalFolding.findBlocks(source)
+        val routineBlocks = blocks.filter { block ->
+            val isProcedure = source.regionMatches(
+                thisOffset = block.startOffset,
+                other = "procedure",
+                otherOffset = 0,
+                length = "procedure".length,
+                ignoreCase = true
+            )
+            val isFunction = source.regionMatches(
+                thisOffset = block.startOffset,
+                other = "function",
+                otherOffset = 0,
+                length = "function".length,
+                ignoreCase = true
+            )
+            isProcedure || isFunction
+        }
+
+        assertEquals(1, routineBlocks.size)
+        assertEquals(7 to 10, routineBlocks.single().let { it.startLine to it.endLine })
+    }
+
+    @Test
     fun replacesHiddenSourceAndMapsOffsets() {
         val source = "begin\n    value := 1;\nend;\nafter"
         val block = PascalFolding.findBlocks(source).single()
