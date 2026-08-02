@@ -52,3 +52,7 @@ Added or changed:
     opening the loader options menu
   - camera capture returns a silent player instead of throwing, and
     platformRequest no longer hands over to another installed midlet
+  - Canvas takes the offscreen buffer lock while it obtains the Graphics it
+    paints a frame with, fixing an upstream race in which a resize arriving
+    from the ui thread during the first frame left that Graphics bound to a
+    discarded bitmap and the canvas black for the rest of the run

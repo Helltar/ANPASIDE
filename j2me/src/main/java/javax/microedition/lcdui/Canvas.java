@@ -792,8 +792,6 @@ public abstract class Canvas extends Displayable {
 				glUniform4fv(program.uSetting, 1, shaderFilter.values, 0);
 			}
 			isStarted = true;
-			// request one frame after egl is ready in case the initial repaint arrived too early
-			mView.post(mView::requestRender);
 		}
 
 		@Override
@@ -919,8 +917,16 @@ public abstract class Canvas extends Displayable {
 			if (r - l <= 0 || b - t <= 0) {
 				return;
 			}
-			Graphics g = offscreen.getSingleGraphics();
-			g.reset(l, t, r, b);
+			// bufferLock, because updateSize() may swap the offscreen bitmap from the ui thread
+			// while this runs, and a Graphics is bound for good to the bitmap it was built on:
+			// caching one outside the lock could leave it attached to the discarded bitmap, and
+			// then every later frame was painted into an orphan while copyTo() kept copying the
+			// new, forever empty one - a canvas that stayed black until the midlet was restarted
+			Graphics g;
+			synchronized (bufferLock) {
+				g = offscreen.getSingleGraphics();
+				g.reset(l, t, r, b);
+			}
 			try {
 				paint(g);
 			} catch (Throwable e) {
