@@ -792,6 +792,8 @@ public abstract class Canvas extends Displayable {
 				glUniform4fv(program.uSetting, 1, shaderFilter.values, 0);
 			}
 			isStarted = true;
+			// request one frame after egl is ready in case the initial repaint arrived too early
+			mView.post(mView::requestRender);
 		}
 
 		@Override
