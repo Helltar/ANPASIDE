@@ -2,7 +2,10 @@ package com.github.helltar.anpaside.ui.editor
 
 import android.graphics.Paint
 import android.graphics.Typeface
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.BringIntoViewSpec
+import androidx.compose.foundation.gestures.LocalBringIntoViewSpec
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.ScrollState
@@ -20,6 +23,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -29,6 +33,7 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
@@ -64,11 +69,21 @@ private val FoldGutterWidth = 20.dp
 // a little air between the tabs and the first line so the code does not sit right against them
 private val ContentTop = 6.dp
 
+// the field cannot scroll the column it grows in, so it asks the column to reveal the caret for
+// it — but it asks only when it gains focus, and with the selection it held before the tap moved
+// it, which is offset 0 in a file that has not been edited yet. that is what threw the view back
+// to the first line on the first tap after scrolling. the request is switched off here and the
+// caret line is kept in view by the editor itself instead
+private val NoAutoScrollSpec = object : BringIntoViewSpec {
+    override fun calculateScrollDistance(offset: Float, size: Float, containerSize: Float) = 0f
+}
+
 // code field with syntax highlighting, line numbers and folding in a fixed left gutter.
 // the field grows inside a scrolling column so the caret-move scroll and the gutter can be
 // driven from the same vertical offset. with word wrap off the field also grows horizontally
 // inside a horizontalScroll, while the gutter stays pinned to the left (drawn as an overlay,
 // not inside the field, so it never scrolls sideways with the text)
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun CodeEditor(
     file: EditorDocument,
@@ -131,6 +146,9 @@ fun CodeEditor(
 
     var editorLayout by remember(file) { mutableStateOf<EditorLayout?>(null) }
 
+    // the field keeps its focus across a tab switch, so this must not be reset with the document
+    var focused by remember { mutableStateOf(false) }
+
     // the caret was moved from outside (a tap on a compiler error), the field itself does
     // not scroll, so the surrounding column has to be moved to the line the caret is on
     LaunchedEffect(file, file.caretRequest) {
@@ -168,69 +186,128 @@ fun CodeEditor(
     val gutterWidth = numberGutterWidth + FoldGutterWidth
     val contentTopPx = with(density) { ContentTop.toPx() }
 
+    // with the field's own request switched off (NoAutoScrollSpec), keeping the caret on screen
+    // is the editor's job: a tap lands on a caret that is visible already and nothing moves,
+    // while the keyboard sliding up under the code scrolls just far enough to keep it in sight
+    LaunchedEffect(file, verticalScroll) {
+        var previous: CaretPosition? = null
+
+        snapshotFlow {
+            CaretPosition(
+                selection = file.value.selection.start,
+                viewport = verticalScroll.viewportSize,
+                layout = editorLayout?.takeIf { it.sourceText == file.value.text }
+            )
+        }.collect { position ->
+            val last = previous
+            previous = position
+
+            val layout = position.layout ?: return@collect
+
+            if (!focused || last?.layout == null) {
+                return@collect
+            }
+
+            val line = layout.text.getLineForOffset(
+                layout.offsetMapping.originalToTransformed(position.selection)
+            )
+            val top = layout.text.getLineTop(line) + contentTopPx
+            val bottom = layout.text.getLineBottom(line) + contentTopPx
+            val scrolled = verticalScroll.value
+
+            // nothing to do while the caret line is on screen
+            if (top >= scrolled && bottom <= scrolled + position.viewport) {
+                return@collect
+            }
+
+            val moved = position.selection != last.selection
+
+            // the keyboard or the log panel taking away part of the viewport only follows a
+            // caret that was on screen before it did, so a panel opening on a reader who has
+            // scrolled somewhere else leaves the code where it is
+            val covered = position.viewport < last.viewport &&
+                    top >= scrolled && bottom <= scrolled + last.viewport
+
+            if (!moved && !covered) {
+                return@collect
+            }
+
+            when {
+                top < scrolled -> verticalScroll.scrollTo(top.toInt().coerceAtLeast(0))
+
+                else -> verticalScroll.scrollTo((bottom - position.viewport).toInt())
+            }
+        }
+    }
+
     BoxWithConstraints(modifier.background(MaterialTheme.colorScheme.surface)) {
         val viewportHeight = maxHeight
         val viewportPx = with(density) { viewportHeight.roundToPx() }
         val textMinWidth = (maxWidth - gutterWidth).coerceAtLeast(0.dp)
 
-        Column(Modifier.verticalScroll(verticalScroll)) {
-            // start padding reserves the gutter and stays outside the horizontal scroll, so the
-            // text scrolls sideways within its own area and never slides under the line numbers
-            val widthModifier =
-                if (wordWrapEnabled) {
-                    Modifier.fillMaxWidth()
-                } else {
-                    Modifier.horizontalScroll(horizontalScroll).widthIn(min = textMinWidth)
-                }
-
-            BasicTextField(
-                value = file.value,
-                onValueChange = file::onValueChange,
-                textStyle = textStyle,
-                cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
-                visualTransformation = transformation,
-                keyboardOptions = KeyboardOptions(autoCorrectEnabled = false),
-                onTextLayout = {
-                    editorLayout = EditorLayout(
-                        text = it,
-                        sourceText = file.value.text,
-                        offsetMapping = foldOffsetMapping,
-                        numberedVisualLines =
-                            if (lineNumbersEnabled) {
-                                it.findNumberedVisualLines(file.value.text, foldOffsetMapping)
-                            } else {
-                                NumberedVisualLines.EMPTY
-                            },
-                        foldMarkers = it.findFoldMarkers(
-                            blocks = visibleFoldBlocks,
-                            collapsedStarts = file.collapsedFoldStarts,
-                            offsetMapping = foldOffsetMapping
-                        )
-                    )
-                },
-                modifier = Modifier
-                    .padding(start = gutterWidth)
-                    .then(widthModifier)
-                    .defaultMinSize(minHeight = viewportHeight)
-                    .onPreviewKeyEvent { event ->
-                        when {
-                            event.type != KeyEventType.KeyDown -> false
-
-                            event.key == Key.Tab -> {
-                                file.insertText(INDENT)
-                                true
-                            }
-
-                            event.key == Key.S && event.isCtrlPressed -> {
-                                onSaveShortcut()
-                                true
-                            }
-
-                            else -> false
-                        }
+        // covers both scrolls, the column's and the field's own horizontal one, which snapped
+        // back to the first column of the file for the same reason
+        CompositionLocalProvider(LocalBringIntoViewSpec provides NoAutoScrollSpec) {
+            Column(Modifier.verticalScroll(verticalScroll)) {
+                // start padding reserves the gutter and stays outside the horizontal scroll, so
+                // the text scrolls sideways within its own area and never slides under the numbers
+                val widthModifier =
+                    if (wordWrapEnabled) {
+                        Modifier.fillMaxWidth()
+                    } else {
+                        Modifier.horizontalScroll(horizontalScroll).widthIn(min = textMinWidth)
                     }
-                    .padding(top = ContentTop, end = 4.dp)
-            )
+
+                BasicTextField(
+                    value = file.value,
+                    onValueChange = file::onValueChange,
+                    textStyle = textStyle,
+                    cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
+                    visualTransformation = transformation,
+                    keyboardOptions = KeyboardOptions(autoCorrectEnabled = false),
+                    onTextLayout = {
+                        editorLayout = EditorLayout(
+                            text = it,
+                            sourceText = file.value.text,
+                            offsetMapping = foldOffsetMapping,
+                            numberedVisualLines =
+                                if (lineNumbersEnabled) {
+                                    it.findNumberedVisualLines(file.value.text, foldOffsetMapping)
+                                } else {
+                                    NumberedVisualLines.EMPTY
+                                },
+                            foldMarkers = it.findFoldMarkers(
+                                blocks = visibleFoldBlocks,
+                                collapsedStarts = file.collapsedFoldStarts,
+                                offsetMapping = foldOffsetMapping
+                            )
+                        )
+                    },
+                    modifier = Modifier
+                        .padding(start = gutterWidth)
+                        .then(widthModifier)
+                        .defaultMinSize(minHeight = viewportHeight)
+                        .onFocusChanged { focused = it.isFocused }
+                        .onPreviewKeyEvent { event ->
+                            when {
+                                event.type != KeyEventType.KeyDown -> false
+
+                                event.key == Key.Tab -> {
+                                    file.insertText(INDENT)
+                                    true
+                                }
+
+                                event.key == Key.S && event.isCtrlPressed -> {
+                                    onSaveShortcut()
+                                    true
+                                }
+
+                                else -> false
+                            }
+                        }
+                        .padding(top = ContentTop, end = 4.dp)
+                )
+            }
         }
 
         val layout = editorLayout
@@ -292,6 +369,14 @@ private data class EditorLayout(
     val offsetMapping: OffsetMapping,
     val numberedVisualLines: NumberedVisualLines,
     val foldMarkers: List<FoldMarker>
+)
+
+// what the caret has to stay in view against: where it is, how much of the code is on screen,
+// and the layout the two are measured in
+private data class CaretPosition(
+    val selection: Int,
+    val viewport: Int,
+    val layout: EditorLayout?
 )
 
 private data class NumberedVisualLines(
