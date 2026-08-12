@@ -1,0 +1,2 @@
+- Fixed the editor jumping back to the first line when tapping into a scrolled source
+- Fixed JSR-75 file access: midlets can now create and read files under c:/ and e:/
