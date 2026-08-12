@@ -58,6 +58,10 @@ Added or changed:
     root, so such a path resolves one directory too high, or fails outright when
     it names a file directly in the drive root. The MIDletPascal library
     Lib_jsr75i builds every one of its URLs that way
+  - the JSR-75 e:/ drive always maps into <external files dir>/emulator/fs/e.
+    Upstream maps it to the shared storage root while the app has the legacy
+    storage view, which the IDE cannot write to without a storage permission it
+    does not request
   - Canvas takes the offscreen buffer lock while it obtains the Graphics it
     paints a frame with, fixing an upstream race in which a resize arriving
     from the ui thread during the first frame left that Graphics bound to a

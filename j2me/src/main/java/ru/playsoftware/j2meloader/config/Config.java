@@ -35,8 +35,6 @@ import ru.playsoftware.j2meloader.R;
 
 import static ru.playsoftware.j2meloader.util.Constants.*;
 
-import ru.playsoftware.j2meloader.util.FileUtils;
-
 public class Config {
 	public static final String DEX_OPT_CACHE_DIR = "dex_opt";
 	public static final String FS_DIR = "/fs/";
@@ -106,12 +104,12 @@ public class Config {
 		return emulatorDir + FS_DIR + "c/";
 	}
 
+	// the e:/ drive stays inside the app's own directory on every android version. upstream
+	// points it at the shared storage root while the app still has the legacy storage view
+	// (api 28, or a device that kept it), and writing there needs a runtime permission the ide
+	// never asks for, so on those phones a midlet's files silently failed to appear
 	public static String getFsExternalDir() {
-		if (FileUtils.isExternalStorageLegacy()) {
-			return Environment.getExternalStorageDirectory().getPath() + "/";
-		} else {
-			return emulatorDir + FS_DIR + "e/";
-		}
+		return emulatorDir + FS_DIR + "e/";
 	}
 
 	public static void startApp(Context context, String name, String path, boolean showSettings) {
