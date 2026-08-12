@@ -52,6 +52,12 @@ Added or changed:
     opening the loader options menu
   - camera capture returns a silent player instead of throwing, and
     platformRequest no longer hands over to another installed midlet
+  - JSR-75 file connections accept the "file://c:/dir/name" form, which has two
+    slashes where the specification wants three and therefore parses the drive
+    letter as the URL authority. Upstream reads the path alone and loses the
+    root, so such a path resolves one directory too high, or fails outright when
+    it names a file directly in the drive root. The MIDletPascal library
+    Lib_jsr75i builds every one of its URLs that way
   - Canvas takes the offscreen buffer lock while it obtains the Graphics it
     paints a frame with, fixing an upstream race in which a resize arriving
     from the ui thread during the first frame left that Graphics bound to a

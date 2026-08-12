@@ -81,7 +81,7 @@ public class FileSystemFileConnection implements FileConnection {
 	FileSystemFileConnection(String url) throws IOException {
 		// <host>/<path>
 		Uri uri = Uri.parse(url);
-		host = uri.getHost();
+		String host = uri.getHost();
 		if (host == null) {
 			throw new IOException("Invalid connection specifier: " + url);
 		}
@@ -89,7 +89,18 @@ public class FileSystemFileConnection implements FileConnection {
 		if (path == null || path.trim().length() == 0 || path.charAt(0) != DIR_SEP) {
 			throw new IOException("Invalid connection specifier: " + url);
 		}
-		path = path.substring(1);
+		String authority = uri.getAuthority();
+		if (authority != null && authority.length() != 0 && getKnownRoot(authority + path) != null) {
+			// "file://c:/dir/name" has two slashes where the spec wants three, which parses the
+			// root as the uri authority. Lib_jsr75i writes every url that way, and reading the
+			// path alone would drop the root: "c:/save/game.sav" would be resolved as
+			// "save/game.sav", whose first directory getRoot() then mistakes for the root
+			path = authority + path;
+			host = "";
+		} else {
+			path = path.substring(1);
+		}
+		this.host = host;
 		root = getRoot(path);
 		if (root == null) throw new IllegalArgumentException("Root is not specified: " + url);
 		path = path.substring(root.length());
@@ -121,10 +132,18 @@ public class FileSystemFileConnection implements FileConnection {
 		return Config.getFsInternalDir();
 	}
 
-	private static String getRoot(String path) {
+	private static String getKnownRoot(String path) {
 		for (String root : FC_ROOTS) {
 			if (path.toLowerCase().startsWith(root))
 				return root;
+		}
+		return null;
+	}
+
+	private static String getRoot(String path) {
+		String known = getKnownRoot(path);
+		if (known != null) {
+			return known;
 		}
 		int separator = path.indexOf(DIR_SEP);
 		if (separator == -1) return null;
