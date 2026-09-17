@@ -1,3 +1,6 @@
+import java.nio.ByteBuffer
+import java.nio.ByteOrder
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
@@ -44,7 +47,36 @@ abstract class BundlePlayerTemplate : DefaultTask() {
 
         val target = assetDirectory.get().asFile.resolve("player")
         target.mkdirs()
-        apk.copyTo(target.resolve("template.apk"), overwrite = true)
+        target.resolve("template.apk").writeBytes(withoutSigningBlock(apk.readBytes()))
+    }
+
+    // signing a release from android studio signs every application module, the player included,
+    // and an ide that carries a template signed with the release key can not be rebuilt byte for
+    // byte by anyone else. the exporter never reads that signature, so it is cut out here: the
+    // v2/v3 block sits between the last entry and the central directory, and taking it out only
+    // moves the directory offset, which gives exactly the apk an unsigned build produces
+    private fun withoutSigningBlock(apk: ByteArray): ByteArray {
+        val bytes = ByteBuffer.wrap(apk).order(ByteOrder.LITTLE_ENDIAN)
+
+        // the end of central directory record, which agp writes without a comment
+        val record = apk.size - 22
+        check(record >= 0 && bytes.getInt(record) == 0x06054b50) { "Unexpected end of the player apk" }
+
+        val directory = bytes.getInt(record + 16)
+        val magic = "APK Sig Block 42".toByteArray()
+
+        if (directory < 32 || !apk.copyOfRange(directory - magic.size, directory).contentEquals(magic)) {
+            return apk
+        }
+
+        // the size is stored on both sides of the block and leaves out its own leading copy
+        val size = bytes.getLong(directory - magic.size - 8)
+        val start = directory - size.toInt() - 8
+        check(start >= 0 && bytes.getLong(start) == size) { "Malformed signing block in the player apk" }
+
+        val result = apk.copyOfRange(0, start) + apk.copyOfRange(directory, apk.size)
+        ByteBuffer.wrap(result).order(ByteOrder.LITTLE_ENDIAN).putInt(result.size - 22 + 16, start)
+        return result
     }
 }
 
