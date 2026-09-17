@@ -103,6 +103,12 @@ android {
             // legacy packaging extracts it there at install instead of leaving it packed inside the apk
             useLegacyPackaging = true
         }
+
+        dex {
+            // stored dex is the default from minSdk 28 on; deflating it takes the apk from 41 MB
+            // to about half that, at the cost of the installer unpacking it on the device
+            useLegacyPackaging = true
+        }
     }
 
     androidResources {
