@@ -1,0 +1,4 @@
+# the emulator runtime and the bundled dx are copies of J2ME loader (see their NOTICE files),
+# so they stay out of the repository language statistics
+j2me/** linguist-vendored
+dexlib/** linguist-vendored
