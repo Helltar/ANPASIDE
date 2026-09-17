@@ -1,0 +1,1 @@
+- Reduced the APK size from 41 MB to 22 MB
