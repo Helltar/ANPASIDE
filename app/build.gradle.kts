@@ -114,7 +114,9 @@ android {
     buildTypes {
         release {
             optimization {
-                enable = false
+                // most of the dex is compose, material and the bundled dexer, none of it used in
+                // full. src/main/keepRules and the j2me consumer rules hold what r8 cannot see
+                enable = true
             }
         }
     }

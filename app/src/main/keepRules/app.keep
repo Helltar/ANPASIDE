@@ -1,4 +1,4 @@
 # what a midlet reaches by name is kept by the consumer rules of the j2me module. names stay
-# as they are because the midlet's dex was linked against them before r8 ever ran
+# as they are for the same reason, and so that a stack trace from a user reads without a mapping
 
 -dontobfuscate
