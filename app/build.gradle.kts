@@ -143,6 +143,13 @@ android {
         }
     }
 
+    dependenciesInfo {
+        // the dependency list agp adds to the signing block is encrypted with a key of google's,
+        // so nobody else can check what it holds, and izzyondroid flags an apk that carries it
+        includeInApk = false
+        includeInBundle = false
+    }
+
     androidResources {
         // the bundled player apk is already compressed, deflating it again only costs build time
         noCompress += "apk"
