@@ -33,6 +33,21 @@ private data class OpenSourceComponent(
 )
 
 private val openSourceComponents = listOf(
+    // the compiler binary in jniLibs and the rtl classes in assets/rtl are both gpl: they run as a
+    // separate process and are copied into the user's jar, so the ide itself stays mit
+    OpenSourceComponent(
+        name = "mp3cc (MIDletPascal compiler)",
+        copyright = "Copyright 2009-2013 MIDletPascal project (Niksa Orlic, Artem, Javier Santo Domingo)",
+        license = "GNU General Public License v3.0 or later",
+        url = "https://github.com/Helltar/mp3cc"
+    ),
+    OpenSourceComponent(
+        name = "MIDletPascal RTL",
+        copyright = "Copyright 2009-2013 MIDletPascal project (Niksa Orlic, Javier Santo Domingo); " +
+            "Real.java Copyright 2003-2009 Roar Lauritzsen",
+        license = "GNU General Public License v3.0 or later (Real.java: v2.0 or later)",
+        url = "https://github.com/Helltar/midletpascal-rtl"
+    ),
     OpenSourceComponent(
         name = "J2ME Loader",
         copyright = "Copyright 2017-2024 Nikita Shakarun",
@@ -124,6 +139,7 @@ fun LicensesScreen(
 
                 LicenseText("MIT License", documents.mit)
                 LicenseText("Apache License 2.0", documents.apache)
+                LicenseText("GNU General Public License v3.0", documents.gpl)
             }
         } else if (state.failed) {
             Box(
