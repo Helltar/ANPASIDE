@@ -18,8 +18,22 @@ object PascalHighlighter {
         "while", "with", "xor"
     ).groupBy(String::length)
 
-    fun highlight(text: String, colors: SyntaxColors): AnnotatedString {
+    // the whole text is always scanned, a comment opened far above still has to be known about,
+    // but only tokens inside the window get a span: laying out thousands of spans on every
+    // keystroke is what made a long file slow to type in
+    internal fun highlight(
+        text: String,
+        colors: SyntaxColors,
+        window: HighlightWindow = HighlightWindow.ALL
+    ): AnnotatedString {
         val builder = AnnotatedString.Builder(text)
+
+        fun mark(style: SpanStyle, start: Int, end: Int) {
+            if (end > window.start && start < window.end) {
+                builder.addStyle(style, start, end)
+            }
+        }
+
         val stringStyle = SpanStyle(color = colors.string)
         val numberStyle = SpanStyle(color = colors.number)
         val keywordStyle = SpanStyle(color = colors.keyword)
@@ -32,35 +46,35 @@ object PascalHighlighter {
             when {
                 text[offset] == '\'' || text[offset] == '"' -> {
                     offset = quotedStringEnd(text, offset)
-                    builder.addStyle(stringStyle, start, offset)
+                    mark(stringStyle, start, offset)
                 }
 
                 text[offset] == '#' -> {
                     offset = characterCodeEnd(text, offset)
-                    builder.addStyle(stringStyle, start, offset)
+                    mark(stringStyle, start, offset)
                 }
 
                 text.startsWith("/*", offset) -> {
                     val end = text.indexOf("*/", offset + 2)
                     offset = if (end < 0) text.length else end + 2
-                    builder.addStyle(commentStyle, start, offset)
+                    mark(commentStyle, start, offset)
                 }
 
                 text.startsWith("(*", offset) -> {
                     val end = text.indexOf("*)", offset + 2)
                     offset = if (end < 0) text.length else end + 2
-                    builder.addStyle(commentStyle, start, offset)
+                    mark(commentStyle, start, offset)
                 }
 
                 text[offset] == '{' -> {
                     val end = text.indexOf('}', offset + 1)
                     offset = if (end < 0) text.length else end + 1
-                    builder.addStyle(commentStyle, start, offset)
+                    mark(commentStyle, start, offset)
                 }
 
                 text.startsWith("//", offset) -> {
                     offset = lineEnd(text, offset + 2)
-                    builder.addStyle(commentStyle, start, offset)
+                    mark(commentStyle, start, offset)
                 }
 
                 text[offset] == '$' && offset + 1 < text.length && text[offset + 1].isLetterOrDigit() -> {
@@ -70,14 +84,14 @@ object PascalHighlighter {
                         offset++
                     }
 
-                    builder.addStyle(numberStyle, start, offset)
+                    mark(numberStyle, start, offset)
                 }
 
                 text[offset].isDigit() -> {
                     offset = numberEnd(text, offset)
 
                     if (offset == text.length || !text[offset].isIdentifierPart()) {
-                        builder.addStyle(numberStyle, start, offset)
+                        mark(numberStyle, start, offset)
                     }
                 }
 
@@ -89,7 +103,7 @@ object PascalHighlighter {
                     }
 
                     if (isKeyword(text, start, offset)) {
-                        builder.addStyle(keywordStyle, start, offset)
+                        mark(keywordStyle, start, offset)
                     }
                 }
 
@@ -174,9 +188,17 @@ object PascalHighlighter {
     private fun Char.isIdentifierPart() = this == '_' || isLetterOrDigit()
 }
 
+// the part of the source, in source offsets, that is worth giving spans to
+internal data class HighlightWindow(val start: Int, val end: Int) {
+    companion object {
+        val ALL = HighlightWindow(0, Int.MAX_VALUE)
+    }
+}
+
 // syntax highlighting only paints; optional folding supplies its own source offset mapping
 internal class PascalVisualTransformation(
     private val colors: SyntaxColors?,
+    private val highlightWindow: HighlightWindow = HighlightWindow.ALL,
     private val activeFoldBlocks: List<PascalFoldBlock> = emptyList()
 ) : VisualTransformation {
 
@@ -189,7 +211,7 @@ internal class PascalVisualTransformation(
                 text
             } else {
                 lastResult.takeIf { text.text == lastText }
-                    ?: PascalHighlighter.highlight(text.text, colors).also {
+                    ?: PascalHighlighter.highlight(text.text, colors, highlightWindow).also {
                         lastText = text.text
                         lastResult = it
                     }

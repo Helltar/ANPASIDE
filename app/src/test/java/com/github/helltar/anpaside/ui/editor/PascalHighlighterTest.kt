@@ -31,6 +31,20 @@ class PascalHighlighterTest {
     }
 
     @Test
+    fun paintsOnlyTheWindowButStillKnowsWhatWasOpenedAboveIt() {
+        val source = "begin\n{ a comment\nthat goes on }\nend"
+        val window = HighlightWindow(source.indexOf("that"), source.length)
+        val highlighted = PascalHighlighter.highlight(source, DarkSyntaxColors, window)
+
+        assertEquals(DarkSyntaxColors.comment, highlighted.colorAt(source, "goes"))
+        assertEquals(DarkSyntaxColors.keyword, highlighted.colorAt(source, "end"))
+        assertEquals(
+            0,
+            highlighted.spanStyles.count { it.end <= window.start }
+        )
+    }
+
+    @Test
     fun supportsEveryCompilerCommentAndStringForm() {
         val source = """
             a := 'It''s';

@@ -66,6 +66,12 @@ private const val INDENT = "    "
 private val GutterGap = 6.dp
 private val FoldGutterWidth = 20.dp
 
+// spans are kept for the visible lines plus this many on each side, and the window is moved
+// once fewer than the refresh margin are left, so scrolling never reaches unpainted code
+private const val HIGHLIGHT_MARGIN_LINES = 80
+private const val HIGHLIGHT_REFRESH_LINES = 25
+private const val INITIAL_HIGHLIGHT_CHARS = 8000
+
 // a little air between the tabs and the first line so the code does not sit right against them
 private val ContentTop = 6.dp
 
@@ -134,9 +140,25 @@ fun CodeEditor(
         }
     }
 
-    val transformation = remember(highlighterEnabled, syntaxColors, activeFoldBlocks) {
+    var highlightWindow by remember(file) {
+        mutableStateOf(
+            if (file.value.text.length <= INITIAL_HIGHLIGHT_CHARS) {
+                HighlightWindow.ALL
+            } else {
+                HighlightWindow(0, INITIAL_HIGHLIGHT_CHARS)
+            }
+        )
+    }
+
+    val transformation = remember(
+        highlighterEnabled,
+        syntaxColors,
+        activeFoldBlocks,
+        highlightWindow
+    ) {
         PascalVisualTransformation(
             colors = syntaxColors.takeIf { highlighterEnabled },
+            highlightWindow = highlightWindow,
             activeFoldBlocks = activeFoldBlocks
         )
     }
@@ -171,6 +193,20 @@ fun CodeEditor(
         val target = measured.text.getLineTop(line) - verticalScroll.viewportSize / 3
 
         verticalScroll.animateScrollTo(target.toInt().coerceAtLeast(0))
+    }
+
+    // the highlight window follows the viewport; moving it lays the text out again, so it is
+    // moved in big steps instead of with every scrolled line
+    LaunchedEffect(file, verticalScroll) {
+        snapshotFlow {
+            editorLayout
+                ?.takeIf { it.sourceText == file.value.text }
+                ?.highlightWindowFor(
+                    scrollOffset = verticalScroll.value,
+                    viewportHeight = verticalScroll.viewportSize,
+                    current = highlightWindow
+                )
+        }.filterNotNull().collect { highlightWindow = it }
     }
 
     val digits = remember(file.value.text) {
@@ -370,6 +406,40 @@ private data class EditorLayout(
     val numberedVisualLines: NumberedVisualLines,
     val foldMarkers: List<FoldMarker>
 )
+
+private fun EditorLayout.highlightWindowFor(
+    scrollOffset: Int,
+    viewportHeight: Int,
+    current: HighlightWindow
+): HighlightWindow {
+    val first = text.getLineForVerticalPosition(scrollOffset.toFloat())
+    val last = text.getLineForVerticalPosition((scrollOffset + viewportHeight).toFloat())
+    val needed = sourceWindow(first - HIGHLIGHT_REFRESH_LINES, last + HIGHLIGHT_REFRESH_LINES)
+
+    if (needed.start >= current.start && needed.end <= current.end) {
+        return current
+    }
+
+    return sourceWindow(first - HIGHLIGHT_MARGIN_LINES, last + HIGHLIGHT_MARGIN_LINES)
+}
+
+// a window that reaches the last line is open-ended, so typing at the end of the file does not
+// outgrow it with every character
+private fun EditorLayout.sourceWindow(firstLine: Int, lastLine: Int): HighlightWindow =
+    HighlightWindow(
+        start =
+            if (firstLine <= 0) {
+                0
+            } else {
+                offsetMapping.transformedToOriginal(text.getLineStart(firstLine))
+            },
+        end =
+            if (lastLine >= text.lineCount - 1) {
+                Int.MAX_VALUE
+            } else {
+                offsetMapping.transformedToOriginal(text.getLineEnd(lastLine))
+            }
+    )
 
 // what the caret has to stay in view against: where it is, how much of the code is on screen,
 // and the layout the two are measured in
