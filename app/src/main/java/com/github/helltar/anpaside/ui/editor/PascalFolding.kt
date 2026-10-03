@@ -1,10 +1,7 @@
 package com.github.helltar.anpaside.ui.editor
 
-import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.text.input.OffsetMapping
-import androidx.compose.ui.text.input.TransformedText
-
-private const val FOLD_PLACEHOLDER = " … "
+// zero width and, unlike a zero width space, not a place a wrapped line may break at
+private const val HIDDEN_CHAR = '\u2060'
 
 internal data class PascalFoldBlock(
     val startOffset: Int,
@@ -164,51 +161,16 @@ internal object PascalFolding {
             }
         }
 
-    fun transform(
-        text: AnnotatedString,
-        activeBlocks: List<PascalFoldBlock>
-    ): TransformedText {
-        val blocks = activeBlocks.filter { block ->
-            block.hiddenStart in 0..text.length &&
-                    block.hiddenEnd in 0..text.length &&
-                    block.hiddenStart < block.hiddenEnd
+    // a folded range keeps its length on screen, so offsets stay the same in the source and in
+    // what is drawn: it shows as " … " followed by characters that take no room at all, line
+    // breaks included
+    fun placeholderChar(index: Int, length: Int): Char =
+        when {
+            length < 3 -> if (index == 0) '…' else HIDDEN_CHAR
+            index == 1 -> '…'
+            index == 0 || index == 2 -> ' '
+            else -> HIDDEN_CHAR
         }
-
-        if (blocks.isEmpty()) {
-            return TransformedText(text, OffsetMapping.Identity)
-        }
-
-        val builder = AnnotatedString.Builder()
-        val replacements = ArrayList<FoldReplacement>(blocks.size)
-        var sourceOffset = 0
-        var transformedOffset = 0
-
-        for (block in blocks) {
-            if (block.hiddenStart < sourceOffset) {
-                continue
-            }
-
-            builder.append(text.subSequence(sourceOffset, block.hiddenStart))
-            transformedOffset += block.hiddenStart - sourceOffset
-            val replacementStart = transformedOffset
-            builder.append(FOLD_PLACEHOLDER)
-            transformedOffset += FOLD_PLACEHOLDER.length
-            replacements += FoldReplacement(
-                originalStart = block.hiddenStart,
-                originalEnd = block.hiddenEnd,
-                transformedStart = replacementStart,
-                transformedEnd = transformedOffset
-            )
-            sourceOffset = block.hiddenEnd
-        }
-
-        builder.append(text.subSequence(sourceOffset, text.length))
-
-        return TransformedText(
-            text = builder.toAnnotatedString(),
-            offsetMapping = FoldOffsetMapping(replacements)
-        )
-    }
 
     private data class Opener(
         val kind: OpenerKind,
@@ -290,64 +252,4 @@ internal object PascalFolding {
     private fun Char.isIdentifierStart() = this == '_' || isLetter()
 
     private fun Char.isIdentifierPart() = this == '_' || isLetterOrDigit()
-}
-
-private data class FoldReplacement(
-    val originalStart: Int,
-    val originalEnd: Int,
-    val transformedStart: Int,
-    val transformedEnd: Int
-)
-
-private class FoldOffsetMapping(
-    private val replacements: List<FoldReplacement>
-) : OffsetMapping {
-
-    override fun originalToTransformed(offset: Int): Int {
-        var adjustment = 0
-
-        for (replacement in replacements) {
-            if (offset < replacement.originalStart) {
-                break
-            }
-
-            if (offset <= replacement.originalEnd) {
-                return if (offset == replacement.originalStart) {
-                    replacement.transformedStart
-                } else {
-                    replacement.transformedEnd
-                }
-            }
-
-            adjustment +=
-                replacement.transformedEnd - replacement.transformedStart -
-                        (replacement.originalEnd - replacement.originalStart)
-        }
-
-        return offset + adjustment
-    }
-
-    override fun transformedToOriginal(offset: Int): Int {
-        var adjustment = 0
-
-        for (replacement in replacements) {
-            if (offset < replacement.transformedStart) {
-                break
-            }
-
-            if (offset <= replacement.transformedEnd) {
-                return if (offset == replacement.transformedStart) {
-                    replacement.originalStart
-                } else {
-                    replacement.originalEnd
-                }
-            }
-
-            adjustment +=
-                replacement.originalEnd - replacement.originalStart -
-                        (replacement.transformedEnd - replacement.transformedStart)
-        }
-
-        return offset + adjustment
-    }
 }

@@ -1,8 +1,5 @@
 package com.github.helltar.anpaside.ui.editor
 
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.AnnotatedString
-import com.github.helltar.anpaside.ui.theme.DarkSyntaxColors
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
@@ -17,30 +14,30 @@ class PascalHighlighterTest {
                 { var }
                 result := #65;
         """.trimIndent()
-        val highlighted = PascalHighlighter.highlight(source, DarkSyntaxColors)
+        val highlighted = PascalHighlighter.tokens(source)
 
-        assertEquals(DarkSyntaxColors.keyword, highlighted.colorAt(source, "if"))
-        assertEquals(DarkSyntaxColors.keyword, highlighted.colorAt(source, "true"))
-        assertEquals(DarkSyntaxColors.keyword, highlighted.colorAt(source, "then"))
-        assertEquals(DarkSyntaxColors.string, highlighted.colorAt(source, "begin"))
-        assertEquals(DarkSyntaxColors.string, highlighted.colorAt(source, "12"))
-        assertEquals(DarkSyntaxColors.comment, highlighted.colorAt(source, "end"))
-        assertEquals(DarkSyntaxColors.comment, highlighted.colorAt(source, "var"))
-        assertEquals(DarkSyntaxColors.keyword, highlighted.colorAt(source, "result"))
-        assertEquals(DarkSyntaxColors.string, highlighted.colorAt(source, "#65"))
+        assertEquals(TokenKind.KEYWORD, highlighted.colorAt(source, "if"))
+        assertEquals(TokenKind.KEYWORD, highlighted.colorAt(source, "true"))
+        assertEquals(TokenKind.KEYWORD, highlighted.colorAt(source, "then"))
+        assertEquals(TokenKind.STRING, highlighted.colorAt(source, "begin"))
+        assertEquals(TokenKind.STRING, highlighted.colorAt(source, "12"))
+        assertEquals(TokenKind.COMMENT, highlighted.colorAt(source, "end"))
+        assertEquals(TokenKind.COMMENT, highlighted.colorAt(source, "var"))
+        assertEquals(TokenKind.KEYWORD, highlighted.colorAt(source, "result"))
+        assertEquals(TokenKind.STRING, highlighted.colorAt(source, "#65"))
     }
 
     @Test
     fun paintsOnlyTheWindowButStillKnowsWhatWasOpenedAboveIt() {
         val source = "begin\n{ a comment\nthat goes on }\nend"
         val window = HighlightWindow(source.indexOf("that"), source.length)
-        val highlighted = PascalHighlighter.highlight(source, DarkSyntaxColors, window)
+        val highlighted = PascalHighlighter.tokens(source, window)
 
-        assertEquals(DarkSyntaxColors.comment, highlighted.colorAt(source, "goes"))
-        assertEquals(DarkSyntaxColors.keyword, highlighted.colorAt(source, "end"))
+        assertEquals(TokenKind.COMMENT, highlighted.colorAt(source, "goes"))
+        assertEquals(TokenKind.KEYWORD, highlighted.colorAt(source, "end"))
         assertEquals(
             0,
-            highlighted.spanStyles.count { it.end <= window.start }
+            highlighted.count { it.end <= window.start }
         )
     }
 
@@ -53,35 +50,32 @@ class PascalHighlighterTest {
             (* paren *)
             { brace }
         """.trimIndent()
-        val highlighted = PascalHighlighter.highlight(source, DarkSyntaxColors)
+        val highlighted = PascalHighlighter.tokens(source)
 
-        assertEquals(DarkSyntaxColors.string, highlighted.colorAt(source, "It''s"))
-        assertEquals(DarkSyntaxColors.string, highlighted.colorAt(source, "\"begin\""))
-        assertEquals(DarkSyntaxColors.comment, highlighted.colorAt(source, "slash"))
-        assertEquals(DarkSyntaxColors.comment, highlighted.colorAt(source, "paren"))
-        assertEquals(DarkSyntaxColors.comment, highlighted.colorAt(source, "brace"))
+        assertEquals(TokenKind.STRING, highlighted.colorAt(source, "It''s"))
+        assertEquals(TokenKind.STRING, highlighted.colorAt(source, "\"begin\""))
+        assertEquals(TokenKind.COMMENT, highlighted.colorAt(source, "slash"))
+        assertEquals(TokenKind.COMMENT, highlighted.colorAt(source, "paren"))
+        assertEquals(TokenKind.COMMENT, highlighted.colorAt(source, "brace"))
     }
 
     @Test
     fun highlightsCompilerNumberFormsWithoutTouchingIdentifiers() {
         val source = "a := 12; b := 3.14; c := 1..2; d := ${'$'}FF; abc12 := 0;"
-        val highlighted = PascalHighlighter.highlight(source, DarkSyntaxColors)
+        val highlighted = PascalHighlighter.tokens(source)
 
-        assertEquals(DarkSyntaxColors.number, highlighted.colorAt(source, "12"))
-        assertEquals(DarkSyntaxColors.number, highlighted.colorAt(source, "3.14"))
-        assertEquals(DarkSyntaxColors.number, highlighted.colorAt(source, "1.."))
-        assertEquals(DarkSyntaxColors.number, highlighted.colorAt(source, "2; d"))
-        assertEquals(DarkSyntaxColors.number, highlighted.colorAt(source, "${'$'}FF"))
-        assertEquals(Color.Unspecified, highlighted.colorAt(source, "abc12"))
+        assertEquals(TokenKind.NUMBER, highlighted.colorAt(source, "12"))
+        assertEquals(TokenKind.NUMBER, highlighted.colorAt(source, "3.14"))
+        assertEquals(TokenKind.NUMBER, highlighted.colorAt(source, "1.."))
+        assertEquals(TokenKind.NUMBER, highlighted.colorAt(source, "2; d"))
+        assertEquals(TokenKind.NUMBER, highlighted.colorAt(source, "${'$'}FF"))
+        assertEquals(null, highlighted.colorAt(source, "abc12"))
     }
 
-    private fun AnnotatedString.colorAt(source: String, marker: String): Color {
+    private fun List<PascalToken>.colorAt(source: String, marker: String): TokenKind? {
         val offset = source.indexOf(marker)
         require(offset >= 0) { "Marker not found: $marker" }
 
-        return spanStyles.firstOrNull { offset >= it.start && offset < it.end }
-            ?.item
-            ?.color
-            ?: Color.Unspecified
+        return firstOrNull { offset >= it.start && offset < it.end }?.kind
     }
 }

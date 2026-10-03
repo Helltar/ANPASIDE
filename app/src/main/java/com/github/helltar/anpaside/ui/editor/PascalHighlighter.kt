@@ -1,12 +1,17 @@
 package com.github.helltar.anpaside.ui.editor
 
-import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.input.TransformedText
-import androidx.compose.ui.text.input.VisualTransformation
-import com.github.helltar.anpaside.ui.theme.SyntaxColors
+internal enum class TokenKind { KEYWORD, STRING, NUMBER, COMMENT }
 
-object PascalHighlighter {
+internal data class PascalToken(val kind: TokenKind, val start: Int, val end: Int)
+
+// the part of the source, in source offsets, that is worth painting
+internal data class HighlightWindow(val start: Int, val end: Int) {
+    companion object {
+        val ALL = HighlightWindow(0, Int.MAX_VALUE)
+    }
+}
+
+internal object PascalHighlighter {
 
     private val keywordsByLength = setOf(
         "and", "array", "begin", "break", "bytecode", "case", "const", "div",
@@ -19,25 +24,17 @@ object PascalHighlighter {
     ).groupBy(String::length)
 
     // the whole text is always scanned, a comment opened far above still has to be known about,
-    // but only tokens inside the window get a span: laying out thousands of spans on every
+    // but only tokens inside the window are reported: painting thousands of them on every
     // keystroke is what made a long file slow to type in
-    internal fun highlight(
-        text: String,
-        colors: SyntaxColors,
-        window: HighlightWindow = HighlightWindow.ALL
-    ): AnnotatedString {
-        val builder = AnnotatedString.Builder(text)
+    fun tokens(text: String, window: HighlightWindow = HighlightWindow.ALL): List<PascalToken> {
+        val tokens = ArrayList<PascalToken>()
 
-        fun mark(style: SpanStyle, start: Int, end: Int) {
+        fun mark(kind: TokenKind, start: Int, end: Int) {
             if (end > window.start && start < window.end) {
-                builder.addStyle(style, start, end)
+                tokens += PascalToken(kind, start, end)
             }
         }
 
-        val stringStyle = SpanStyle(color = colors.string)
-        val numberStyle = SpanStyle(color = colors.number)
-        val keywordStyle = SpanStyle(color = colors.keyword)
-        val commentStyle = SpanStyle(color = colors.comment)
         var offset = 0
 
         while (offset < text.length) {
@@ -46,35 +43,35 @@ object PascalHighlighter {
             when {
                 text[offset] == '\'' || text[offset] == '"' -> {
                     offset = quotedStringEnd(text, offset)
-                    mark(stringStyle, start, offset)
+                    mark(TokenKind.STRING, start, offset)
                 }
 
                 text[offset] == '#' -> {
                     offset = characterCodeEnd(text, offset)
-                    mark(stringStyle, start, offset)
+                    mark(TokenKind.STRING, start, offset)
                 }
 
                 text.startsWith("/*", offset) -> {
                     val end = text.indexOf("*/", offset + 2)
                     offset = if (end < 0) text.length else end + 2
-                    mark(commentStyle, start, offset)
+                    mark(TokenKind.COMMENT, start, offset)
                 }
 
                 text.startsWith("(*", offset) -> {
                     val end = text.indexOf("*)", offset + 2)
                     offset = if (end < 0) text.length else end + 2
-                    mark(commentStyle, start, offset)
+                    mark(TokenKind.COMMENT, start, offset)
                 }
 
                 text[offset] == '{' -> {
                     val end = text.indexOf('}', offset + 1)
                     offset = if (end < 0) text.length else end + 1
-                    mark(commentStyle, start, offset)
+                    mark(TokenKind.COMMENT, start, offset)
                 }
 
                 text.startsWith("//", offset) -> {
                     offset = lineEnd(text, offset + 2)
-                    mark(commentStyle, start, offset)
+                    mark(TokenKind.COMMENT, start, offset)
                 }
 
                 text[offset] == '$' && offset + 1 < text.length && text[offset + 1].isLetterOrDigit() -> {
@@ -84,14 +81,14 @@ object PascalHighlighter {
                         offset++
                     }
 
-                    mark(numberStyle, start, offset)
+                    mark(TokenKind.NUMBER, start, offset)
                 }
 
                 text[offset].isDigit() -> {
                     offset = numberEnd(text, offset)
 
                     if (offset == text.length || !text[offset].isIdentifierPart()) {
-                        mark(numberStyle, start, offset)
+                        mark(TokenKind.NUMBER, start, offset)
                     }
                 }
 
@@ -103,7 +100,7 @@ object PascalHighlighter {
                     }
 
                     if (isKeyword(text, start, offset)) {
-                        mark(keywordStyle, start, offset)
+                        mark(TokenKind.KEYWORD, start, offset)
                     }
                 }
 
@@ -111,7 +108,7 @@ object PascalHighlighter {
             }
         }
 
-        return builder.toAnnotatedString()
+        return tokens
     }
 
     private fun quotedStringEnd(text: String, start: Int): Int {
@@ -186,37 +183,4 @@ object PascalHighlighter {
     private fun Char.isIdentifierStart() = this == '_' || isLetter()
 
     private fun Char.isIdentifierPart() = this == '_' || isLetterOrDigit()
-}
-
-// the part of the source, in source offsets, that is worth giving spans to
-internal data class HighlightWindow(val start: Int, val end: Int) {
-    companion object {
-        val ALL = HighlightWindow(0, Int.MAX_VALUE)
-    }
-}
-
-// syntax highlighting only paints; optional folding supplies its own source offset mapping
-internal class PascalVisualTransformation(
-    private val colors: SyntaxColors?,
-    private val highlightWindow: HighlightWindow = HighlightWindow.ALL,
-    private val activeFoldBlocks: List<PascalFoldBlock> = emptyList()
-) : VisualTransformation {
-
-    private var lastText: String? = null
-    private var lastResult: AnnotatedString? = null
-
-    override fun filter(text: AnnotatedString): TransformedText {
-        val highlighted =
-            if (colors == null) {
-                text
-            } else {
-                lastResult.takeIf { text.text == lastText }
-                    ?: PascalHighlighter.highlight(text.text, colors, highlightWindow).also {
-                        lastText = text.text
-                        lastResult = it
-                    }
-            }
-
-        return PascalFolding.transform(highlighted, activeFoldBlocks)
-    }
 }

@@ -1,6 +1,5 @@
 package com.github.helltar.anpaside.ui.editor
 
-import androidx.compose.ui.text.AnnotatedString
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -114,11 +113,9 @@ class PascalFoldingTest {
         """.trimIndent()
         val routine = PascalFolding.findBlocks(source).first()
 
-        val transformed = PascalFolding.transform(AnnotatedString(source), listOf(routine))
-
         assertEquals(
             "function updatedValue(value: Integer; extra: Integer): Integer; … end;",
-            transformed.text.text
+            folded(source, routine)
         )
     }
 
@@ -167,18 +164,13 @@ class PascalFoldingTest {
     }
 
     @Test
-    fun replacesHiddenSourceAndMapsOffsets() {
+    fun foldedRangeKeepsItsLengthAndShowsAPlaceholder() {
         val source = "begin\n    value := 1;\nend;\nafter"
         val block = PascalFolding.findBlocks(source).single()
-        val transformed = PascalFolding.transform(AnnotatedString(source), listOf(block))
 
-        assertEquals("begin … end;\nafter", transformed.text.text)
-        assertEquals(block.hiddenStart, transformed.offsetMapping.originalToTransformed(block.hiddenStart))
-        assertEquals(8, transformed.offsetMapping.originalToTransformed(block.hiddenStart + 1))
-        assertEquals(8, transformed.offsetMapping.originalToTransformed(block.hiddenEnd))
-        assertEquals(block.hiddenStart, transformed.offsetMapping.transformedToOriginal(5))
-        assertEquals(block.hiddenEnd, transformed.offsetMapping.transformedToOriginal(6))
-        assertEquals(block.hiddenEnd, transformed.offsetMapping.transformedToOriginal(8))
+        assertEquals("begin … end;\nafter", folded(source, block))
+        assertEquals("…", folded("ab", 0, 1).take(1))
+        assertEquals(2, folded("ab", 0, 2).length)
     }
 
     @Test
@@ -200,4 +192,17 @@ class PascalFoldingTest {
         assertEquals(listOf(blocks.first()), visible)
         assertTrue(starts.contains(blocks.last().startOffset))
     }
+
+    // what the layout shows for a fold, with the zero width filler dropped
+    private fun folded(source: String, block: PascalFoldBlock): String =
+        folded(source, block.hiddenStart, block.hiddenEnd).replace("\u2060", "")
+
+    private fun folded(source: String, start: Int, end: Int): String =
+        source.mapIndexed { index, char ->
+            if (index in start until end) {
+                PascalFolding.placeholderChar(index - start, end - start)
+            } else {
+                char
+            }
+        }.joinToString("")
 }
