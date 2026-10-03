@@ -652,11 +652,11 @@ internal class CodeEditorView(context: Context) : EditText(context) {
             panning = false
             longPressed = false
 
-            // the navigation drawer around the editor claims every sideways drag it sees;
-            // while there is a line to pan, the gesture has to be kept from the first event
-            if (wordWrapEnabled == false && maxScrollX() > 0) {
-                parent?.requestDisallowInterceptTouchEvent(true)
-            }
+            // the navigation drawer around the editor claims any drag that leans sideways,
+            // which a scroll done with a thumb nearly always does: the scroll was cut short
+            // and the drawer slid out instead. a touch that starts in the code is the
+            // editor's for as long as it lasts; the drawer still has its button
+            parent?.requestDisallowInterceptTouchEvent(true)
         }
 
         pressedFold?.let { block ->
@@ -714,7 +714,7 @@ internal class CodeEditorView(context: Context) : EditText(context) {
                 val velocity = tracker.yVelocity
 
                 // only a drag that scrolled is flung, not one that selected text
-                if (abs(velocity) > minFlingVelocity && scrollY != downScrollY && !hasSelection()) {
+                if (abs(velocity) > minFlingVelocity && scrollY != downScrollY && !longPressed) {
                     scroller.fling(
                         scrollX, scrollY,
                         0, -velocity.toInt(),
