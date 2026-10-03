@@ -17,7 +17,7 @@ android {
     }
 
     defaultConfig {
-        minSdk = 28
+        minSdk = 24
         buildConfigField("boolean", "FULL_EMULATOR", "true")
 
         // what a midlet resolves by name, kept in every application that shrinks this runtime

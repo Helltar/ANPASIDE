@@ -71,10 +71,19 @@ class ApkExporter(
             )
 
         // a midlet without a readable icon of its own keeps the template's
-        request.icon
-            ?.takeIf(File::isFile)
-            ?.let(LauncherIcon::compose)
-            ?.let { icon -> replacements[ApkTemplate.ICON_ENTRY] = icon }
+        val icon = request.icon?.takeIf(File::isFile)
+        val foreground = icon?.let(LauncherIcon::compose)
+
+        if (foreground != null) {
+            replacements[ApkTemplate.ICON_ENTRY] = foreground
+        }
+
+        replacements[ApkTemplate.LEGACY_ICON_ENTRY] =
+            LauncherIcon.legacy(
+                color = request.iconBackground,
+                icon = icon.takeIf { foreground != null },
+                foregroundLayer = foreground ?: readEntry(ApkTemplate.ICON_ENTRY)
+            )
 
         return replacements
     }

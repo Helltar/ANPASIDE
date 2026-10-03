@@ -5,6 +5,7 @@ import android.graphics.BitmapFactory
 import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.Rect
+import android.graphics.RectF
 import java.io.ByteArrayOutputStream
 import java.io.File
 import kotlin.math.roundToInt
@@ -25,6 +26,12 @@ object LauncherIcon {
     // every mask shape
     const val CANVAS_SIZE = 432
     const val SAFE_ZONE_SIZE = 264
+
+    // a 48dp legacy icon at xxxhdpi; the safe zone is the adaptive one at the scale that
+    // brings the visible 72dp of the adaptive grid down to this size
+    const val LEGACY_SIZE = 192
+    const val LEGACY_SAFE_ZONE_SIZE = 176
+    private const val LEGACY_CORNER = 32f
 
     /** The background layer: the whole grid in one opaque color. */
     fun background(color: Int): ByteArray {
@@ -74,6 +81,65 @@ object LauncherIcon {
         target.recycle()
 
         return png
+    }
+
+    /**
+     * The icon launchers older than Android 8 show, which know nothing of adaptive icons: the
+     * part of the two layers a launcher mask leaves visible, drawn as one rounded tile.
+     *
+     * [icon] is the midlet's own sprite, scaled by the same rule as in the foreground layer;
+     * without one the tile is cut out of [foregroundLayer], the layer the apk ends up with.
+     */
+    fun legacy(color: Int, icon: File?, foregroundLayer: ByteArray?): ByteArray {
+        val target = Bitmap.createBitmap(LEGACY_SIZE, LEGACY_SIZE, Bitmap.Config.ARGB_8888)
+        val canvas = Canvas(target)
+        val size = LEGACY_SIZE.toFloat()
+
+        canvas.drawRoundRect(
+            RectF(0f, 0f, size, size),
+            LEGACY_CORNER,
+            LEGACY_CORNER,
+            Paint(Paint.ANTI_ALIAS_FLAG).apply { this.color = color or OPAQUE }
+        )
+
+        val sprite = icon?.takeIf(File::isFile)?.let { BitmapFactory.decodeFile(it.path) }
+        val longest = sprite?.let { maxOf(it.width, it.height) } ?: 0
+
+        if (sprite != null && longest > 0) {
+            val drawn = contentSize(longest, LEGACY_SAFE_ZONE_SIZE)
+            val scale = drawn.toFloat() / longest
+            val width = (sprite.width * scale).roundToInt().coerceAtLeast(1)
+            val height = (sprite.height * scale).roundToInt().coerceAtLeast(1)
+            val left = (LEGACY_SIZE - width) / 2
+            val top = (LEGACY_SIZE - height) / 2
+
+            canvas.drawBitmap(
+                sprite,
+                null,
+                Rect(left, top, left + width, top + height),
+                Paint().apply {
+                    isFilterBitmap = drawn % longest != 0
+                    isDither = false
+                }
+            )
+        } else if (foregroundLayer != null) {
+            BitmapFactory.decodeByteArray(foregroundLayer, 0, foregroundLayer.size)?.let { layer ->
+                // the middle 72dp of the 108dp grid is what a mask shows at most
+                val inset = layer.width / 6
+
+                canvas.drawBitmap(
+                    layer,
+                    Rect(inset, inset, layer.width - inset, layer.height - inset),
+                    Rect(0, 0, LEGACY_SIZE, LEGACY_SIZE),
+                    Paint().apply { isFilterBitmap = true }
+                )
+                layer.recycle()
+            }
+        }
+
+        sprite?.recycle()
+
+        return target.toPng().also { target.recycle() }
     }
 
     /**

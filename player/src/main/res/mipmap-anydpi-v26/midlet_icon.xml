@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  minSdk is 28, so this always wins and no raster fallback has to ship. Both layers are replaced
-  per export, and neither is a resource value: the ide draws the midlet's own icon into the
-  foreground and fills the background with the project's icon color, then swaps the two pngs
-  inside the exported apk, which leaves this file and the resource ids untouched. A color
-  resource would have meant editing resources.arsc instead of an entry.
+  Both layers are replaced per export, and neither is a resource value: the ide draws the
+  midlet's own icon into the foreground and fills the background with the project's icon color,
+  then swaps the two pngs inside the exported apk, which leaves this file and the resource ids
+  untouched. A color resource would have meant editing resources.arsc instead of an entry.
+  Below Android 8 this file does not exist for the launcher and mipmap-xxxhdpi/midlet_icon.png
+  is shown instead, a flat tile of the same two layers that the ide redraws as well.
 -->
 <adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
     <background android:drawable="@mipmap/midlet_icon_background" />

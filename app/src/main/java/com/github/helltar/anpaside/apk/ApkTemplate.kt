@@ -46,12 +46,14 @@ object ApkTemplate {
     // adaptive-icon xml that ties them together stays as the template built it
     const val ICON_ENTRY = "res/mipmap-xxxhdpi-v4/midlet_icon_foreground.png"
     const val ICON_BACKGROUND_ENTRY = "res/mipmap-xxxhdpi-v4/midlet_icon_background.png"
+    // what a launcher older than android 8 shows instead of the adaptive icon
+    const val LEGACY_ICON_ENTRY = "res/mipmap-xxxhdpi-v4/midlet_icon.png"
     const val RESOURCE_TABLE_ENTRY = "resources.arsc"
     const val MIDLET_ASSET_DIRECTORY = "assets/midlet/"
 
-    // the runtime cannot ask for permissions on behalf of an old midlet, and the manifest of
-    // the template is what an exported apk is installed with
-    const val MIN_SDK = 28
+    // the minSdk the player module is built with: android 7.0, the first release that takes
+    // an apk signed with the v2 scheme alone
+    const val MIN_SDK = 24
 
     private const val PLACEHOLDER_PACKAGE = "com.github.helltar.anpaside.midlet"
     private const val PLACEHOLDER_LABEL = "ANPASIDE Midlet"

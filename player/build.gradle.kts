@@ -40,7 +40,7 @@ android {
         // placeholders rewritten in the compiled manifest of every exported apk, so they must
         // stay in sync with ApkTemplate in the ide
         applicationId = "com.github.helltar.anpaside.midlet"
-        minSdk = 28
+        minSdk = 24
         targetSdk = 34
         versionCode = 1
         versionName = "0.0.0"
