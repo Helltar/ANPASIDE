@@ -790,6 +790,11 @@ internal class CodeEditorView(context: Context) : EditText(context) {
         val collapsed = document?.collapsedFoldStarts.orEmpty()
         var marker = 0
 
+        // nothing clips a view's own drawing to its bounds here, and a half-scrolled line is
+        // drawn from its baseline, so without this the top number reaches up onto the tabs
+        canvas.save()
+        canvas.clipRect(scrollX, scrollY, scrollX + width, scrollY + height)
+
         for (line in first..last) {
             val start = layout.getLineStart(line)
             val end = layout.getLineEnd(line)
@@ -817,6 +822,8 @@ internal class CodeEditorView(context: Context) : EditText(context) {
                 )
             }
         }
+
+        canvas.restore()
     }
 
     private fun drawFoldMarker(canvas: Canvas, centerX: Float, centerY: Float, collapsed: Boolean) {
