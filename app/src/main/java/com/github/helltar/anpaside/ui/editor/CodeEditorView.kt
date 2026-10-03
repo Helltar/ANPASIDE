@@ -288,23 +288,34 @@ internal class CodeEditorView(context: Context) : EditText(context) {
 
         // while the text is being replaced the selection is reported against a text the
         // document has not seen yet, the edit itself carries the final selection
-        if (!ready || applying || editing || selStart < 0 || selEnd < 0) {
+        if (!ready || applying || editing) {
             return
         }
 
-        val current = synced ?: return
-        val selection = TextRange(selStart, selEnd)
+        // a selection is set one end at a time, and the state in between can reach into a
+        // folded block that neither the old nor the new selection touches, which would open
+        // it; only what the selection has settled on is reported
+        removeCallbacks(pushSelection)
+        post(pushSelection)
+    }
 
-        if (selection == current.selection) {
-            return
+    private val pushSelection = Runnable {
+        val current = synced
+        val start = selectionStart
+        val end = selectionEnd
+
+        if (current != null && !applying && !editing && start >= 0 && end >= 0) {
+            val selection = TextRange(start, end)
+
+            if (selection != current.selection) {
+                val value = current.copy(selection = selection)
+                synced = value
+                document?.onValueChange(value)
+
+                // a caret that lands inside a folded block opens it
+                syncFolds()
+            }
         }
-
-        val value = current.copy(selection = selection)
-        synced = value
-        document?.onValueChange(value)
-
-        // a caret that lands inside a folded block opens it
-        syncFolds()
     }
 
     // only what differs is replaced, so the layout reflows those lines and nothing else
