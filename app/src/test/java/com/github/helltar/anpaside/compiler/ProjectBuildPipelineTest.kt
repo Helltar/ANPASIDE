@@ -118,6 +118,50 @@ class ProjectBuildPipelineTest {
     }
 
     @Test
+    fun detectPassOfALaterUnitDoesNotNumberItsRecordsFromZeroAgain() {
+        val fixture = fixture()
+        val detectIds = mutableMapOf<String, String>()
+
+        val runner =
+            ProcessRunner { arguments ->
+                val source = File(arguments.valueAfter("-s"))
+                val output = File(arguments.valueAfter("-o"))
+
+                when {
+                    "-d" in arguments -> {
+                        detectIds[source.name] = arguments.valueAfter("-r")
+
+                        ProcessResult.Completed(
+                            0,
+                            if (source == fixture.project.mainModule) "^0first\n^0second" else ""
+                        )
+                    }
+
+                    source == fixture.project.mainModule -> {
+                        output.resolve("M.class").writeBytes(byteArrayOf(1))
+                        ProcessResult.Completed(0, "")
+                    }
+
+                    // each unit declares one record type
+                    else -> {
+                        val id = arguments.valueAfter("-r")
+                        output.resolve(source.nameWithoutExtension + ".class").writeBytes(byteArrayOf(5))
+                        ProcessResult.Completed(0, "^3R_$id.class")
+                    }
+                }
+            }
+
+        fixture.project.sourcesDirectory.resolve("first.pas").writeText("unit first;")
+        fixture.project.sourcesDirectory.resolve("second.pas").writeText("unit second;")
+
+        val report = fixture.pipeline(runner).build()
+
+        assertTrue(report.succeeded)
+        assertEquals("0", detectIds["first.pas"])
+        assertEquals("1", detectIds["second.pas"])
+    }
+
+    @Test
     fun startsRecordNumberingOverOnEveryBuild() {
         val fixture = fixture()
         val recordIds = mutableListOf<String>()

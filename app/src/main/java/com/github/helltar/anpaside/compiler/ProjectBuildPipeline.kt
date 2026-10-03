@@ -137,15 +137,15 @@ class ProjectBuildPipeline(
             "-l", project.librariesDirectory.path,
             "-p", project.librariesDirectory.path,
             "-m", compilerSettings.mathType.toString(),
-            "-c", compilerSettings.canvasType.toString()
+            "-c", compilerSettings.canvasType.toString(),
+            // the detect pass of a unit writes its record classes too, only without reporting
+            // them; numbered from zero it would put its own R_0.class over the one a module
+            // compiled earlier owns, so it gets the ids the real pass is about to write again
+            "-r", nextRecordId.toString()
         )
 
         if (detectUnits) {
-            // the detect pass writes no classes at all, so it needs no record numbering
             args.add("-d")
-        } else {
-            args.add("-r")
-            args.add(nextRecordId.toString())
         }
 
         return when (val result = processRunner.run(args)) {
