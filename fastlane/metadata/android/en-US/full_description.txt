@@ -8,7 +8,7 @@
 <li>Bundled MIDletPascal compiler and Java ME runtime classes</li>
 <li>Built-in J2ME emulator with configurable screen size and on-screen keypad</li>
 <li>APK export that packs a project into an installable Android app with its own name and icon</li>
-<li>Project and global library support</li>
+<li>External Java libraries (Lib_*.class) in the project's libs folder</li>
 <li>File import, sharing, project export, and external JAR launching</li>
 <li>Compiler errors you can tap to open the source file at the failing line</li>
 </ul>
