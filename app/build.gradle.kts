@@ -177,3 +177,16 @@ dependencies {
     debugImplementation(libs.androidx.compose.ui.tooling)
     testImplementation(libs.junit)
 }
+
+// a release is always compiled whole. compiled incrementally, the compose compiler takes the
+// stability of a class it does not recompile from the previous build's output instead of
+// inferring it from the source, and a composable that takes such a class comes out as other
+// bytecode than a clean build of the same commit gives — which is what a rebuilder compares with.
+// it is set after evaluation because the kotlin plugin switches the flag back on until then
+afterEvaluate {
+    tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
+        if (name.contains("Release")) {
+            incremental = false
+        }
+    }
+}
