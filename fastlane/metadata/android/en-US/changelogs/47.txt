@@ -1,0 +1,7 @@
+- Added the case statement: integer, char and string selectors, lists, ranges and an else part
+- Rewrote the code editor: no more lag in files of 1000+ lines
+- Fixed projects that declare record types in several modules crashing on start
+- Fixed large units taking minutes to compile
+- Fixed units that export a constant or an array being unusable from other modules
+- Fixed negative constants of a unit losing their sign in other modules
+- Exported APKs now install on Android 7

@@ -107,8 +107,8 @@ android {
         applicationId = "com.github.helltar.anpaside"
         minSdk = 28
         targetSdk = 36
-        versionCode = 46
-        versionName = "2.4.1"
+        versionCode = 47
+        versionName = "2.5.0"
     }
 
     buildTypes {
