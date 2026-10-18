@@ -1,0 +1,3 @@
+- Added the Touch library for multi-touch input: uses Touch, nothing to copy into libs
+- Fixed exported APKs cutting off the bottom of the screen
+- Fixed a finger lifted outside the screen staying pressed
