@@ -13,6 +13,7 @@ data class AppDirectories(
     val privateDataDirectory: File,
     val privateFilesDirectory: File,
     val runtimeLibraryDirectory: File,
+    val bundledLibrariesDirectory: File,
     val templatesDirectory: File,
     val templateIcon: File,
     val compilerExecutable: File,
@@ -25,6 +26,7 @@ data class AppDirectories(
         const val COMPILER_EXECUTABLE = "libmp3cc.so"
         const val ASSET_RUNTIME_LIBRARY = "rtl"
         const val ASSET_TEMPLATES = "templates"
+        const val ASSET_LIBRARIES = "libs"
 
         private const val TEMPLATE_ICON = "icon.png"
         private const val PROJECTS_DIRECTORY = "projects"
@@ -43,6 +45,7 @@ data class AppDirectories(
                 privateFilesDirectory = privateFilesDirectory,
                 runtimeLibraryDirectory =
                     privateFilesDirectory.resolve(ASSET_RUNTIME_LIBRARY),
+                bundledLibrariesDirectory = privateFilesDirectory.resolve(ASSET_LIBRARIES),
                 templatesDirectory = privateFilesDirectory.resolve(ASSET_TEMPLATES),
                 templateIcon =
                     privateFilesDirectory.resolve(ASSET_TEMPLATES).resolve(TEMPLATE_ICON),

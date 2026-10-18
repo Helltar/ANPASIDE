@@ -15,12 +15,13 @@ class AssetInstaller(
 
     // bump when bundled assets change so installed copies get refreshed
     companion object {
-        const val ASSETS_VERSION = 5
+        const val ASSETS_VERSION = 6
     }
 
     fun install(): Result<Unit> = runCatching {
         installRuntimeLibrary()
         copyAssetTree(AppDirectories.ASSET_TEMPLATES, directories.templatesDirectory)
+        installBundledLibraries()
         removeLegacyAssets()
     }
 
@@ -44,6 +45,12 @@ class AssetInstaller(
             staging.deleteRecursively()
             throw error
         }
+    }
+
+    // a library dropped from the assets has to disappear too, or old builds would still find it
+    private fun installBundledLibraries() {
+        directories.bundledLibrariesDirectory.deleteOrThrow()
+        copyAssetTree(AppDirectories.ASSET_LIBRARIES, directories.bundledLibrariesDirectory)
     }
 
     private fun removeLegacyAssets() {

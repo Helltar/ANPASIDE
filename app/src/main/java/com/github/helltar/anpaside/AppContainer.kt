@@ -69,6 +69,7 @@ class AppContainer(private val application: Application) {
             messages = buildMessages,
             project = project,
             compilerExecutable = directories.compilerExecutable,
-            runtimeLibraryDirectory = directories.runtimeLibraryDirectory
+            runtimeLibraryDirectory = directories.runtimeLibraryDirectory,
+            bundledLibrariesDirectory = directories.bundledLibrariesDirectory
         )
 }

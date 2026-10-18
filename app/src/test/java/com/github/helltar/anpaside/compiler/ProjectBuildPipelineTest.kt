@@ -29,10 +29,7 @@ class ProjectBuildPipelineTest {
 
         val runner =
             ProcessRunner { arguments ->
-                assertEquals(
-                    fixture.project.librariesDirectory.path,
-                    arguments.valueAfter("-l")
-                )
+                assertEquals(fixture.bundledLibraries.path, arguments.valueAfter("-l"))
                 assertEquals(
                     fixture.project.librariesDirectory.path,
                     arguments.valueAfter("-p")
@@ -77,6 +74,44 @@ class ProjectBuildPipelineTest {
         assertTrue("icon.png" in entries)
         assertFalse("unused.bsf" in entries)
         assertTrue(report.logEntries.any { it.severity == LogSeverity.INFO })
+        assertFalse(MULTI_TOUCH in report.manifest())
+    }
+
+    @Test
+    fun takesABundledLibraryTheProjectDoesNotHaveAndAsksForMultiTouch() {
+        val fixture = fixture()
+        fixture.bundledLibraries.resolve("Lib_touch.class").writeBytes(byteArrayOf(7))
+
+        val report = fixture.pipeline(mainModuleUsing("^1touch")).build()
+
+        assertTrue(report.succeeded)
+        assertTrue("Lib_touch.class" in report.entries())
+        assertTrue(report.manifest().lines().contains(MULTI_TOUCH))
+    }
+
+    @Test
+    fun prefersTheProjectsOwnCopyOfABundledLibrary() {
+        val fixture = fixture()
+        fixture.bundledLibraries.resolve("Lib_touch.class").writeBytes(byteArrayOf(7))
+        fixture.project.librariesDirectory.resolve("Lib_touch.class").writeBytes(byteArrayOf(8))
+
+        val report = fixture.pipeline(mainModuleUsing("^1touch")).build()
+
+        val library =
+            ZipFile(report.outputJar).use { archive ->
+                archive.getInputStream(archive.getFileHeader("Lib_touch.class")).readBytes()
+            }
+        assertEquals(listOf<Byte>(8), library.toList())
+    }
+
+    @Test
+    fun failsOnALibraryNeitherTheProjectNorTheIdeHas() {
+        val fixture = fixture()
+
+        val report = fixture.pipeline(mainModuleUsing("^1missing")).build()
+
+        assertFalse(report.succeeded)
+        assertTrue(report.logEntries.any { it.text.endsWith("Lib_missing.class") })
     }
 
     @Test
@@ -237,6 +272,25 @@ class ProjectBuildPipelineTest {
         assertTrue(report.logEntries.any { it.severity == LogSeverity.ERROR })
     }
 
+    private fun mainModuleUsing(output: String) =
+        ProcessRunner { arguments ->
+            if ("-d" in arguments) {
+                ProcessResult.Completed(0, "")
+            } else {
+                File(arguments.valueAfter("-o")).resolve("M.class").writeBytes(byteArrayOf(1))
+                ProcessResult.Completed(0, output)
+            }
+        }
+
+    private fun BuildReport.entries(): Set<String> =
+        ZipFile(outputJar).use { archive -> archive.fileHeaders.map { it.fileName }.toSet() }
+
+    private fun BuildReport.manifest(): String =
+        ZipFile(outputJar).use { archive ->
+            archive.getInputStream(archive.getFileHeader("META-INF/MANIFEST.MF"))
+                .use { it.readBytes().decodeToString() }
+        }
+
     private fun fixture(): Fixture {
         val projectDirectory = temporaryFolder.newFolder("project-${System.nanoTime()}")
         val project = Project.create(File(projectDirectory, "game.aproj"), "game")
@@ -248,15 +302,17 @@ class ProjectBuildPipelineTest {
         val runtime = temporaryFolder.newFolder("rtl-${System.nanoTime()}")
         File(runtime, "FW.class").writeBytes(byteArrayOf(1))
         File(runtime, "F.class").writeBytes(byteArrayOf(2))
+        val bundledLibraries = temporaryFolder.newFolder("libs-${System.nanoTime()}")
         val compiler = temporaryFolder.newFile("compiler-${System.nanoTime()}")
 
-        return Fixture(project, compiler, runtime)
+        return Fixture(project, compiler, runtime, bundledLibraries)
     }
 
     private data class Fixture(
         val project: Project,
         val compiler: File,
-        val runtime: File
+        val runtime: File,
+        val bundledLibraries: File
     ) {
         fun pipeline(runner: ProcessRunner) =
             ProjectBuildPipeline(
@@ -264,6 +320,7 @@ class ProjectBuildPipelineTest {
                 project = project,
                 compilerExecutable = compiler,
                 runtimeLibraryDirectory = runtime,
+                bundledLibrariesDirectory = bundledLibraries,
                 processRunner = runner
             )
     }
@@ -272,6 +329,8 @@ class ProjectBuildPipelineTest {
         get(indexOf(option) + 1)
 
     private companion object {
+        const val MULTI_TOUCH = "Nokia-UI-Enhancement: EnableMultiPointTouchEvents"
+
         val MESSAGES =
             BuildMessages(
                 manifestTemplate = "%s\n%s\n%s\n%s\n%d\n%d",

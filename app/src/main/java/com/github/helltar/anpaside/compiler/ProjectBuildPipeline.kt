@@ -34,6 +34,7 @@ class ProjectBuildPipeline(
     private val project: Project,
     private val compilerExecutable: File,
     private val runtimeLibraryDirectory: File,
+    private val bundledLibrariesDirectory: File,
     private val processRunner: ProcessRunner = SystemProcessRunner()
 ) {
 
@@ -42,11 +43,13 @@ class ProjectBuildPipeline(
     private val outputJar = project.outputJar
     private val logEntries = mutableListOf<LogEntry>()
     private val compilingSources = mutableSetOf<String>()
+    private val usedLibraries = mutableSetOf<String>()
     private var nextRecordId = 0
 
     fun build(): BuildReport {
         logEntries.clear()
         compilingSources.clear()
+        usedLibraries.clear()
         nextRecordId = 0
 
         val outputJar =
@@ -56,6 +59,7 @@ class ProjectBuildPipeline(
                 if (!compileSource(project.mainModule) || !mainClassExists()) {
                     null
                 } else {
+                    writeManifest()
                     packJar()
                     logSuccess()
                     outputJar
@@ -134,7 +138,8 @@ class ProjectBuildPipeline(
             compilerExecutable.path,
             "-s", file.path,
             "-o", project.buildDirectory.path,
-            "-l", project.librariesDirectory.path,
+            // the compiler looks in the project's libs/ first and falls back to the bundled ones
+            "-l", bundledLibrariesDirectory.path,
             "-p", project.librariesDirectory.path,
             "-m", compilerSettings.mathType.toString(),
             "-c", compilerSettings.canvasType.toString(),
@@ -188,6 +193,8 @@ class ProjectBuildPipeline(
 
             val source =
                 project.librariesDirectory.requireDirectChildName(fileName).takeIf(File::exists)
+                    ?: bundledLibrariesDirectory.requireDirectChildName(fileName)
+                        .takeIf(File::exists)
 
             if (source == null) {
                 error(
@@ -199,6 +206,7 @@ class ProjectBuildPipeline(
             }
 
             source.copyToDirectory(project.buildDirectory)
+            usedLibraries += library
             true
         }
 
@@ -223,23 +231,35 @@ class ProjectBuildPipeline(
         // keep its class inside the jar for every later build
         outputJar.deleteOrThrow()
 
-        val metaInf = project.buildDirectory.resolve("META-INF").createDirectories()
-        metaInf.resolve("MANIFEST.MF").writeText(manifest())
-
         runtimeLibraryDirectory
             .resolve(ProjectLayout.FRAMEWORK_CLASS)
             .copyToDirectory(project.buildDirectory)
+    }
+
+    // written once every module is compiled, since what it declares depends on the libraries
+    private fun writeManifest() {
+        val metaInf = project.buildDirectory.resolve("META-INF").createDirectories()
+        metaInf.resolve("MANIFEST.MF").writeText(manifest())
     }
 
     private fun manifest(): String {
         val midp = if (compilerSettings.canvasType < 1) 1 else 2
         val cldc = if (midp == 2) 1 else 0
 
-        return messages.manifestTemplate.format(
-            metadata.name, metadata.vendor,
-            metadata.name, metadata.version,
-            cldc, midp
-        )
+        val manifest =
+            messages.manifestTemplate.format(
+                metadata.name, metadata.vendor,
+                metadata.name, metadata.version,
+                cldc, midp
+            )
+
+        // a runtime hands a midlet the second finger only when the manifest asks for it, and
+        // lib_sensor would mistake it for the first one, so only a multi-touch library asks
+        return if (usedLibraries.any { it in MULTI_TOUCH_LIBRARIES }) {
+            manifest.trimEnd() + "\n" + MULTI_TOUCH_ATTRIBUTE
+        } else {
+            manifest
+        }
     }
 
     private fun packJar() {
@@ -308,4 +328,9 @@ class ProjectBuildPipeline(
     private fun plainLines(text: String) = text.lines().forEach(::plain)
 
     private fun errorLines(text: String) = text.lines().forEach(::error)
+
+    private companion object {
+        val MULTI_TOUCH_LIBRARIES = setOf("touch")
+        const val MULTI_TOUCH_ATTRIBUTE = "Nokia-UI-Enhancement: EnableMultiPointTouchEvents"
+    }
 }

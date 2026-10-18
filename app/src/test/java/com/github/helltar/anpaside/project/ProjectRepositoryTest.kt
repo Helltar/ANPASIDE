@@ -73,6 +73,7 @@ class ProjectRepositoryTest {
                 privateDataDirectory = File(root, "data"),
                 privateFilesDirectory = privateFiles,
                 runtimeLibraryDirectory = File(privateFiles, "rtl"),
+                bundledLibrariesDirectory = File(privateFiles, "libs"),
                 templatesDirectory = templates,
                 templateIcon = icon,
                 compilerExecutable = File(root, "mp3cc"),
