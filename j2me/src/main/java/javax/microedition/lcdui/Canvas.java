@@ -162,6 +162,7 @@ public abstract class Canvas extends Displayable {
 	private boolean skipLeftSoft;
 	private boolean skipRightSoft;
 	private int[][] lastPointerPos = new int[20][2];
+	private boolean[] pointerDown = new boolean[20];
 
 	protected Canvas() {
 		this(forceFullscreen);
@@ -1078,6 +1079,7 @@ public abstract class Canvas extends Displayable {
 						if (id < 20) {
 							lastPointerPos[id][0] = cX;
 							lastPointerPos[id][1] = cY;
+							pointerDown[id] = true;
 						}
 						Display.postEvent(CanvasEvent.getInstance(Canvas.this,
 								CanvasEvent.POINTER_PRESSED,
@@ -1156,11 +1158,17 @@ public abstract class Canvas extends Displayable {
 					if (overlay != null) {
 						overlay.pointerReleased(id, x, y);
 					}
-					if (touchInput && virtualScreen.contains(x, y)) {
+					// a pointer pressed on the canvas is released even when it is
+					// lifted off it, otherwise the midlet keeps it down for good
+					boolean wasDown = id < 20 && pointerDown[id];
+					if (touchInput && (wasDown || virtualScreen.contains(x, y))) {
 						int cX = Math.round(convertPointerX(x));
 						int cY = Math.round(convertPointerY(y));
-						lastPointerPos[id][0] = cX;
-						lastPointerPos[id][1] = cY;
+						if (id < 20) {
+							lastPointerPos[id][0] = cX;
+							lastPointerPos[id][1] = cY;
+							pointerDown[id] = false;
+						}
 						Display.postEvent(CanvasEvent.getInstance(Canvas.this,
 								CanvasEvent.POINTER_RELEASED,
 								id,
@@ -1171,6 +1179,17 @@ public abstract class Canvas extends Displayable {
 				case MotionEvent.ACTION_CANCEL:
 					if (overlay != null) {
 						overlay.cancel();
+					}
+					// a gesture taken over by the system releases what it held
+					for (id = 0; id < pointerDown.length; id++) {
+						if (pointerDown[id]) {
+							pointerDown[id] = false;
+							Display.postEvent(CanvasEvent.getInstance(Canvas.this,
+									CanvasEvent.POINTER_RELEASED,
+									id,
+									lastPointerPos[id][0],
+									lastPointerPos[id][1]));
+						}
 					}
 					break;
 				default:
