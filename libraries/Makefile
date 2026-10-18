@@ -34,7 +34,10 @@ install: $(LIBRARIES) $(STUBS)
 		"$(JAVAP)" -verbose "$$class_file" | grep -q 'StackMap:' \
 			|| { echo "$$class_file is not preverified" >&2; exit 1; }; \
 	done
-	cp "$(CLASSES_DIR)"/Lib_*.class "$(ASSETS_DIR)/"
+	# .bin, because bundletool drops every .class entry of an app bundle
+	@for class_file in "$(CLASSES_DIR)"/Lib_*.class; do \
+		cp "$$class_file" "$(ASSETS_DIR)/$$(basename "$$class_file" .class).bin"; \
+	done
 
 clean:
 	rm -rf "$(BUILD_DIR)"

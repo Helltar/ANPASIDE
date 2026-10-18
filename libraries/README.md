@@ -51,7 +51,10 @@ finger 0, and the library works as `Lib_sensor` does.
 
 `make` compiles every `src/Lib_*.java` against the stand-ins in `build-support/` (`M` and `FW`,
 the classes a library links against, never shipped), preverifies the result for CLDC 1.0 and
-copies it into `app/src/main/assets/libs/`. It needs JDK 8 and the Sun Wireless Toolkit that
+copies it into `app/src/main/assets/libs/` as `Lib_<name>.bin`, which `AssetInstaller` installs
+under its `.class` name again: bundletool silently drops every `.class` entry of an app bundle,
+so a `.class` asset is missing from the Google Play build, and the bundle fails validation with
+*"Targeted directory 'assets/libs' is empty"*. It needs JDK 8 and the Sun Wireless Toolkit that
 [midletpascal-rtl](https://github.com/Helltar/midletpascal-rtl) installs into its
 `toolchains/`; `WTK_HOME` and `JDK8_HOME` point elsewhere. The build is deterministic. After
 changing a library, bump `AssetInstaller.ASSETS_VERSION`, or installed copies are not refreshed.

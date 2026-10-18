@@ -2,6 +2,7 @@ package com.github.helltar.anpaside.assets
 
 import android.content.res.AssetManager
 import com.github.helltar.anpaside.foundation.AppDirectories
+import com.github.helltar.anpaside.foundation.ProjectLayout
 import com.github.helltar.anpaside.foundation.createDirectories
 import com.github.helltar.anpaside.foundation.deleteOrThrow
 import com.github.helltar.anpaside.foundation.replaceDirectory
@@ -15,7 +16,9 @@ class AssetInstaller(
 
     // bump when bundled assets change so installed copies get refreshed
     companion object {
-        const val ASSETS_VERSION = 6
+        const val ASSETS_VERSION = 7
+
+        private const val BUNDLED_LIBRARY_SUFFIX = ".bin"
     }
 
     fun install(): Result<Unit> = runCatching {
@@ -47,10 +50,25 @@ class AssetInstaller(
         }
     }
 
-    // a library dropped from the assets has to disappear too, or old builds would still find it
+    // a library dropped from the assets has to disappear too, or old builds would still find it.
+    // the assets carry them as .bin: bundletool drops every .class entry of an app bundle, so a
+    // .class asset never reaches a device installed from google play
     private fun installBundledLibraries() {
-        directories.bundledLibrariesDirectory.deleteOrThrow()
-        copyAssetTree(AppDirectories.ASSET_LIBRARIES, directories.bundledLibrariesDirectory)
+        val destination = directories.bundledLibrariesDirectory
+        destination.deleteOrThrow()
+        destination.createDirectories()
+
+        assetManager.list(AppDirectories.ASSET_LIBRARIES).orEmpty()
+            .filter { it.endsWith(BUNDLED_LIBRARY_SUFFIX) }
+            .forEach { name ->
+                val className = name.removeSuffix(BUNDLED_LIBRARY_SUFFIX) + ProjectLayout.CLASS_EXTENSION
+
+                destination.resolve(className).writeAtomically { output ->
+                    assetManager.open("${AppDirectories.ASSET_LIBRARIES}/$name").use { input ->
+                        input.copyTo(output)
+                    }
+                }
+            }
     }
 
     private fun removeLegacyAssets() {
