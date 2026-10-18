@@ -96,6 +96,8 @@ public class MicroActivity extends AppCompatActivity {
 	private boolean visible;
 	private boolean actionBarEnabled;
 	private boolean statusBarEnabled;
+	private int requestedOrientation;
+	private boolean midletStarted;
 	private MicroLoader microLoader;
 	private String appName;
 	private InputMethodManager inputMethodManager;
@@ -194,11 +196,50 @@ public class MicroActivity extends AppCompatActivity {
 			}
 		}
 		setOrientation(orientation);
+		requestedOrientation = orientation;
 		menuKey = microLoader.getMenuKeyCode();
 		inputMethodManager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
 
+		// a midlet sizes its buffers from the first canvas size it sees, and started right
+		// away it saw the window with the navigation bar and in the launcher's orientation,
+		// then drew past the bottom of its buffer once the canvas grew. so the bars go first,
+		// and the midlet waits for a layout in the orientation it asked for
+		hideSystemUI();
+		View root = binding.getRoot();
+		root.addOnLayoutChangeListener((v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> {
+			int width = right - left;
+			int height = bottom - top;
+			if (width > 0 && height > 0) {
+				ContextHolder.setDisplaySize(width, height);
+				if (fitsRequestedOrientation(width, height)) {
+					startMIDlet();
+				}
+			}
+		});
+		// a layout that never matches (a device that refuses the orientation) must not keep
+		// the midlet from starting
+		root.postDelayed(this::startMIDlet, 1000);
+	}
+
+	private boolean fitsRequestedOrientation(int width, int height) {
+		switch (requestedOrientation) {
+			case ORIENTATION_PORTRAIT:
+				return height >= width;
+			case ORIENTATION_LANDSCAPE:
+				return width > height;
+			default:
+				return true;
+		}
+	}
+
+	private void startMIDlet() {
+		if (midletStarted || isFinishing()) {
+			return;
+		}
+		midletStarted = true;
 		try {
 			loadMIDlet();
+			MidletThread.resumeApp();
 		} catch (Exception e) {
 			e.printStackTrace();
 			showErrorDialog(e.toString());

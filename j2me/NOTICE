@@ -71,6 +71,13 @@ Added or changed:
     gesture. Upstream drops both releases, so a midlet keeps that finger down
     for good, which an on-screen button held with a second finger runs into
     as soon as the finger slides off the canvas
+  - MicroActivity hides the system bars before the first layout and starts the
+    midlet only once the window is laid out in the requested orientation, and
+    the canvas takes its first size from that layout. Upstream starts the
+    midlet in onCreate, where Display reports the screen without the
+    navigation bar; a midlet that sizes its buffers once, as every
+    MIDletPascal program does, then drew past the bottom of them as soon as
+    the bars were hidden and the canvas grew
   - consumer-rules.pro keeps every class a midlet can resolve by name, and the
     gson-mapped emulator profile, in any application that shrinks this module
     with R8; upstream ships its rules with the application instead

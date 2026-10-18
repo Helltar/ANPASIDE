@@ -77,12 +77,22 @@ public class ContextHolder {
 		return display;
 	}
 
+	// the window content once it is laid out; Display leaves out the system bars, which a
+	// canvas covers once they are hidden
+	private static int displayWidth;
+	private static int displayHeight;
+
+	public static void setDisplaySize(int width, int height) {
+		displayWidth = width;
+		displayHeight = height;
+	}
+
 	public static int getDisplayWidth() {
-		return getDisplay().getWidth();
+		return displayWidth > 0 ? displayWidth : getDisplay().getWidth();
 	}
 
 	public static int getDisplayHeight() {
-		return getDisplay().getHeight();
+		return displayHeight > 0 ? displayHeight : getDisplay().getHeight();
 	}
 
 	public static void setCurrentActivity(MicroActivity activity) {
