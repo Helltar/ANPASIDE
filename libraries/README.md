@@ -41,6 +41,19 @@ Every `Lib_sensor` function is there too, with the same name and meaning, follow
 `pointer_dragged_x/y`, `pointer_released_x/y`. A program written for `Sensor` switches by
 changing `uses Sensor` to `uses Touch` and `Sensor.Init` to `Touch.Init`.
 
+Do not mix the two kinds in one check: `touch_area` and the other `touch_*` functions see every
+finger, the `pointer_*` functions only finger 0. Testing a rectangle with `touch_area` and then
+taking the position from `pointer_pressed_x` reads the wrong finger as soon as two are down, for
+instance an inventory tapped while finger 0 holds a walk button. Take the position from the
+finger that is inside:
+
+```pascal
+for i := 0 to 9 do
+  if (touch_down(i) = 1) and (touch_x(i) >= x) and (touch_x(i) < x + w)
+    and (touch_y(i) >= y) and (touch_y(i) < y + h) then
+    slot := (touch_x(i) - x) div cell;
+```
+
 A runtime only reports more than one finger when the jar asks for it, so when a program uses
 `Touch` the IDE adds `Nokia-UI-Enhancement: EnableMultiPointTouchEvents` to its manifest. The
 library reads the finger number through the Nokia `com.nokia.pointer.number` property, which
