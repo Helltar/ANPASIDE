@@ -8,6 +8,7 @@ it.
 | Library | `uses` | What it is for |
 |---|---|---|
 | `Lib_touch` | `Touch` | multi-touch input, a drop-in replacement for `Lib_sensor` |
+| `Lib_sound` | `Sound` | several sounds at once: music that effects do not cut off |
 
 ## Touch
 
@@ -60,6 +61,66 @@ library reads the finger number through the Nokia `com.nokia.pointer.number` pro
 J2ME Loader and the IDE's own emulator support; on a runtime without multi-touch every touch is
 finger 0, and the library works as `Lib_sensor` does.
 
+## Sound
+
+```pascal
+program game;
+uses Sound;
+var ok: integer;
+begin
+  ok := sound_open(0, '/music.mid', 'audio/midi');
+  ok := sound_open(1, '/shot.wav', 'audio/x-wav');
+  sound_loop(0, -1);
+  sound_volume(0, 60);
+  ok := sound_play(0);
+  repeat
+    if KeyToAction(GetKeyPressed) = GA_FIRE then ok := sound_play(1);
+    { ... }
+  until false;
+end.
+```
+
+The built-in `OpenPlayer` keeps one player, and opening a sound closes the one before it, so
+background music stops for every effect. Here a sound is opened on a channel, a number from 0
+to 7, and a channel only replaces its own sound. Nothing has to be initialized. A program can
+still use `OpenPlayer` next to it; the built-in player is one more sound of its own and does not
+stop the channels.
+
+| Function | Does |
+|---|---|
+| `sound_open(ch, name, type)` | loads the resource `name` of MIME type `type` (`audio/midi`, `audio/x-wav`, `audio/mpeg`, ...) into channel `ch`, closing what the channel held; 1 on success, 0 otherwise |
+| `sound_play(ch)` | plays from the beginning, and starts over if the channel is already playing, so an effect fired again cuts off its previous run; 1 on success |
+| `sound_pause(ch)`, `sound_resume(ch)` | stops where it is, and continues from there; `sound_resume` returns 1 on success |
+| `sound_stop(ch)` | stops and rewinds |
+| `sound_loop(ch, count)` | how many times the channel plays in a row, -1 for endlessly; 1 by default, applied at the next `sound_play` |
+| `sound_volume(ch, level)` | 0 to 100, 100 by default, applied at once |
+| `sound_playing(ch)` | 1 while the channel is playing |
+| `sound_duration(ch)` | the length in milliseconds, -1 if unknown; the IDE's emulator only knows it while the sound is playing and answers 0 otherwise |
+| `sound_close(ch)` | stops the channel and frees its sound |
+
+The type has to be one the runtime lists, written exactly; every sound is then played by
+Android's `MediaPlayer`, which decides what actually works:
+
+| Type | Format | Plays |
+|---|---|---|
+| `audio/midi`, `audio/x-midi` | MIDI | yes |
+| `audio/wav`, `audio/x-wav` | WAV | yes |
+| `audio/mpeg`, `audio/mp3` | MP3 | yes |
+| `audio/aac`, `audio/mp4` | AAC, M4A | yes |
+| `audio/amr`, `audio/amr-wb` | AMR | yes |
+| `audio/mmf` | SMAF | no: accepted, but handed to `MediaPlayer` unconverted |
+| `audio/x-tone-seq` | J2ME tone sequence | no, for the same reason |
+
+Any other type, `audio/ogg` or a typo, gets an empty player from the runtime instead of an
+error, which plays nothing; `sound_open` notices that and answers 0. The built-in `OpenPlayer`
+does not, and returns true for it.
+
+`sound_loop` and `sound_volume` belong to the channel, not to the sound, so they survive the next
+`sound_open` on it: a music channel keeps its volume across tracks. Whether two sounds really
+play at once is up to the runtime. The IDE's emulator, an exported apk and J2ME Loader give every
+channel an Android `MediaPlayer` of its own and mix all of them, two MIDI files included; on an
+old phone that mixes nothing, `sound_play` may answer 0 while another sound is playing.
+
 ## Building
 
 `make` compiles every `src/Lib_*.java` against the stand-ins in `build-support/` (`M` and `FW`,
@@ -74,4 +135,8 @@ changing a library, bump `AssetInstaller.ASSETS_VERSION`, or installed copies ar
 
 The compiler sees only the methods whose modifiers are exactly `public static`
 (`read_library_file` in mp3cc's `structures/block.c`), so a helper has to be package-private,
-and a `public static synchronized` function would silently vanish from the library.
+and a `public static synchronized` function would silently vanish from the library. The same
+reader takes every constant pool entry as one slot, while a `long` or `double` constant takes
+two, so a class holding one fails with *E449 error reading external library file*; the build
+refuses such a class. `x / 1000L` is the usual way to get one, and `x / n` with an `int n = 1000`
+is the way around it.
