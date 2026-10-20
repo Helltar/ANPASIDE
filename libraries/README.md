@@ -173,8 +173,4 @@ changing a library, bump `AssetInstaller.ASSETS_VERSION`, or installed copies ar
 
 The compiler sees only the methods whose modifiers are exactly `public static`
 (`read_library_file` in mp3cc's `structures/block.c`), so a helper has to be package-private,
-and a `public static synchronized` function would silently vanish from the library. The same
-reader takes every constant pool entry as one slot, while a `long` or `double` constant takes
-two, so a class holding one fails with *E449 error reading external library file*; the build
-refuses such a class. `x / 1000L` is the usual way to get one, and `x / n` with an `int n = 1000`
-is the way around it.
+and a `public static synchronized` function would silently vanish from the library.

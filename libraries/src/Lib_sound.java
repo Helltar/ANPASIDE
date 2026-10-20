@@ -173,12 +173,9 @@ class Lib_sound {
             return -1;
         }
 
-        // a variable rather than 1000L: a long constant in the pool breaks mp3cc's class reader
-        int usPerMs = 1000;
-
         try {
             long duration = player.getDuration();
-            return duration < 0 ? -1 : (int) (duration / usPerMs);
+            return duration < 0 ? -1 : (int) (duration / 1000);
         } catch (Exception e) {
             return -1;
         }

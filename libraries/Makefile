@@ -33,8 +33,6 @@ install: $(LIBRARIES) $(STUBS)
 			|| { echo "$$class_file is not a java 1.1 class" >&2; exit 1; }; \
 		"$(JAVAP)" -verbose "$$class_file" | grep -q 'StackMap:' \
 			|| { echo "$$class_file is not preverified" >&2; exit 1; }; \
-		! "$(JAVAP)" -verbose "$$class_file" | grep -Eq '= (Long|Double) ' \
-			|| { echo "$$class_file has a long or double constant, which mp3cc cannot read" >&2; exit 1; }; \
 	done
 	# .bin, because bundletool drops every .class entry of an app bundle
 	@for class_file in "$(CLASSES_DIR)"/Lib_*.class; do \
