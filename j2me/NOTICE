@@ -78,6 +78,10 @@ Added or changed:
     navigation bar; a midlet that sizes its buffers once, as every
     MIDletPascal program does, then drew past the bottom of them as soon as
     the bars were hidden and the canvas grew
+  - MicroActivity lays the window out into the display cutout by default.
+    Upstream leaves that off unless its "Add cutout area" setting is on, a
+    setting this module has no screen for, so with the bars hidden every
+    midlet got a black band the height of the camera cutout
   - consumer-rules.pro keeps every class a midlet can resolve by name, and the
     gson-mapped emulator profile, in any application that shrinks this module
     with R8; upstream ships its rules with the application instead
