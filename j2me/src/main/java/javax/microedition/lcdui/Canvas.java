@@ -73,6 +73,7 @@ import javax.microedition.lcdui.overlay.Layer;
 import javax.microedition.lcdui.overlay.Overlay;
 import javax.microedition.lcdui.overlay.OverlayView;
 import javax.microedition.shell.MicroActivity;
+import javax.microedition.shell.SafeInsets;
 import javax.microedition.util.ContextHolder;
 
 import io.reactivex.Single;
@@ -500,6 +501,42 @@ public abstract class Canvas extends Displayable {
 			renderer.updateSize(gl, gt, gr, gb, th, tw);
 		}
 		repaintInternal();
+	}
+
+	/**
+	 * How far the display cutout and the rounded screen corners reach into one side of the
+	 * canvas, in canvas pixels; 0 where they stay outside it.
+	 *
+	 * @param side one of the {@link SafeInsets} sides
+	 */
+	public int getSafeInset(int side) {
+		int width = this.width;
+		int height = this.height;
+		int onWidth = this.onWidth;
+		int onHeight = this.onHeight;
+
+		if (onWidth <= 0 || onHeight <= 0) {
+			return 0;
+		}
+
+		// only the part of an inset that the space around the canvas does not already absorb
+		int covered;
+		switch (side) {
+			case SafeInsets.LEFT:
+				covered = SafeInsets.get(side) - onX;
+				return covered > 0 ? (covered * width + onWidth - 1) / onWidth : 0;
+			case SafeInsets.TOP:
+				covered = SafeInsets.get(side) - onY;
+				return covered > 0 ? (covered * height + onHeight - 1) / onHeight : 0;
+			case SafeInsets.RIGHT:
+				covered = SafeInsets.get(side) - (displayWidth - onX - onWidth);
+				return covered > 0 ? (covered * width + onWidth - 1) / onWidth : 0;
+			case SafeInsets.BOTTOM:
+				covered = SafeInsets.get(side) - (displayHeight - onY - onHeight);
+				return covered > 0 ? (covered * height + onHeight - 1) / onHeight : 0;
+			default:
+				return 0;
+		}
 	}
 
 	/**
@@ -1209,6 +1246,7 @@ public abstract class Canvas extends Displayable {
 			}
 			displayWidth = newWidth;
 			displayHeight = newHeight;
+			SafeInsets.update(innerView);
 			if (checkSizeChanged() || !sizeChangedCalled) {
 				Display.postEvent(CanvasEvent.getInstance(Canvas.this,
 						CanvasEvent.SIZE_CHANGED,

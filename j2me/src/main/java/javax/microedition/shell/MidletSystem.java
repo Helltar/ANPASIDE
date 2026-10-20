@@ -8,7 +8,9 @@ import androidx.annotation.Keep;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.microedition.lcdui.Canvas;
 import javax.microedition.lcdui.Display;
+import javax.microedition.lcdui.Displayable;
 
 /** {@link java.lang.System} Delegate for Midlet */
 @Keep
@@ -21,6 +23,13 @@ public final class MidletSystem {
     }
 
     public static String getProperty(String key) {
+        // asked for every frame by a game that keeps its controls clear of the screen corners,
+        // so it is answered before the logging below
+        int side = SafeInsets.sideOf(key);
+        if (side >= 0) {
+            Displayable current = Display.getDisplay(null).getCurrent();
+            return String.valueOf(current instanceof Canvas ? ((Canvas) current).getSafeInset(side) : 0);
+        }
         String value = PROPERTY.get(key);
         if (Display.isMultiTouchSupported() && key.equals("com.nokia.pointer.number")) {
             return Display.getDisplay(null).getPointerNumber();
