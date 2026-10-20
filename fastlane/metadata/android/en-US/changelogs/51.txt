@@ -1,0 +1,4 @@
+- Added the Sound library: background music and sound effects at the same time
+- Added the Screen library: how far the camera cutout and rounded corners cover the screen
+- Midlets now fill the whole screen, including the area around the camera
+- Fixed libraries with long constants failing with error E449
