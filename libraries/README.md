@@ -9,6 +9,7 @@ it.
 |---|---|---|
 | `Lib_touch` | `Touch` | multi-touch input, a drop-in replacement for `Lib_sensor` |
 | `Lib_sound` | `Sound` | several sounds at once: music that effects do not cut off |
+| `Lib_screen` | `Screen` | the safe area: how far the camera cutout and the rounded corners cover the canvas |
 
 ## Touch
 
@@ -120,6 +121,43 @@ does not, and returns true for it.
 play at once is up to the runtime. The IDE's emulator, an exported apk and J2ME Loader give every
 channel an Android `MediaPlayer` of its own and mix all of them, two MIDI files included; on an
 old phone that mixes nothing, `sound_play` may answer 0 while another sound is playing.
+
+## Screen
+
+```pascal
+program game;
+uses Screen;
+var l, t, r, b: integer;
+begin
+  repeat
+    l := screen_inset_left;
+    t := screen_inset_top;
+    r := screen_inset_right;
+    b := screen_inset_bottom;
+    { the world fills the whole screen, the controls keep clear of the edges }
+    FillRect(GetWidth - r - 64, t, 64, 32);  { a menu button in the top right corner }
+    DrawText('v 1.2', l, GetHeight - b - GetStringHeight('A'));
+    { ... }
+  until false;
+end.
+```
+
+The IDE's emulator and the apks it exports draw a canvas over the whole screen, under the
+camera cutout and into the rounded corners, so whatever a game puts against an edge can be cut
+off there. Each function says how far one edge of the canvas is covered, in canvas pixels; a
+control that keeps at least that far from every edge stays whole.
+
+| Function | Returns |
+|---|---|
+| `screen_inset_left`, `screen_inset_top`, `screen_inset_right`, `screen_inset_bottom` | how far that edge is covered, 0 if not at all |
+
+An edge counts the cutout as a band along its whole length, the way Android reports it, and a
+rounded corner as the distance that keeps a rectangle's corner inside the arc on both edges it
+touches: a Pixel 9 in landscape answers 173 on the side of its camera and 39 on the other three.
+Nothing needs initializing, and the values follow the screen when it turns, so a game that
+rotates reads them again. They come from the runtime through the `anpaside.screen.inset.<side>`
+system properties, which only the IDE's emulator and exported apks answer; anywhere else every
+function returns 0.
 
 ## Building
 

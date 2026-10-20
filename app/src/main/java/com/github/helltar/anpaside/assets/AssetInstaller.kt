@@ -16,7 +16,7 @@ class AssetInstaller(
 
     // bump when bundled assets change so installed copies get refreshed
     companion object {
-        const val ASSETS_VERSION = 8
+        const val ASSETS_VERSION = 9
 
         private const val BUNDLED_LIBRARY_SUFFIX = ".bin"
     }
