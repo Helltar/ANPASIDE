@@ -1,0 +1,2623 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MIDletPascal language reference</title>
+<meta name="description" content="The MIDletPascal language as the mp3cc compiler accepts it: syntax, types, statements and every built-in routine, with the libraries ANPASIDE ships.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2032%2032'%3E%3Crect%20width='32'%20height='32'%20rx='7'%20fill='%233F444C'/%3E%3Ctext%20x='16'%20y='17'%20font-family='Georgia%2Cserif'%20font-size='17'%20font-weight='700'%20fill='%23ffffff'%20text-anchor='middle'%20dominant-baseline='central'%3EMP%3C/text%3E%3C/svg%3E">
+<link rel="canonical" href="https://helltar.com/midletpascal/">
+
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="MIDletPascal">
+<meta property="og:title" content="MIDletPascal language reference">
+<meta property="og:description" content="The MIDletPascal language as the mp3cc compiler accepts it: syntax, types, statements and every built-in routine.">
+<meta property="og:url" content="https://helltar.com/midletpascal/">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://helltar.com/midletpascal/og.png?v=cc11eccdbe">
+<meta property="og:image:type" content="image/png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="MIDletPascal language reference: 159 built-in routines.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="MIDletPascal language reference">
+<meta name="twitter:description" content="The MIDletPascal language as the mp3cc compiler accepts it: syntax, types, statements and every built-in routine.">
+<meta name="twitter:image" content="https://helltar.com/midletpascal/og.png?v=cc11eccdbe">
+<link rel="preload" as="font" type="font/woff2" href="/midletpascal/fonts/manual-serif-regular.woff2" crossorigin>
+<link rel="preload" as="font" type="font/woff2" href="/midletpascal/fonts/manual-serif-bold.woff2" crossorigin>
+<link rel="preload" as="font" type="font/woff2" href="/static/fonts/jetbrains-mono-400.woff2" crossorigin>
+<style>
+/* running text is a latin subset of charis sil, renamed as the ofl asks of a modified font (fonts/OFL.txt);
+   code is jetbrains mono from the homepage */
+@font-face{font-family:"Manual Serif";src:url("/midletpascal/fonts/manual-serif-regular.woff2") format("woff2");font-weight:400;font-style:normal;font-display:swap}
+@font-face{font-family:"Manual Serif";src:url("/midletpascal/fonts/manual-serif-italic.woff2") format("woff2");font-weight:400;font-style:italic;font-display:swap}
+@font-face{font-family:"Manual Serif";src:url("/midletpascal/fonts/manual-serif-bold.woff2") format("woff2");font-weight:700;font-style:normal;font-display:swap}
+@font-face{font-family:"JetBrains Mono";src:url("/static/fonts/jetbrains-mono-400.woff2") format("woff2");font-weight:400;font-style:normal;font-display:swap}
+@font-face{font-family:"JetBrains Mono";src:url("/static/fonts/jetbrains-mono-700.woff2") format("woff2");font-weight:700;font-style:normal;font-display:swap}
+
+/* the palette is anpaside's: the slate of its launcher icon and the blue of its accent */
+:root{
+  --paper:#ffffff; --ink:#1d2026; --ink-2:#5b6370; --ink-3:#8a919c;
+  --rule:#e3e6ea; --code-bg:#f3f5f7; --mark:#eef3fc;
+  --accent:#2457b5; --caution:#a3341f; --slate:#3f444c;
+  --t-str:#2f6b3a; --t-num:#8a5a1c; --t-fn:#2457b5;
+  --serif:"Manual Serif",Charter,"Bitstream Charter","Sitka Text",Cambria,Georgia,serif;
+  --mono:"JetBrains Mono",ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+  --bar:52px; --rail:15.5rem;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --paper:#1c1f24; --ink:#e3e5e9; --ink-2:#a1a8b3; --ink-3:#737a85;
+    --rule:#30343b; --code-bg:#24282e; --mark:#24324a;
+    --accent:#7fb0ff; --caution:#f08b78; --slate:#3f444c;
+    --t-str:#a6cf9c; --t-num:#dcb98d; --t-fn:#93bcf5;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#1c1f24; --ink:#e3e5e9; --ink-2:#a1a8b3; --ink-3:#737a85;
+  --rule:#30343b; --code-bg:#24282e; --mark:#24324a;
+  --accent:#7fb0ff; --caution:#f08b78; --slate:#3f444c;
+  --t-str:#a6cf9c; --t-num:#dcb98d; --t-fn:#93bcf5;
+  color-scheme:dark;
+}
+
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html{scroll-behavior:smooth;scroll-padding-top:calc(var(--bar) + 16px);-webkit-text-size-adjust:100%}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+body{margin:0;background:var(--paper);color:var(--ink);font:400 17px/1.62 var(--serif);
+  font-variant-numeric:lining-nums proportional-nums;font-kerning:normal}
+a{color:var(--accent);text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:3px;
+  text-decoration-color:color-mix(in srgb,var(--accent) 40%,transparent)}
+a:hover{text-decoration-color:currentColor}
+code,pre,kbd{font-family:var(--mono);font-variant-numeric:normal;font-variant-ligatures:none}
+code{font-size:.84em}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+h1,h2,h3,h4{font-weight:700;line-height:1.25;text-wrap:balance}
+p,li{text-wrap:pretty}
+table{border-collapse:collapse;font-variant-numeric:lining-nums tabular-nums}
+
+/* ---------- top bar ---------- */
+.bar{position:sticky;top:0;z-index:40;height:var(--bar);display:flex;align-items:center;gap:16px;
+  padding:0 20px;background:var(--paper);border-bottom:1px solid var(--rule)}
+.brand{font-weight:700;font-size:18px;color:var(--ink);text-decoration:none;white-space:nowrap}
+.brand span{font-weight:400;color:var(--ink-2)}
+.bar .spacer{flex:1}
+.search{position:relative;width:min(22rem,100%)}
+.search input{width:100%;height:34px;padding:0 34px 0 12px;font:400 15px/1 var(--serif);color:var(--ink);
+  background:var(--code-bg);border:1px solid transparent;border-radius:6px;outline:none}
+.search input::placeholder{color:var(--ink-3)}
+.search input:focus{border-color:var(--accent);background:var(--paper)}
+.search kbd{position:absolute;right:8px;top:50%;transform:translateY(-50%);font-size:12px;color:var(--ink-3);
+  border:1px solid var(--rule);border-radius:4px;padding:0 5px;line-height:18px;pointer-events:none}
+.search input:focus+kbd,.search input:not(:placeholder-shown)+kbd{display:none}
+.menu{display:none;align-items:center;justify-content:center;width:38px;height:38px;margin-left:-8px;
+  background:none;border:0;color:var(--ink);cursor:pointer;border-radius:6px}
+.menu:hover{background:var(--code-bg)}
+
+/* ---------- layout ---------- */
+.shell{display:grid;grid-template-columns:var(--rail) minmax(0,1fr);max-width:76rem;margin:0 auto}
+.rail{position:sticky;top:var(--bar);align-self:start;height:calc(100vh - var(--bar));overflow:auto;
+  padding:26px 18px 48px 20px;font-size:15px;line-height:1.45;scrollbar-width:thin}
+.rail ul,.rail ol{list-style:none;margin:0 0 6px;padding:0}
+.rail li a{display:flex;gap:8px;padding:3px 8px;margin:0 -8px;border-radius:5px;color:var(--ink-2);text-decoration:none}
+.rail li a:hover{color:var(--ink);background:var(--code-bg)}
+.rail li a.active{color:var(--ink);background:var(--mark)}
+.rail .no{flex:none;min-width:1.1em;color:var(--ink-3);font-variant-numeric:lining-nums tabular-nums}
+.navgroup{margin:22px 0 6px;font-weight:700;color:var(--ink)}
+.navgroup:first-child{margin-top:0}
+.navgroup a{color:inherit;text-decoration:none}
+main{min-width:0;padding:0 clamp(18px,4vw,56px) 40px}
+.col{max-width:42rem}
+
+/* ---------- hero ---------- */
+.hero{padding:44px 0 8px;max-width:42rem}
+.hero h1{font-size:clamp(40px,6vw,56px);letter-spacing:-.015em;margin:0 0 18px;line-height:1.05}
+.lead{font-size:19px;line-height:1.55;margin:0 0 14px}
+.first{margin:32px 0 0}
+.first pre{margin:0}
+.first figcaption{margin-top:10px;font-style:italic;color:var(--ink-2);font-size:15px}
+
+/* ---------- running text ---------- */
+.chapter,.part{scroll-margin-top:calc(var(--bar) + 12px)}
+.chapter{max-width:42rem;padding-top:36px}
+.part{padding-top:48px}
+.part>h2,.part>p,.part>.index,.part>#noresults,.part>.tables,.part>table{max-width:42rem}
+.chapter>h2,.part>h2{font-size:30px;letter-spacing:-.01em;margin:0 0 16px;position:relative}
+h2 .no{display:inline-block;min-width:1.4em;color:var(--ink-3);font-weight:400}
+@media (min-width:1180px){h2 .no{position:absolute;right:100%;min-width:0;margin-right:.6em}}
+.chapter h3{font-size:21px;margin:1.6em 0 .5em}
+.chapter h4{font-size:18px;margin:1.8em 0 .4em}
+.chapter p{margin:.8em 0}
+.chapter ul{margin:.8em 0;padding-left:1.25em}
+.chapter li{margin:.35em 0}
+.chapter li::marker{color:var(--ink-3)}
+.caution{margin:1.2em 0;padding:2px 0 2px 16px;border-left:3px solid var(--caution)}
+
+pre.code,pre.sig{font-size:13.5px;line-height:1.6;background:var(--code-bg);border-radius:6px;
+  padding:14px 16px;margin:1.1em 0;overflow-x:auto;tab-size:2}
+
+table:not(.consts){width:100%;margin:1.1em 0;font-size:16px}
+th{text-align:left;font-weight:700;padding:6px 16px 6px 0;border-bottom:1px solid var(--ink)}
+td{padding:6px 16px 6px 0;border-bottom:1px solid var(--rule);vertical-align:top}
+table.plain td{border:0;padding:3px 16px 3px 0}
+table.plain td:first-child{white-space:nowrap;color:var(--ink-2)}
+table.plain td:nth-child(3){color:var(--ink-2);white-space:nowrap}
+table.keys td:not(:first-child),table.keys th:not(:first-child){font-family:var(--mono);font-size:14px;font-weight:400}
+table.keys th:not(:first-child){font-family:var(--serif);font-size:16px;font-weight:700}
+
+/* ---------- reference ---------- */
+.index{margin:28px 0 8px;display:grid;grid-template-columns:max-content 1fr;gap:6px 20px;font-size:15px}
+.index dt{font-weight:700}
+.index dt a{color:var(--ink);text-decoration:none}
+.index dd{margin:0;display:flex;flex-wrap:wrap;gap:2px 12px;font-family:var(--mono);font-size:13px;line-height:1.75}
+.index dd a{text-decoration:none}
+.index dd a:hover{text-decoration:underline}
+.index dd a.off{color:var(--ink-3);text-decoration:line-through}
+.cat{max-width:42rem;padding-top:40px}
+.cathead{position:sticky;top:var(--bar);z-index:10;margin:0;padding:10px 0 8px;background:var(--paper);
+  font-size:24px;border-bottom:1px solid var(--ink)}
+.intro{color:var(--ink-2);margin:12px 0 0}
+.intro p{margin:0}
+.fn{padding:22px 0 6px;scroll-margin-top:calc(var(--bar) + 56px)}
+.fn h4{margin:0;font:700 17px/1.3 var(--mono)}
+.fn h4 a{color:var(--ink);text-decoration:none}
+.fn h4 a:hover{text-decoration:underline}
+.fn:target h4 a{background:var(--mark);box-shadow:0 0 0 4px var(--mark)}
+.gone{font:italic 400 15px var(--serif);color:var(--caution)}
+.fn.off h4 a{color:var(--ink-3);text-decoration:line-through}
+.fn pre.sig{margin:8px 0 10px;padding:8px 12px;font-size:13px;white-space:pre-wrap;word-break:break-word}
+.fn p{margin:.5em 0}
+.fn ul{margin:.5em 0;padding-left:1.25em}
+.needs,.see{font-size:15px;color:var(--ink-2)}
+.fn details{margin:.5em 0}
+.fn summary{cursor:pointer;color:var(--accent);width:max-content;font-size:15px}
+.fn details pre.code{margin:.5em 0 .2em;font-size:13px}
+#noresults{margin:24px 0;font-style:italic;color:var(--ink-2)}
+#noresults b{font-style:normal}
+
+.tables{display:grid;align-items:start;grid-template-columns:repeat(auto-fill,minmax(17rem,1fr));gap:8px 40px;margin-top:20px}
+table.consts{width:100%;font-size:15px;margin:12px 0}
+.consts caption{text-align:left;font-weight:700;padding-bottom:6px;border-bottom:1px solid var(--ink)}
+.consts td{border-bottom:1px solid var(--rule);padding:4px 12px 4px 0}
+.consts td:last-child{text-align:right;padding-right:0;font-family:var(--mono);font-size:13px;color:var(--ink-2)}
+
+footer{max-width:42rem;margin-top:56px;padding:0 0 8px;font-size:15px;color:var(--ink-2)}
+footer p{margin:.4em 0}
+
+/* ---------- syntax colors: bold keywords, as pascal is printed ---------- */
+.t-kw{font-weight:700}
+.t-com{color:var(--ink-3);font-style:italic}
+.t-str{color:var(--t-str)}
+.t-num{color:var(--t-num)}
+.t-fn{color:var(--t-fn)}
+
+/* ---------- searching: only the matching routines are left ---------- */
+main.searching .hero,main.searching .chapter,main.searching .index,main.searching .intro,
+main.searching #libraries>h2~p,main.searching #reference>h2~p,main.searching #constants,
+main.searching #keycodes,main.searching footer{display:none}
+main.searching #reference{padding-top:32px}
+.fn.miss,.cat.miss,.part.miss{display:none}
+
+.scrim{display:none}
+@media (max-width:900px){
+  .menu{display:inline-flex}
+  .shell{grid-template-columns:minmax(0,1fr)}
+  /* align-self:stretch, because a fixed grid child still obeys align-self and start sized it to its content,
+     taller than the screen, so it had nothing to scroll and the page scrolled instead */
+  .rail{position:fixed;top:var(--bar);left:0;bottom:0;height:auto;align-self:stretch;width:min(18rem,86vw);z-index:60;
+    overscroll-behavior:contain;background:var(--paper);border-right:1px solid var(--rule);
+    transform:translateX(-101%);transition:transform .2s ease}
+  /* only on html: with body hidden as well, body becomes the scroll container and the sticky bar
+     sticks to it, at the top of the document and off the screen */
+  html.drawer{overflow:hidden}
+  .rail.open{transform:none}
+  .scrim.show{display:block;position:fixed;inset:var(--bar) 0 0;background:rgba(0,0,0,.4);z-index:55}
+  main{padding:0 16px 32px}
+  .bar{padding:0 16px;gap:10px}
+}
+@media (max-width:560px){
+  body{font-size:16.5px}
+  .brand span{display:none}
+  .lead{font-size:17.5px}
+  .chapter>h2,.part>h2{font-size:26px}
+  .index{grid-template-columns:1fr;gap:2px 0}
+  .index dd{margin-bottom:10px}
+  pre.code{font-size:12.5px;padding:12px}
+}
+@media print{.bar,.rail,.scrim{display:none}.shell{display:block}details>pre{display:block}}
+</style>
+</head>
+<body>
+<header class="bar">
+  <button class="menu" id="menuBtn" aria-label="Contents" aria-expanded="false">
+    <svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true"><path d="M3 5h14M3 10h14M3 15h14" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+  </button>
+  <a class="brand" href="#overview">MIDletPascal <span>language reference</span></a>
+  <span class="spacer"></span>
+  <label class="search">
+    <input id="search" type="search" placeholder="Search routines" autocomplete="off" spellcheck="false" aria-label="Search routines">
+    <kbd>/</kbd>
+  </label>
+</header>
+
+<div class="shell">
+<nav class="rail" id="rail" aria-label="Contents">
+<p class="navgroup">Language</p>
+<ol class="nav-ch">
+  <li><a href="#build"><span class="no">1</span>From source to a MIDlet</a></li>
+  <li><a href="#structure"><span class="no">2</span>Program structure</a></li>
+  <li><a href="#types"><span class="no">3</span>Data types</a></li>
+  <li><a href="#declarations"><span class="no">4</span>Declarations</a></li>
+  <li><a href="#statements"><span class="no">5</span>Statements</a></li>
+  <li><a href="#routines"><span class="no">6</span>Procedures and functions</a></li>
+  <li><a href="#units"><span class="no">7</span>Units and libraries</a></li>
+  <li><a href="#operators"><span class="no">8</span>Operators</a></li>
+  <li><a href="#reals"><span class="no">9</span>Real numbers</a></li>
+  <li><a href="#extensions"><span class="no">10</span>Beyond standard Pascal</a></li>
+</ol>
+<p class="navgroup"><a href="#reference">Built-in routines</a></p><ul>
+  <li><a href="#cat-drawing">Drawing</a></li>
+  <li><a href="#cat-keypadaccess">Keypad</a></li>
+  <li><a href="#cat-dateandtime">Date and time</a></li>
+  <li><a href="#cat-math">Math</a></li>
+  <li><a href="#cat-string">Strings</a></li>
+  <li><a href="#cat-forms">Forms and commands</a></li>
+  <li><a href="#cat-recordstore">Record stores</a></li>
+  <li><a href="#cat-httpconnectivity">HTTP</a></li>
+  <li><a href="#cat-smsmessaging">SMS</a></li>
+  <li><a href="#cat-soundandmusic">Sound</a></li>
+  <li><a href="#cat-resourcefiles">Resource files</a></li>
+  <li><a href="#cat-misc">Other</a></li>
+</ul><p class="navgroup"><a href="#libraries">Libraries</a></p><ul>
+  <li><a href="#cat-touch">Touch</a></li>
+  <li><a href="#cat-sound">Sound</a></li>
+  <li><a href="#cat-screen">Screen</a></li>
+</ul><p class="navgroup">Tables</p><ol class="nav-ch">
+  <li><a href="#constants"><span class="no">A</span>Predefined constants</a></li>
+  <li><a href="#keycodes"><span class="no">B</span>Key scan codes</a></li>
+</ol>
+</nav>
+<div class="scrim" id="scrim"></div>
+
+<main id="main">
+  <header class="hero" id="overview">
+    <h1>MIDletPascal</h1>
+    <p class="lead">A small Pascal for the phones of the 2000s, the ones with a keypad, a screen
+    176 pixels wide and Java ME. A program compiles to a MIDlet: a JAR that runs on such a phone,
+    in J2ME Loader, or in the emulator built into ANPASIDE.</p>
+    <p class="lead">This page describes the language as the <code>mp3cc</code> compiler accepts
+    it, routine by routine. Where the original manual says otherwise, the compiler is what is
+    described here.</p>
+    <figure class="first">
+<pre class="code">program hello;
+begin
+  SetColor(255, 0, 0);
+  DrawText('Hello world', 10, 10);
+  Repaint;
+  Delay(2000);
+end.</pre>
+      <figcaption>A whole program: it writes a red line of text at 10, 10, shows it, and exits two
+      seconds later.</figcaption>
+    </figure>
+  </header>
+
+  <section class="chapter" id="build">
+    <h2><span class="no">1</span>From source to a MIDlet</h2>
+    <p>One run of <code>mp3cc</code> compiles one <code>.pas</code> file and writes class files,
+    nothing else:</p>
+    <table class="plain">
+      <tbody>
+        <tr><td>a program</td><td><code>M.class</code>, a subclass of the MIDP <code>Canvas</code></td></tr>
+        <tr><td>a unit</td><td>a class named after the unit in lowercase, and a <code>.bsf</code> file with its symbols</td></tr>
+        <tr><td>a record type</td><td><code>R_0.class</code>, <code>R_1.class</code> and so on</td></tr>
+      </tbody>
+    </table>
+    <p>Because the program itself is the canvas, drawing and key handling are part of the language
+    rather than a library. Everything else the compiler only names in its output: the units the
+    program uses, the library classes it calls, and the runtime classes its built-in routines need.
+    Compiling those units, collecting the classes and packing them into a JAR with a manifest is
+    the job of the IDE. In ANPASIDE that is the Run button.</p>
+    <p>The runtime is a handful of small classes. <code>FW.class</code> goes into every JAR; the
+    others only when a routine needs them, and the <a href="#reference">reference</a> says which:</p>
+    <table class="plain">
+      <tbody>
+        <tr><td><code>FS</code></td><td>forms</td></tr>
+        <tr><td><code>F</code> or <code>Real</code></td><td>real numbers, see <a href="#reals">Real numbers</a></td></tr>
+        <tr><td><code>S</code></td><td>some string, image and resource routines</td></tr>
+        <tr><td><code>RS</code></td><td>record stores</td></tr>
+        <tr><td><code>H</code></td><td>HTTP</td></tr>
+        <tr><td><code>P</code></td><td>sound</td></tr>
+        <tr><td><code>SM</code></td><td>SMS</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Unlike other Pascals</h3>
+    <ul>
+      <li>A string is not an array of characters. Its first character is at index 0, and
+      characters are read and changed with <a href="#fn-getchar">GetChar</a> and
+      <a href="#fn-setchar">SetChar</a>; <code>s[i]</code> does not compile.</li>
+      <li>A function's result has to be used, as in standard Pascal; Turbo Pascal, Free Pascal and
+      Delphi let a call stand on its own. <code>FormAddString('Hi');</code> alone is error E432, so
+      assign it: <code>id := FormAddString('Hi');</code>.</li>
+      <li>Parameters are always passed by value, and routines cannot be nested.</li>
+      <li>There are no sets, enumerated types, files, pointers or <code>with</code>.</li>
+    </ul>
+  </section>
+
+  <section class="chapter" id="structure">
+    <h2><span class="no">2</span>Program structure</h2>
+    <p>A program is a header, declarations, and a main block:</p>
+<pre class="code" data-frag>program name;
+
+  { constants, types, variables }
+  { procedures and functions }
+
+begin
+  { statements }
+end.</pre>
+    <p>The <code>program</code> line may be left out. Declarations come in any order and any
+    number of blocks. The program runs the main block and ends at its <code>end.</code>, with
+    the period.</p>
+    <p>As in every Pascal, keywords and names are case-insensitive: <code>Begin</code>,
+    <code>begin</code> and <code>BEGIN</code> are one word.</p>
+
+    <h3>Comments</h3>
+<pre class="code" data-frag>{ braces }
+(* parentheses and stars *)
+// to the end of the line
+/* C style */</pre>
+    <p>Compiler directives such as <code>{$R+}</code> are read as ordinary comments: the kind of
+    real numbers and of canvas is set by the build, not by the source.</p>
+  </section>
+
+  <section class="chapter" id="types">
+    <h2><span class="no">3</span>Data types</h2>
+    <table>
+      <thead><tr><th>Type</th><th>Holds</th></tr></thead>
+      <tbody>
+        <tr><td><code>integer</code></td><td>a 32-bit signed number, −2147483648 to 2147483647</td></tr>
+        <tr><td><code>real</code></td><td>a number with a fraction, computed in software; see <a href="#reals">Real numbers</a></td></tr>
+        <tr><td><code>boolean</code></td><td><code>true</code> or <code>false</code></td></tr>
+        <tr><td><code>char</code></td><td>one character; <code>Ord</code> and <code>Chr</code> convert it to and from its code</td></tr>
+        <tr><td><code>string</code></td><td>text of any length, indexed from 0</td></tr>
+        <tr><td><code>image</code></td><td>a picture, from <code>LoadImage</code> or one of the <code>ImageFrom</code> functions</td></tr>
+        <tr><td><code>command</code></td><td>a soft-key command, from <code>CreateCommand</code></td></tr>
+        <tr><td><code>recordStore</code></td><td>an open <a href="#cat-recordstore">record store</a></td></tr>
+        <tr><td><code>http</code></td><td>an <a href="#cat-httpconnectivity">HTTP</a> connection</td></tr>
+        <tr><td><code>resource</code></td><td>a file from the JAR opened for <a href="#cat-resourcefiles">reading</a></td></tr>
+      </tbody>
+    </table>
+    <p>The last five are handles: a program passes them around but cannot look inside. From these,
+    a program builds records and arrays.</p>
+
+    <h3 id="type-record">Records</h3>
+<pre class="code">type hero = record
+  x, y: integer;
+  health: integer;
+end;
+
+var player, saved: hero;
+begin
+  player.x := player.x + 1;
+  saved := player;          { copies every field }
+end.</pre>
+    <p>Assigning a record copies it, so changing <code>saved</code> later leaves
+    <code>player</code> alone. A record cannot hold an array (error E446).</p>
+    <p>Each record type becomes a class numbered in the order the compiler meets it:
+    <code>R_0</code>, <code>R_1</code>, and so on. The numbers start again with every run unless
+    the build passes the next free one with <code>-r</code>, and ANPASIDE does, so that the record
+    classes of two modules do not overwrite each other in the JAR. One case is still not covered:
+    two units that use each other can end up with the same numbers, so keep record types out of
+    such a pair. The compiler tells record types apart by their number alone, which is why a clash
+    is not caught at compile time and shows up only as a crash on the phone.</p>
+
+    <h3 id="type-array">Arrays</h3>
+<pre class="code">type board = array[1..8, 1..8] of integer;
+var cells: board;
+    scores: array[0..9] of integer;
+begin
+  cells[1, 1] := 0;
+  scores[0] := 100;
+end.</pre>
+    <p>Each dimension has its own bounds, and there can be any number of dimensions. Arrays are not
+    assigned whole, only element by element (error E443).</p>
+    <aside class="caution">The compiler does not check indexes, not even constant ones:
+    <code>x[7]</code> on an <code>array[1..5]</code> compiles. When it runs, the program stops at
+    that line without a message.</aside>
+  </section>
+
+  <section class="chapter" id="declarations">
+    <h2><span class="no">4</span>Declarations</h2>
+<pre class="code">const
+  minutesInHour = 60;
+  greeting = 'To be or not to be';
+
+type
+  number = integer;
+  point = record x, y: integer; end;
+
+var
+  index: integer;
+  field: array[1..15] of integer;
+  p: point;
+
+begin
+end.</pre>
+    <p><code>const</code> names a value, <code>type</code> names a type, and <code>var</code>
+    declares variables, of a named type or one written out in place. Variables declared outside any
+    routine are global: every procedure and function declared after them sees them.</p>
+  </section>
+
+  <section class="chapter" id="statements">
+    <h2><span class="no">5</span>Statements</h2>
+    <p>Where a statement has a body, one statement needs nothing around it and several go between
+    <code>begin</code> and <code>end</code>.</p>
+
+    <h3>Assignment</h3>
+<pre class="code" data-frag>x := x + 1;</pre>
+
+    <h3>if</h3>
+<pre class="code" data-frag>if lives = 0 then
+  gameOver := true
+else
+begin
+  lives := lives - 1;
+  restart;
+end;</pre>
+
+    <h3>for</h3>
+<pre class="code" data-frag>for i := 1 to 10 do
+  sum := sum + i;
+
+for i := 10 downto 1 do
+  DrawText(IntegerToString(i), 0, i * 10);</pre>
+
+    <h3>while and repeat</h3>
+<pre class="code" data-frag>while GetKeyClicked = KE_NONE do
+  Delay(100);
+
+repeat
+  Delay(100);
+until GetKeyClicked &lt;&gt; KE_NONE;
+
+repeat
+  tick;
+forever;</pre>
+    <p><code>forever</code> in place of <code>until</code> makes a loop that only
+    <code>break</code>, <code>exit</code> or <code>Halt</code> ends.
+    <code>break</code> leaves the innermost <code>for</code>, <code>while</code> or
+    <code>repeat</code>, and is an error outside a loop.</p>
+
+    <h3 id="case">case</h3>
+<pre class="code" data-frag>case GetKeyClicked of
+  KE_KEY2:          y := y - 1;
+  KE_KEY8:          y := y + 1;
+  KE_KEY4, KE_KEY6: x := x + key - KE_KEY5;   { several labels }
+  KE_KEY5:          begin
+                      DrawText('fire', 10, 10);
+                      Repaint;
+                    end;
+  KE_STAR:          ;                         { does nothing }
+  0..31:            Delay(50);                { a range, both ends included }
+else
+  x := 0;
+  y := 0;
+end;
+
+case name of
+  'left', 'l': dx := -1;
+  'right':     dx := 1;
+end;</pre>
+    <p>The value tested is an <code>integer</code>, a <code>char</code> or a
+    <code>string</code>. Labels are literals or constants, never variables; integer and char
+    labels may also be ranges. The first matching arm runs and nothing falls through. The
+    <code>else</code> part takes any number of statements and is optional; without it, a value
+    that matches nothing does nothing.</p>
+    <ul>
+      <li>String labels are compared exactly, upper and lower case included.</li>
+      <li>A label that repeats or overlaps another is error E465.</li>
+      <li>In an arm such as <code>1: if ok then go; else stop</code>, the <code>else</code>
+      after the semicolon belongs to the <code>case</code>, not to the <code>if</code>.</li>
+      <li><code>break</code> in an arm leaves the loop around the <code>case</code>.</li>
+    </ul>
+    <p><code>case</code> needs <code>mp3cc</code> 3.5.4, which ANPASIDE ships since 2.5.0. Older
+    compilers stop with E442.</p>
+  </section>
+
+  <section class="chapter" id="routines">
+    <h2><span class="no">6</span>Procedures and functions</h2>
+<pre class="code">var total: integer;
+
+procedure add(a: integer; b: string);
+var len: integer;           { local, made anew on every call }
+begin
+  len := Length(b);
+  total := a + len;
+end;
+
+function multiply(a, b: integer): integer;
+begin
+  multiply := a * b;
+end;
+
+function square(x: integer): integer;
+begin
+  result := x * x;
+end;
+
+begin
+  add(multiply(2, 3), 'abc');
+  total := square(total);
+end.</pre>
+    <p>A procedure returns nothing. A function returns the value last assigned to its own name, or
+    to <code>result</code>. <code>exit</code> leaves a routine at
+    once, and in the main block ends the program like <code>Halt</code>.</p>
+    <p>Parameters are passed by value. <code>var</code> in a parameter list is ignored with
+    warning W436, so a routine cannot change its caller's variables, only globals. Routines cannot
+    be declared inside other routines (error E431), but they can call themselves:</p>
+<pre class="code" data-frag>function factorial(n: integer): integer;
+begin
+  if n &lt;= 1 then
+    factorial := 1
+  else
+    factorial := n * factorial(n - 1);
+end;</pre>
+    <p>Two routines that call each other need one of them declared <code>forward</code> first:</p>
+<pre class="code" data-frag>procedure b(y: integer); forward;
+
+procedure a(x: integer);
+begin
+  if x &gt; 0 then b(x - 1);
+end;
+
+procedure b(y: integer);
+begin
+  if y &gt; 0 then a(y - 1);
+end;</pre>
+  </section>
+
+  <section class="chapter" id="units">
+    <h2><span class="no">7</span>Units and libraries</h2>
+    <p>A program can be split into units written in Pascal, and it can call Java through library
+    classes. ANPASIDE also ships three libraries of its own.</p>
+
+    <h3 id="pascal-units">Units</h3>
+<pre class="code" data-frag>unit geometry;
+
+interface
+  function square(x: integer): integer;
+
+implementation
+  function square(x: integer): integer;
+  begin
+    square := x * x;
+  end;
+
+initialization
+  { runs when the program starts }
+end.</pre>
+<pre class="code" data-frag>program game;
+uses geometry;
+var area: integer;
+begin
+  area := geometry.square(5);   { or square(5), unless two units share the name }
+end.</pre>
+    <p>A unit name has at least three characters; a shorter one is error E454, whose message says
+    two. There is no <code>finalization</code> section.</p>
+    <p>A unit shares everything in its <code>interface</code>: constants, types, variables,
+    procedures and functions. Its types, unlike the rest, are only found by their full name. With
+    a unit <code>shapes</code> that declares <code>type point = record x, y: integer; end</code>,
+    another module writes <code>var p: shapes.point</code>; a bare <code>point</code> is error
+    E415, even for an alias such as <code>type index = integer</code>.</p>
+
+    <h3 id="java-libraries">Libraries in Java</h3>
+    <p>When a program needs something of MIDP that the language does not offer, it can be written
+    in Java as a library class:</p>
+<pre class="code plain">// Lib_mylib.java, compiled for CLDC 1.0 and preverified
+public class Lib_mylib {
+  public static int square(int value) {
+    return value * value;
+  }
+}</pre>
+<pre class="code" data-frag>program demo;
+uses mylib;
+var id: integer;
+begin
+  ShowForm;
+  id := FormAddString('5 squared is ' + mylib.square(5));
+  Delay(5000);
+end.</pre>
+    <ul>
+      <li>The class has no package, and its name is <code>Lib_</code> followed by the unit name in
+      lowercase.</li>
+      <li>Only methods declared exactly <code>public static</code> are seen. One that is also
+      <code>final</code> or <code>synchronized</code> is skipped without a word.</li>
+      <li>Parameters and results may be <code>int</code>, <code>String</code>, <code>Image</code>,
+      <code>Command</code>, <code>RecordStore</code> or <code>InputStream</code>, and a method may
+      return <code>void</code>.</li>
+      <li>A library has routines only, no types or variables.</li>
+      <li>The class goes in the project's library folder, <code>libs/</code> in ANPASIDE, or in the
+      compiler's global one. The project's folder is searched first.</li>
+    </ul>
+    <p>For phone features such as vibration or the backlight, a library needs the
+    <code>Display</code>; the original manual's chapter on advanced features shows how to reach it.
+    A call that exists only in MIDP 2.0 belongs in a <code>try</code>/<code>catch</code>, or the
+    MIDlet crashes on a MIDP 1.0 phone.</p>
+
+    <h3 id="bundled">Libraries in ANPASIDE</h3>
+    <p>ANPASIDE ships three libraries that a program reaches with <code>uses</code> and nothing to
+    copy. A <code>Lib_</code> class of the same name in the project's <code>libs/</code> takes their
+    place.</p>
+    <table class="plain">
+      <tbody>
+        <tr><td><a href="#bundled-touch">Touch</a></td><td>several fingers at once</td><td>since 2.5.2</td></tr>
+        <tr><td><a href="#bundled-sound">Sound</a></td><td>music and sound effects together</td><td>since 2.6.0</td></tr>
+        <tr><td><a href="#bundled-screen">Screen</a></td><td>the parts of the screen the camera and the corners cover</td><td>since 2.6.0</td></tr>
+      </tbody>
+    </table>
+
+    <h4 id="bundled-touch">Touch</h4>
+    <p>For on-screen buttons held with several fingers, to walk and jump at the same time:</p>
+<pre class="code">program buttons;
+uses Touch;
+var w, h, x, y, vy, floor: integer;
+begin
+  Touch.Init;
+  w := GetWidth;
+  h := GetHeight;
+  floor := h - 120;
+  x := w div 2;
+  y := floor;
+  vy := 0;
+  repeat
+    { each button follows its own finger }
+    if touch_area(0, h - 80, 80, 80) &gt; 0 then x := x - 4;
+    if touch_area(90, h - 80, 80, 80) &gt; 0 then x := x + 4;
+    if (touch_area(w - 80, h - 80, 80, 80) &gt; 0) and (y = floor) then vy := -15;
+
+    y := y + vy;
+    vy := vy + 1;
+    if y &gt;= floor then
+    begin
+      y := floor;
+      vy := 0;
+    end;
+
+    SetColor(0, 0, 0);
+    FillRect(0, 0, w, h);
+    SetColor(255, 255, 255);
+    FillRect(x, y - 40, 20, 40);
+    DrawRect(0, h - 80, 80, 80);
+    DrawRect(90, h - 80, 80, 80);
+    DrawRect(w - 80, h - 80, 80, 80);
+    Repaint;
+    Delay(20);
+  until false;
+end.</pre>
+    <p>Fingers are numbered 0 to 9. The first finger down is 0, and each next one takes the lowest
+    free number. Touch also has every function of <code>Lib_sensor</code>, under the same names,
+    following finger 0. A program moves over by writing <code>uses Touch</code> and
+    <code>Touch.Init</code> where it had <code>Sensor</code>.</p>
+    <p>The <code>touch_</code> functions see every finger and the <code>pointer_</code> functions
+    only finger 0, so they do not mix. A program that checks a rectangle with
+    <code>touch_area</code> and then reads the position from <code>pointer_pressed_x</code> reads
+    the wrong finger as soon as two are down. Take the position from the finger that is inside:</p>
+<pre class="code" data-frag>for i := 0 to 9 do
+  if (touch_down(i) = 1) and (touch_x(i) &gt;= x) and (touch_x(i) &lt; x + w)
+     and (touch_y(i) &gt;= y) and (touch_y(i) &lt; y + h) then
+    slot := (touch_x(i) - x) div cell;</pre>
+    <p>Following Nokia, J2ME Loader and ANPASIDE's runtime report more than one finger only to a
+    JAR whose manifest has <code>Nokia-UI-Enhancement: EnableMultiPointTouchEvents</code>, and
+    ANPASIDE adds it to every program that uses Touch. The fingers are told apart through Nokia's
+    <code>com.nokia.pointer.number</code> property, so the JAR works in J2ME Loader too. On a phone
+    without multi-touch every touch is finger 0, and Touch behaves like <code>Lib_sensor</code>.</p>
+    <p>All functions: <a href="#cat-touch">Touch reference</a>.</p>
+
+    <h4 id="bundled-sound">Sound</h4>
+    <p>The built-in <a href="#fn-openplayer">OpenPlayer</a> has a single player, so background
+    music stops for every effect. Sound has eight channels, 0 to 7. Each channel holds one sound
+    and only ever replaces its own: music on one, effects on the others. It needs no
+    initialization.</p>
+<pre class="code">program game;
+uses Sound;
+var ok: integer;
+begin
+  ok := sound_open(0, '/music.mp3', 'audio/mpeg');
+  ok := sound_open(1, '/shot.wav', 'audio/x-wav');
+  sound_loop(0, -1);
+  sound_volume(0, 60);
+  ok := sound_play(0);
+  repeat
+    { the shot starts over at every press, the music plays on }
+    if KeyToAction(GetKeyPressed) = GA_FIRE then ok := sound_play(1);
+    Delay(20);
+  until false;
+end.</pre>
+    <p>The loop count and the volume belong to the channel, not to the sound, so a music channel
+    keeps its volume from one track to the next. <code>OpenPlayer</code> still works alongside, as
+    one more sound.</p>
+    <p>In ANPASIDE's emulator and in exported APKs, Android plays every sound and mixes them, two
+    MIDI files included. It takes MIDI, WAV, MP3, AAC and AMR. A type it does not know, such as
+    <code>audio/ogg</code>, makes <code>sound_open</code> return 0. Whether an old phone mixes
+    sounds at all is up to the phone; one that does not may return 0 from
+    <code>sound_play</code> while another sound plays.</p>
+    <p>All functions: <a href="#cat-sound">Sound reference</a>.</p>
+
+    <h4 id="bundled-screen">Screen</h4>
+    <p>ANPASIDE's emulator and the APKs it exports draw the canvas over the whole screen, under
+    the camera cutout and into the rounded corners. Screen tells how far each of them reaches into
+    the canvas, so that buttons and text stay clear while the game world still fills the
+    screen:</p>
+<pre class="code">program hud;
+uses Screen;
+var w, h, l, t, r, b: integer;
+begin
+  repeat
+    w := GetWidth;
+    h := GetHeight;
+    l := screen_inset_left;
+    t := screen_inset_top;
+    r := screen_inset_right;
+    b := screen_inset_bottom;
+
+    SetColor(80, 160, 255);
+    FillRect(0, 0, w, h);                     { the world, edge to edge }
+    SetColor(255, 255, 255);
+    DrawRect(w - r - 64, t, 64, 32);          { a menu button in the top right corner }
+    DrawText('v 1.0', l, h - b - GetStringHeight('A'));
+    Repaint;
+    Delay(20);
+  until false;
+end.</pre>
+    <p>The cutout counts as a band along its whole edge, as Android reports it. A rounded corner
+    counts as the distance that brings the corner of a rectangle inside the curve, on both edges
+    it touches. A Pixel 9 held sideways answers 173 on the camera side and 39 on the other three.
+    The values change when the screen turns, so a game that rotates reads them again.</p>
+    <p>The runtime measures the screen and hands the values out as the system properties
+    <code>anpaside.screen.inset.left</code>, <code>.top</code>, <code>.right</code> and
+    <code>.bottom</code>. Only ANPASIDE answers them; in J2ME Loader and on an old phone every
+    function returns 0, which is also correct there.</p>
+    <p>All functions: <a href="#cat-screen">Screen reference</a>.</p>
+  </section>
+
+  <section class="chapter" id="operators">
+    <h2><span class="no">8</span>Operators</h2>
+    <table>
+      <thead><tr><th>Operators</th><th>Meaning</th></tr></thead>
+      <tbody>
+        <tr><td><code>+ - * /</code></td><td>arithmetic; on integers <code>/</code> is the same as <code>div</code></td></tr>
+        <tr><td><code>div mod</code></td><td>integer division and its remainder</td></tr>
+        <tr><td><code>= &lt;&gt; &lt; &gt; &lt;= &gt;=</code></td><td>comparison; strings compare with upper and lower case distinct</td></tr>
+        <tr><td><code>and or xor not</code></td><td>logic on booleans, bitwise on integers</td></tr>
+        <tr><td><code>shl shr ushr</code></td><td>shifts, also written <code>&lt;&lt; &gt;&gt; &gt;&gt;&gt;</code>; <code>ushr</code> fills with zeros, as Java's <code>&gt;&gt;&gt;</code> does</td></tr>
+        <tr><td><code>+</code> on a string</td><td>joins it with a string, char, integer, real or boolean</td></tr>
+      </tbody>
+    </table>
+    <p><code>not</code> binds tightest and the comparisons loosest, as in other Pascals, so
+    <code>(a &gt; 0) and (b &gt; 0)</code> needs its parentheses.</p>
+
+    <h3 id="literals">Literals</h3>
+<pre class="code" data-frag>255   $FF          { integers, decimal and hex }
+3.14              { a real }
+'it''s'           { a string; a doubled quote is a quote }
+"it's"            { a string in double quotes }
+#65   #$41        { the char 'A' by its code }</pre>
+  </section>
+
+  <section class="chapter" id="reals">
+    <h2><span class="no">9</span>Real numbers</h2>
+    <p>CLDC 1.0, the Java ME of the early phones, has no floating point types, so
+    <code>real</code> arithmetic is done in software. It is slow and makes the JAR bigger. The build, not the source, chooses one of two
+    implementations:</p>
+    <table>
+      <thead><tr><th></th><th>Fixed point</th><th>Floating point</th></tr></thead>
+      <tbody>
+        <tr><td>Switch</td><td><code>-m1</code>, the default</td><td><code>-m2</code></td></tr>
+        <tr><td>Classes</td><td><code>F.class</code></td><td><code>Real.class</code>, <code>Real$NumberFormat.class</code></td></tr>
+        <tr><td>Precision</td><td>low, a fixed number of fractional bits</td><td>much higher</td></tr>
+        <tr><td>Cost</td><td>fast and small</td><td>slower, several KB more</td></tr>
+      </tbody>
+    </table>
+    <p>All <a href="#cat-math">math functions</a> but <code>Abs</code> and <code>Sqr</code> work
+    on reals, as do <code>StringToReal</code> and the constant <code>pi</code>. In ANPASIDE the choice is the <code>MathType</code> line of the project's
+    <code>.aproj</code> file.</p>
+  </section>
+
+  <section class="chapter" id="extensions">
+    <h2><span class="no">10</span>Beyond standard Pascal</h2>
+    <p>MIDletPascal accepts a few things that standard Pascal does not:</p>
+    <ul>
+      <li><code>exit</code> and <code>result</code> in <a href="#routines">routines</a>, as Delphi
+      and Free Pascal have them;</li>
+      <li><code>forever</code> to close a <code>repeat</code> loop;</li>
+      <li><code>ushr</code>, also written <code>&gt;&gt;&gt;</code>;</li>
+      <li><code>//</code> and <code>/* */</code> comments, and strings in double quotes;</li>
+      <li>raw JVM instructions in a <code>bytecode … end</code> block, with labels.</li>
+    </ul>
+    <p>Most of them were added by Javier Santo Domingo for MIDletPascal 3. <code>mp3cc</code> is the
+    3.5 compiler ported to Linux and Android, and the port added one thing to the language:
+    <a href="#case"><code>case</code></a>, which 3.5 rejected with E442.</p>
+    <p>A build that only checks the compiler's messages can miss a failure: if the compiler process
+    is killed, by a bad argument or a binary built for the wrong system, it writes no
+    <code>M.class</code> and no error. A JAR holding nothing but <code>FW.class</code> is the sign.
+    The exit code of <code>mp3cc</code> is its error count, so any other exit code means the process
+    died. ANPASIDE checks both.</p>
+  </section>
+
+  <section class="part" id="reference">
+    <h2>Built-in routines</h2>
+    <p>The 159 routines every program can call without a <code>uses</code> clause, by
+    area. Each signature is the one <code>mp3cc</code> accepts. The 4 routines marked
+    <span class="gone">not in mp3cc</span> are listed in the original manual, but MIDletPascal 3.5,
+    and so <code>mp3cc</code>, does not have them.</p>
+    <div id="noresults" hidden>Nothing matches <b id="nrq"></b>. Search looks at routine names and
+    descriptions.</div>
+<dl class="index">
+  <dt><a href="#cat-drawing">Drawing</a></dt>
+  <dd><a href="#fn-drawarc">DrawArc</a> <a href="#fn-drawellipse">DrawEllipse</a> <a href="#fn-drawimage">DrawImage</a> <a href="#fn-drawline">DrawLine</a> <a href="#fn-drawrect">DrawRect</a> <a href="#fn-drawroundrect">DrawRoundRect</a> <a href="#fn-drawtext">DrawText</a> <a href="#fn-fillellipse">FillEllipse</a> <a href="#fn-fillrect">FillRect</a> <a href="#fn-fillroundrect">FillRoundRect</a> <a href="#fn-getcolorblue">GetColorBlue</a> <a href="#fn-getcolorgreen">GetColorGreen</a> <a href="#fn-getcolorred">GetColorRed</a> <a href="#fn-getcolorsnum">GetColorsNum</a> <a href="#fn-getheight">GetHeight</a> <a href="#fn-getimageheight">GetImageHeight</a> <a href="#fn-getimagewidth">GetImageWidth</a> <a href="#fn-getstringheight">GetStringHeight</a> <a href="#fn-getstringwidth">GetStringWidth</a> <a href="#fn-getwidth">GetWidth</a> <a href="#fn-imagefrombuffer">ImageFromBuffer</a> <a href="#fn-imagefromcanvas">ImageFromCanvas</a> <a href="#fn-imagefromimage">ImageFromImage</a> <a href="#fn-iscolordisplay">IsColorDisplay</a> <a href="#fn-loadimage">LoadImage</a> <a href="#fn-plot">Plot</a> <a href="#fn-repaint">Repaint</a> <a href="#fn-setclip">SetClip</a> <a href="#fn-setcolor">SetColor</a> <a href="#fn-setdefaultfont">SetDefaultFont</a> <a href="#fn-setfont">SetFont</a></dd>
+  <dt><a href="#cat-keypadaccess">Keypad</a></dt>
+  <dd><a href="#fn-getkeyclicked">GetKeyClicked</a> <a href="#fn-getkeypressed">GetKeyPressed</a> <a href="#fn-keytoaction">KeyToAction</a></dd>
+  <dt><a href="#cat-dateandtime">Date and time</a></dt>
+  <dd><a href="#fn-delay">Delay</a> <a href="#fn-getcurrenttime">GetCurrentTime</a> <a href="#fn-getday">GetDay</a> <a href="#fn-gethour">GetHour</a> <a href="#fn-getminute">GetMinute</a> <a href="#fn-getmonth">GetMonth</a> <a href="#fn-getrelativetimems">GetRelativeTimeMs</a> <a href="#fn-getsecond">GetSecond</a> <a href="#fn-getweekday">GetWeekDay</a> <a href="#fn-getyear">GetYear</a> <a href="#fn-getyearday">GetYearDay</a></dd>
+  <dt><a href="#cat-math">Math</a></dt>
+  <dd><a href="#fn-abs">Abs</a> <a href="#fn-acos">Acos</a> <a href="#fn-asin">Asin</a> <a href="#fn-atan">Atan</a> <a href="#fn-atan2">Atan2</a> <a href="#fn-cos">Cos</a> <a href="#fn-exp">Exp</a> <a href="#fn-frac">Frac</a> <a href="#fn-log">Log</a> <a href="#fn-log10">Log10</a> <a href="#fn-pow">Pow</a> <a href="#fn-rabs">Rabs</a> <a href="#fn-sin">Sin</a> <a href="#fn-sqr">Sqr</a> <a href="#fn-sqrt">Sqrt</a> <a href="#fn-tan">Tan</a> <a href="#fn-todegrees">ToDegrees</a> <a href="#fn-toradians">ToRadians</a> <a href="#fn-trunc">Trunc</a></dd>
+  <dt><a href="#cat-string">Strings</a></dt>
+  <dd><a href="#fn-copy">Copy</a> <a href="#fn-getchar">GetChar</a> <a href="#fn-integertostring">IntegerToString</a> <a href="#fn-length">Length</a> <a href="#fn-locase">Locase</a> <a href="#fn-pos">Pos</a> <a href="#fn-setchar">SetChar</a> <a href="#fn-stringtointeger">StringToInteger</a> <a href="#fn-stringtoreal">StringToReal</a> <a href="#fn-upcase">Upcase</a></dd>
+  <dt><a href="#cat-forms">Forms and commands</a></dt>
+  <dd><a href="#fn-addcommand">AddCommand</a> <a href="#fn-choiceappendstring">ChoiceAppendString</a> <a href="#fn-choiceappendstringimage">ChoiceAppendStringImage</a> <a href="#fn-choicegetselectedindex">ChoiceGetSelectedIndex</a> <a href="#fn-choiceisselected">ChoiceIsSelected</a> <a href="#fn-clearform">ClearForm</a> <a href="#fn-createcommand">CreateCommand</a> <a href="#fn-emptycommand">EmptyCommand</a> <a href="#fn-formaddchoice">FormAddChoice</a> <a href="#fn-formadddatefield">FormAddDateField</a> <a href="#fn-formaddgauge">FormAddGauge</a> <a href="#fn-formaddimage">FormAddImage</a> <a href="#fn-formaddspace">FormAddSpace</a> <a href="#fn-formaddstring">FormAddString</a> <a href="#fn-formaddtextfield">FormAddTextField</a> <a href="#fn-formgetdate">FormGetDate</a> <a href="#fn-formgettext">FormGetText</a> <a href="#fn-formgetvalue">FormGetValue</a> <a href="#fn-formremove">FormRemove</a> <a href="#fn-formsetdate">FormSetDate</a> <a href="#fn-formsettext">FormSetText</a> <a href="#fn-formsetvalue">FormSetValue</a> <a href="#fn-getclickedcommand">GetClickedCommand</a> <a href="#fn-getformtitle">GetFormTitle</a> <a href="#fn-gettextboxstring">GetTextBoxString</a> <a href="#fn-menuappendstring">MenuAppendString</a> <a href="#fn-menuappendstringimage">MenuAppendStringImage</a> <a href="#fn-menugetselectedindex">MenuGetSelectedIndex</a> <a href="#fn-menuisselected">MenuIsSelected</a> <a href="#fn-playalertsound">PlayAlertSound</a> <a href="#fn-removecommand">RemoveCommand</a> <a href="#fn-removeformtitle">RemoveFormTitle</a> <a href="#fn-setformtitle">SetFormTitle</a> <a href="#fn-setticker">SetTicker</a> <a href="#fn-showalert">ShowAlert</a> <a href="#fn-showcanvas">ShowCanvas</a> <a href="#fn-showform">ShowForm</a> <a href="#fn-showmenu">ShowMenu</a> <a href="#fn-showtextbox">ShowTextBox</a></dd>
+  <dt><a href="#cat-recordstore">Record stores</a></dt>
+  <dd><a href="#fn-addrecordstoreentry">AddRecordStoreEntry</a> <a href="#fn-closerecordstore">CloseRecordStore</a> <a href="#fn-closersenumeration" class="off">CloseRSEnumeration</a> <a href="#fn-deleterecordstore">DeleteRecordStore</a> <a href="#fn-deleterecordstoreentry">DeleteRecordStoreEntry</a> <a href="#fn-enumeraterecords" class="off">EnumerateRecords</a> <a href="#fn-getrecordstorenextid">GetRecordStoreNextId</a> <a href="#fn-getrecordstoresize">GetRecordStoreSize</a> <a href="#fn-modifyrecordstoreentry">ModifyRecordStoreEntry</a> <a href="#fn-nextrecord" class="off">NextRecord</a> <a href="#fn-openrecordstore">OpenRecordStore</a> <a href="#fn-readrecordstoreentry">ReadRecordStoreEntry</a> <a href="#fn-updaterseumeration" class="off">UpdateRSEnumeration</a></dd>
+  <dt><a href="#cat-httpconnectivity">HTTP</a></dt>
+  <dd><a href="#fn-addhttpbody">AddHttpBody</a> <a href="#fn-addhttpheader">AddHttpHeader</a> <a href="#fn-closehttp">CloseHttp</a> <a href="#fn-gethttpheader">GetHttpHeader</a> <a href="#fn-gethttpresponse">GetHttpResponse</a> <a href="#fn-ishttpopen">IsHttpOpen</a> <a href="#fn-openhttp">OpenHttp</a> <a href="#fn-sendhttpmessage">SendHttpMessage</a> <a href="#fn-sethttpmethod">SetHttpMethod</a></dd>
+  <dt><a href="#cat-smsmessaging">SMS</a></dt>
+  <dd><a href="#fn-smsissending">SmsIsSending</a> <a href="#fn-smsstartsend">SmsStartSend</a> <a href="#fn-smswassuccessfull">SmsWasSuccessfull</a></dd>
+  <dt><a href="#cat-soundandmusic">Sound</a></dt>
+  <dd><a href="#fn-getplayerduration">GetPlayerDuration</a> <a href="#fn-openplayer">OpenPlayer</a> <a href="#fn-playtone">PlayTone</a> <a href="#fn-setplayercount">SetPlayerCount</a> <a href="#fn-startplayer">StartPlayer</a> <a href="#fn-stopplayer">StopPlayer</a></dd>
+  <dt><a href="#cat-resourcefiles">Resource files</a></dt>
+  <dd><a href="#fn-closeresource">CloseResource</a> <a href="#fn-openresource">OpenResource</a> <a href="#fn-readbyte">ReadByte</a> <a href="#fn-readline">ReadLine</a> <a href="#fn-resourceavailable">ResourceAvailable</a></dd>
+  <dt><a href="#cat-misc">Other</a></dt>
+  <dd><a href="#fn-assert">Assert</a> <a href="#fn-chr">Chr</a> <a href="#fn-debug">Debug</a> <a href="#fn-getproperty">GetProperty</a> <a href="#fn-halt">Halt</a> <a href="#fn-ismidletpaused">IsMidletPaused</a> <a href="#fn-odd">Odd</a> <a href="#fn-ord">Ord</a> <a href="#fn-random">Random</a> <a href="#fn-randomize">Randomize</a></dd>
+</dl>
+<section class="cat" id="cat-drawing">
+  <h3 class="cathead">Drawing</h3>
+  <div class="intro"><p>Everything is drawn into a buffer the size of the canvas, in the color set by <code>SetColor</code>, and <code>Repaint</code> shows it. The origin is the top left corner; x grows to the right and y down.</p></div>
+<article class="fn" id="fn-drawarc" data-name="drawarc">
+  <h4><a href="#fn-drawarc">DrawArc</a></h4>
+  <pre class="sig">procedure DrawArc(x, y, width, height, startAngle, arcAngle: integer);</pre>
+  <p>Draws the outline of an arc inside the rectangle at <code>x</code>, <code>y</code>. The arc begins at <code>startAngle</code> and runs <code>arcAngle</code> degrees counterclockwise. 0° points to three o'clock and 90° to twelve.</p>
+  <details><summary>Example</summary>
+<pre class="code">begin
+  DrawArc(0, 0, GetWidth, GetHeight, 0, 90);
+  Repaint;
+  Delay(1000);
+end.</pre></details>
+  <p class="see">See also <a href="#fn-fillellipse">FillEllipse</a>, <a href="#fn-drawellipse">DrawEllipse</a></p>
+</article>
+<article class="fn" id="fn-drawellipse" data-name="drawellipse">
+  <h4><a href="#fn-drawellipse">DrawEllipse</a></h4>
+  <pre class="sig">procedure DrawEllipse(x, y, width, height: integer);</pre>
+  <p>Draws the outline of the ellipse that fits the given rectangle.</p>
+  <details><summary>Example</summary>
+<pre class="code">begin
+  DrawEllipse(0, 0, GetWidth, GetHeight);
+  Repaint;
+  Delay(1000);
+end.</pre></details>
+  <p class="see">See also <a href="#fn-fillellipse">FillEllipse</a></p>
+</article>
+<article class="fn" id="fn-drawimage" data-name="drawimage">
+  <h4><a href="#fn-drawimage">DrawImage</a></h4>
+  <pre class="sig">procedure DrawImage(img: image; x, y: integer);</pre>
+  <p>Draws <code>img</code> with its top left corner at <code>x</code>, <code>y</code>.</p>
+  <details><summary>Example</summary>
+<pre class="code">begin
+  DrawImage(LoadImage(&#x27;/logo.png&#x27;), 0, 0);
+  Repaint;
+  Delay(1000);
+end.</pre></details>
+  <p class="see">See also <a href="#fn-loadimage">LoadImage</a>, <a href="#fn-getimagewidth">GetImageWidth</a></p>
+</article>
+<article class="fn" id="fn-drawline" data-name="drawline">
+  <h4><a href="#fn-drawline">DrawLine</a></h4>
+  <pre class="sig">procedure DrawLine(x1, y1, x2, y2: integer);</pre>
+  <p>Draws a line from <code>x1</code>, <code>y1</code> to <code>x2</code>, <code>y2</code>.</p>
+  <details><summary>Example</summary>
+<pre class="code">begin
+  DrawLine(10, 15, 25, 35);
+  Repaint;
+  Delay(1000);
+end.</pre></details>
+</article>
+<article class="fn" id="fn-drawrect" data-name="drawrect">
+  <h4><a href="#fn-drawrect">DrawRect</a></h4>
+  <pre class="sig">procedure DrawRect(x, y, width, height: integer);</pre>
+  <p>Draws the outline of a rectangle.</p>
+  <p class="see">See also <a href="#fn-fillrect">FillRect</a></p>
+</article>
+<article class="fn" id="fn-drawroundrect" data-name="drawroundrect">
+  <h4><a href="#fn-drawroundrect">DrawRoundRect</a></h4>
+  <pre class="sig">procedure DrawRoundRect(x, y, width, height, arcWidth, arcHeight: integer);</pre>
+  <p>Draws the outline of a rectangle with rounded corners. <code>arcWidth</code> and <code>arcHeight</code> are the size of the arc at each corner.</p>
+  <p class="see">See also <a href="#fn-fillroundrect">FillRoundRect</a></p>
+</article>
+<article class="fn" id="fn-drawtext" data-name="drawtext">
+  <h4><a href="#fn-drawtext">DrawText</a></h4>
+  <pre class="sig">procedure DrawText(text: string; x, y: integer);</pre>
+  <p>Draws <code>text</code> in the current font and color, with the top left corner of its box at <code>x</code>, <code>y</code>.</p>
+  <details><summary>Example</summary>
+<pre class="code">begin
+  SetColor(255, 0, 0);
+  DrawText(&#x27;Hello world&#x27;, 0, 0);
+  Repaint;
+  Delay(1000);
+end.</pre></details>
+  <p class="see">See also <a href="#fn-setfont">SetFont</a>, <a href="#fn-getstringwidth">GetStringWidth</a></p>
+</article>
+<article class="fn" id="fn-fillellipse" data-name="fillellipse">
+  <h4><a href="#fn-fillellipse">FillEllipse</a></h4>
+  <pre class="sig">procedure FillEllipse(x, y, width, height: integer);</pre>
+  <p>Fills the ellipse that fits the given rectangle.</p>
+  <p class="see">See also <a href="#fn-drawellipse">DrawEllipse</a></p>
+</article>
+<article class="fn" id="fn-fillrect" data-name="fillrect">
+  <h4><a href="#fn-fillrect">FillRect</a></h4>
+  <pre class="sig">procedure FillRect(x, y, width, height: integer);</pre>
+  <p>Fills a rectangle with the current color. <code>FillRect(0, 0, GetWidth, GetHeight)</code> clears the screen.</p>
+  <p class="see">See also <a href="#fn-drawrect">DrawRect</a></p>
+</article>
+<article class="fn" id="fn-fillroundrect" data-name="fillroundrect">
+  <h4><a href="#fn-fillroundrect">FillRoundRect</a></h4>
+  <pre class="sig">procedure FillRoundRect(x, y, width, height, arcWidth, arcHeight: integer);</pre>
+  <p>Fills a rectangle with rounded corners.</p>
+  <p class="see">See also <a href="#fn-drawroundrect">DrawRoundRect</a></p>
+</article>
+<article class="fn" id="fn-getcolorblue" data-name="getcolorblue">
+  <h4><a href="#fn-getcolorblue">GetColorBlue</a></h4>
+  <pre class="sig">function GetColorBlue: integer;</pre>
+  <p>The blue part of the current color, 0 to 255.</p>
+  <p class="see">See also <a href="#fn-setcolor">SetColor</a></p>
+</article>
+<article class="fn" id="fn-getcolorgreen" data-name="getcolorgreen">
+  <h4><a href="#fn-getcolorgreen">GetColorGreen</a></h4>
+  <pre class="sig">function GetColorGreen: integer;</pre>
+  <p>The green part of the current color, 0 to 255.</p>
+  <p class="see">See also <a href="#fn-setcolor">SetColor</a></p>
+</article>
+<article class="fn" id="fn-getcolorred" data-name="getcolorred">
+  <h4><a href="#fn-getcolorred">GetColorRed</a></h4>
+  <pre class="sig">function GetColorRed: integer;</pre>
+  <p>The red part of the current color, 0 to 255.</p>
+  <p class="see">See also <a href="#fn-setcolor">SetColor</a></p>
+</article>
+<article class="fn" id="fn-getcolorsnum" data-name="getcolorsnum">
+  <h4><a href="#fn-getcolorsnum">GetColorsNum</a></h4>
+  <pre class="sig">function GetColorsNum: integer;</pre>
+  <p>How many colors the display can show. On a black-and-white screen this is the number of gray levels.</p>
+  <p class="see">See also <a href="#fn-iscolordisplay">IsColorDisplay</a></p>
+</article>
+<article class="fn" id="fn-getheight" data-name="getheight">
+  <h4><a href="#fn-getheight">GetHeight</a></h4>
+  <pre class="sig">function GetHeight: integer;</pre>
+  <p>The height of the canvas in pixels.</p>
+  <p class="see">See also <a href="#fn-getwidth">GetWidth</a></p>
+</article>
+<article class="fn" id="fn-getimageheight" data-name="getimageheight">
+  <h4><a href="#fn-getimageheight">GetImageHeight</a></h4>
+  <pre class="sig">function GetImageHeight(img: image): integer;</pre>
+  <p>The height of <code>img</code> in pixels.</p>
+  <p class="see">See also <a href="#fn-getimagewidth">GetImageWidth</a></p>
+</article>
+<article class="fn" id="fn-getimagewidth" data-name="getimagewidth">
+  <h4><a href="#fn-getimagewidth">GetImageWidth</a></h4>
+  <pre class="sig">function GetImageWidth(img: image): integer;</pre>
+  <p>The width of <code>img</code> in pixels.</p>
+  <details><summary>Example</summary>
+<pre class="code">var logo: image;
+begin
+  logo := LoadImage(&#x27;/logo.png&#x27;);
+  { centered on the screen }
+  DrawImage(logo, (GetWidth - GetImageWidth(logo)) div 2,
+                  (GetHeight - GetImageHeight(logo)) div 2);
+  Repaint;
+  Delay(1000);
+end.</pre></details>
+  <p class="see">See also <a href="#fn-getimageheight">GetImageHeight</a></p>
+</article>
+<article class="fn" id="fn-getstringheight" data-name="getstringheight">
+  <h4><a href="#fn-getstringheight">GetStringHeight</a></h4>
+  <pre class="sig">function GetStringHeight(text: string): integer;</pre>
+  <p>The height of <code>text</code> in pixels, in the current font.</p>
+  <details><summary>Example</summary>
+<pre class="code">var text: string;
+begin
+  text := &#x27;Text to display&#x27;;
+  DrawText(text, 0, (GetHeight - GetStringHeight(text)) div 2);
+  Repaint;
+  Delay(1000);
+end.</pre></details>
+  <p class="see">See also <a href="#fn-getstringwidth">GetStringWidth</a>, <a href="#fn-setfont">SetFont</a></p>
+</article>
+<article class="fn" id="fn-getstringwidth" data-name="getstringwidth">
+  <h4><a href="#fn-getstringwidth">GetStringWidth</a></h4>
+  <pre class="sig">function GetStringWidth(text: string): integer;</pre>
+  <p>The width of <code>text</code> in pixels, in the current font.</p>
+  <details><summary>Example</summary>
+<pre class="code">var text: string;
+begin
+  text := &#x27;Text to display&#x27;;
+  DrawText(text, (GetWidth - GetStringWidth(text)) div 2, 0);
+  Repaint;
+  Delay(1000);
+end.</pre></details>
+  <p class="see">See also <a href="#fn-getstringheight">GetStringHeight</a>, <a href="#fn-setfont">SetFont</a></p>
+</article>
+<article class="fn" id="fn-getwidth" data-name="getwidth">
+  <h4><a href="#fn-getwidth">GetWidth</a></h4>
+  <pre class="sig">function GetWidth: integer;</pre>
+  <p>The width of the canvas in pixels.</p>
+  <p class="see">See also <a href="#fn-getheight">GetHeight</a></p>
+</article>
+<article class="fn" id="fn-imagefrombuffer" data-name="imagefrombuffer">
+  <h4><a href="#fn-imagefrombuffer">ImageFromBuffer</a></h4>
+  <pre class="sig">function ImageFromBuffer(buffer: string; length: integer): image;</pre>
+  <p>Decodes an image held in a string, for example one read from a resource or received over HTTP. Every phone takes PNG, some also JPEG. <code>length</code> is the number of bytes to decode. The original manual does not mention it.</p>
+  <p class="needs">Adds <code>S.class</code> to the JAR.</p>
+  <p class="see">See also <a href="#fn-gethttpresponse">GetHttpResponse</a>, <a href="#fn-readbyte">ReadByte</a></p>
+</article>
+<article class="fn" id="fn-imagefromcanvas" data-name="imagefromcanvas">
+  <h4><a href="#fn-imagefromcanvas">ImageFromCanvas</a></h4>
+  <pre class="sig">function ImageFromCanvas(x, y, width, height: integer): image;</pre>
+  <p>Copies a part of the canvas into a new image.</p>
+  <p class="needs">Adds <code>S.class</code> to the JAR.</p>
+  <p class="see">See also <a href="#fn-imagefromimage">ImageFromImage</a></p>
+</article>
+<article class="fn" id="fn-imagefromimage" data-name="imagefromimage">
+  <h4><a href="#fn-imagefromimage">ImageFromImage</a></h4>
+  <pre class="sig">function ImageFromImage(source: image; x, y, width, height: integer): image;</pre>
+  <p>Copies a part of <code>source</code> into a new image. Useful for cutting frames out of a sprite sheet.</p>
+  <p class="needs">Adds <code>S.class</code> to the JAR.</p>
+  <p class="see">See also <a href="#fn-imagefromcanvas">ImageFromCanvas</a></p>
+</article>
+<article class="fn" id="fn-iscolordisplay" data-name="iscolordisplay">
+  <h4><a href="#fn-iscolordisplay">IsColorDisplay</a></h4>
+  <pre class="sig">function IsColorDisplay: boolean;</pre>
+  <p><code>true</code> if the display shows colors, <code>false</code> if it only shows gray levels.</p>
+  <p class="see">See also <a href="#fn-getcolorsnum">GetColorsNum</a></p>
+</article>
+<article class="fn" id="fn-loadimage" data-name="loadimage">
+  <h4><a href="#fn-loadimage">LoadImage</a></h4>
+  <pre class="sig">function LoadImage(name: string): image;</pre>
+  <p>Loads a PNG from the JAR. The name starts with <code>/</code>: a file in the project's <code>res/</code> folder is <code>'/name.png'</code>. If there is no such file the MIDlet stops.</p>
+  <details><summary>Example</summary>
+<pre class="code">begin
+  DrawImage(LoadImage(&#x27;/icon.png&#x27;), 0, 0);
+  Repaint;
+  Delay(1000);
+end.</pre></details>
+  <p class="see">See also <a href="#fn-drawimage">DrawImage</a></p>
+</article>
+<article class="fn" id="fn-plot" data-name="plot">
+  <h4><a href="#fn-plot">Plot</a></h4>
+  <pre class="sig">procedure Plot(x, y: integer);</pre>
+  <p>Sets one pixel to the current color.</p>
+</article>
+<article class="fn" id="fn-repaint" data-name="repaint">
+  <h4><a href="#fn-repaint">Repaint</a></h4>
+  <pre class="sig">procedure Repaint;</pre>
+  <p>Copies the drawing buffer to the screen. Drawing routines only change the buffer, so nothing is visible until <code>Repaint</code>. A repaint is slow on a phone: draw the whole frame first and call it once per frame.</p>
+  <details><summary>Example</summary>
+<pre class="code">begin
+  DrawText(&#x27;Hello world&#x27;, 0, 0);
+  Repaint;
+  Delay(1000);
+end.</pre></details>
+</article>
+<article class="fn" id="fn-setclip" data-name="setclip">
+  <h4><a href="#fn-setclip">SetClip</a></h4>
+  <pre class="sig">procedure SetClip(x, y, width, height: integer);</pre>
+  <p>Limits drawing to a rectangle: anything drawn outside it is dropped. <code>SetClip(0, 0, GetWidth, GetHeight)</code> lifts the limit.</p>
+  <details><summary>Example</summary>
+<pre class="code">begin
+  SetColor(0, 0, 0);
+  FillEllipse(0, 0, GetWidth, GetHeight);
+  Repaint;
+  Delay(2000);
+
+  SetClip(10, 10, 15, 25);      { only this part of the next ellipse is drawn }
+  SetColor(255, 0, 0);
+  FillEllipse(0, 0, GetWidth, GetHeight);
+  Repaint;
+  Delay(2000);
+end.</pre></details>
+</article>
+<article class="fn" id="fn-setcolor" data-name="setcolor">
+  <h4><a href="#fn-setcolor">SetColor</a></h4>
+  <pre class="sig">procedure SetColor(red, green, blue: integer);</pre>
+  <p>Sets the color for everything drawn after it. Each part is 0 to 255: <code>0, 0, 0</code> is black, <code>255, 255, 255</code> white.</p>
+  <details><summary>Example</summary>
+<pre class="code">begin
+  SetColor(0, 0, 255);
+  DrawText(&#x27;Hello world&#x27;, 0, 0);
+  Repaint;
+  Delay(1000);
+end.</pre></details>
+  <p class="see">See also <a href="#fn-getcolorred">GetColorRed</a></p>
+</article>
+<article class="fn" id="fn-setdefaultfont" data-name="setdefaultfont">
+  <h4><a href="#fn-setdefaultfont">SetDefaultFont</a></h4>
+  <pre class="sig">procedure SetDefaultFont;</pre>
+  <p>Goes back to the phone's default font.</p>
+  <p class="see">See also <a href="#fn-setfont">SetFont</a></p>
+</article>
+<article class="fn" id="fn-setfont" data-name="setfont">
+  <h4><a href="#fn-setfont">SetFont</a></h4>
+  <pre class="sig">procedure SetFont(face, style, size: integer);</pre>
+  <p>Sets the font for <code>DrawText</code>. The phone picks the closest font it has, and a phone with a single font ignores the call.</p><ul><li><code>face</code>: <code>FONT_FACE_SYSTEM</code>, <code>FONT_FACE_MONOSPACE</code> or <code>FONT_FACE_PROPORTIONAL</code></li><li><code>style</code>: <code>FONT_STYLE_PLAIN</code>, or any of <code>FONT_STYLE_BOLD</code>, <code>FONT_STYLE_ITALIC</code> and <code>FONT_STYLE_UNDERLINED</code> joined with <code>or</code></li><li><code>size</code>: <code>FONT_SIZE_SMALL</code>, <code>FONT_SIZE_MEDIUM</code> or <code>FONT_SIZE_LARGE</code></li></ul>
+  <details><summary>Example</summary>
+<pre class="code">begin
+  SetFont(FONT_FACE_SYSTEM, FONT_STYLE_BOLD or FONT_STYLE_UNDERLINED, FONT_SIZE_LARGE);
+  DrawText(&#x27;Hello world&#x27;, 0, 0);
+  Repaint;
+  Delay(1000);
+end.</pre></details>
+  <p class="see">See also <a href="#fn-setdefaultfont">SetDefaultFont</a>, <a href="#fn-getstringwidth">GetStringWidth</a></p>
+</article>
+</section>
+<section class="cat" id="cat-keypadaccess">
+  <h3 class="cathead">Keypad</h3>
+  <div class="intro"><p>Key codes for the number keys are the same on every phone. For the arrows and fire, go through <code>KeyToAction</code>; the raw codes are in <a href="#keycodes">key scan codes</a>.</p></div>
+<article class="fn" id="fn-getkeyclicked" data-name="getkeyclicked">
+  <h4><a href="#fn-getkeyclicked">GetKeyClicked</a></h4>
+  <pre class="sig">function GetKeyClicked: integer;</pre>
+  <p>The code of the last key pressed since the previous call, or <code>KE_NONE</code>. Reading it clears it, so a key press is reported once. The number keys, <code>*</code> and <code>#</code> have constants (<code>KE_KEY0</code> to <code>KE_KEY9</code>, <code>KE_STAR</code>, <code>KE_POUND</code>); for the arrows and fire, use <code>KeyToAction</code>.</p>
+  <details><summary>Example</summary>
+<pre class="code">begin
+  repeat
+    Delay(100);
+  until GetKeyClicked = KE_STAR;
+end.</pre></details>
+  <p class="see">See also <a href="#fn-getkeypressed">GetKeyPressed</a>, <a href="#fn-keytoaction">KeyToAction</a>, <a href="#keycodes">Key scan codes</a></p>
+</article>
+<article class="fn" id="fn-getkeypressed" data-name="getkeypressed">
+  <h4><a href="#fn-getkeypressed">GetKeyPressed</a></h4>
+  <pre class="sig">function GetKeyPressed: integer;</pre>
+  <p>The code of the key held down right now, or <code>KE_NONE</code>. Use it for movement that lasts as long as the key is held, and <code>GetKeyClicked</code> for single presses.</p>
+  <details><summary>Example</summary>
+<pre class="code">begin
+  repeat
+    Delay(100);
+  until GetKeyPressed = KE_STAR;
+end.</pre></details>
+  <p class="see">See also <a href="#fn-getkeyclicked">GetKeyClicked</a>, <a href="#fn-keytoaction">KeyToAction</a></p>
+</article>
+<article class="fn" id="fn-keytoaction" data-name="keytoaction">
+  <h4><a href="#fn-keytoaction">KeyToAction</a></h4>
+  <pre class="sig">function KeyToAction(keyCode: integer): integer;</pre>
+  <p>Turns a key code into a game action, which is the same on every phone: <code>GA_UP</code>, <code>GA_DOWN</code>, <code>GA_LEFT</code>, <code>GA_RIGHT</code>, <code>GA_FIRE</code>, <code>GA_GAMEA</code> to <code>GA_GAMED</code>, or <code>GA_NONE</code>. The raw codes of the arrow keys differ from maker to maker; see <a href="#keycodes">key scan codes</a>.</p>
+  <details><summary>Example</summary>
+<pre class="code">begin
+  repeat
+    Delay(100);
+  until KeyToAction(GetKeyClicked) = GA_FIRE;
+end.</pre></details>
+  <p class="see">See also <a href="#fn-getkeyclicked">GetKeyClicked</a>, <a href="#constants">Predefined constants</a></p>
+</article>
+</section>
+<section class="cat" id="cat-dateandtime">
+  <h3 class="cathead">Date and time</h3>
+  <div class="intro"><p>A time is an integer: seconds since midnight, 1 January 1970. <code>GetCurrentTime</code> gives the current one, and the other functions take it apart.</p></div>
+<article class="fn" id="fn-delay" data-name="delay">
+  <h4><a href="#fn-delay">Delay</a></h4>
+  <pre class="sig">procedure Delay(ms: integer);</pre>
+  <p>Waits <code>ms</code> milliseconds. A game loop calls it once per frame so that the phone has time for other work.</p>
+  <details><summary>Example</summary>
+<pre class="code">begin
+  DrawText(&#x27;Hello world&#x27;, 0, 0);
+  Repaint;
+  Delay(2000);
+end.</pre></details>
+</article>
+<article class="fn" id="fn-getcurrenttime" data-name="getcurrenttime">
+  <h4><a href="#fn-getcurrenttime">GetCurrentTime</a></h4>
+  <pre class="sig">function GetCurrentTime: integer;</pre>
+  <p>The current time as seconds since midnight, 1 January 1970. The other date functions take this number.</p>
+  <details><summary>Example</summary>
+<pre class="code">var time: integer;
+begin
+  time := GetCurrentTime;
+  DrawText(&#x27;It is &#x27; + GetHour(time) + &#x27;:&#x27; + GetMinute(time) + &#x27;:&#x27; + GetSecond(time), 0, 0);
+  Repaint;
+  Delay(1000);
+end.</pre></details>
+  <p class="see">See also <a href="#fn-gethour">GetHour</a>, <a href="#fn-getday">GetDay</a></p>
+</article>
+<article class="fn" id="fn-getday" data-name="getday">
+  <h4><a href="#fn-getday">GetDay</a></h4>
+  <pre class="sig">function GetDay(time: integer): integer;</pre>
+  <p>The day of the month of <code>time</code>, 1 to 31.</p>
+  <p class="see">See also <a href="#fn-getcurrenttime">GetCurrentTime</a></p>
+</article>
+<article class="fn" id="fn-gethour" data-name="gethour">
+  <h4><a href="#fn-gethour">GetHour</a></h4>
+  <pre class="sig">function GetHour(time: integer): integer;</pre>
+  <p>The hour of <code>time</code>, 0 to 23.</p>
+  <p class="see">See also <a href="#fn-getcurrenttime">GetCurrentTime</a></p>
+</article>
+<article class="fn" id="fn-getminute" data-name="getminute">
+  <h4><a href="#fn-getminute">GetMinute</a></h4>
+  <pre class="sig">function GetMinute(time: integer): integer;</pre>
+  <p>The minute of <code>time</code>, 0 to 59.</p>
+  <p class="see">See also <a href="#fn-getcurrenttime">GetCurrentTime</a></p>
+</article>
+<article class="fn" id="fn-getmonth" data-name="getmonth">
+  <h4><a href="#fn-getmonth">GetMonth</a></h4>
+  <pre class="sig">function GetMonth(time: integer): integer;</pre>
+  <p>The month of <code>time</code>, 1 to 12.</p>
+  <p class="see">See also <a href="#fn-getcurrenttime">GetCurrentTime</a></p>
+</article>
+<article class="fn" id="fn-getrelativetimems" data-name="getrelativetimems">
+  <h4><a href="#fn-getrelativetimems">GetRelativeTimeMs</a></h4>
+  <pre class="sig">function GetRelativeTimeMs: integer;</pre>
+  <p>The system clock in milliseconds, cut to a 32-bit integer: good for timing, not for telling the date. It can be negative, and about every 50 days it jumps from the largest integer to the smallest. The difference of two readings, <code>now - last</code>, stays right across that jump.</p>
+  <details><summary>Example</summary>
+<pre class="code">  { move the block down once a second, sideways at every key press }
+  last := GetRelativeTimeMs;
+  repeat
+    key := KeyToAction(GetKeyClicked);
+    if key = GA_LEFT then moveLeft;
+    if key = GA_RIGHT then moveRight;
+    now := GetRelativeTimeMs;
+    if now - last &gt; 1000 then
+    begin
+      last := now;
+      moveDown;
+    end;
+    Delay(20);
+  until gameOver;</pre></details>
+  <p class="see">See also <a href="#fn-delay">Delay</a></p>
+</article>
+<article class="fn" id="fn-getsecond" data-name="getsecond">
+  <h4><a href="#fn-getsecond">GetSecond</a></h4>
+  <pre class="sig">function GetSecond(time: integer): integer;</pre>
+  <p>The second of <code>time</code>, 0 to 59.</p>
+  <p class="see">See also <a href="#fn-getcurrenttime">GetCurrentTime</a></p>
+</article>
+<article class="fn" id="fn-getweekday" data-name="getweekday">
+  <h4><a href="#fn-getweekday">GetWeekDay</a></h4>
+  <pre class="sig">function GetWeekDay(time: integer): integer;</pre>
+  <p>The day of the week of <code>time</code>: 1 is Sunday, 2 Monday, and 7 Saturday.</p>
+  <p class="see">See also <a href="#fn-getcurrenttime">GetCurrentTime</a></p>
+</article>
+<article class="fn" id="fn-getyear" data-name="getyear">
+  <h4><a href="#fn-getyear">GetYear</a></h4>
+  <pre class="sig">function GetYear(time: integer): integer;</pre>
+  <p>The year of <code>time</code>.</p>
+  <p class="see">See also <a href="#fn-getcurrenttime">GetCurrentTime</a></p>
+</article>
+<article class="fn" id="fn-getyearday" data-name="getyearday">
+  <h4><a href="#fn-getyearday">GetYearDay</a></h4>
+  <pre class="sig">function GetYearDay(time: integer): integer;</pre>
+  <p>The day of the year of <code>time</code>, 1 to 366.</p>
+  <p class="see">See also <a href="#fn-getcurrenttime">GetCurrentTime</a></p>
+</article>
+</section>
+<section class="cat" id="cat-math">
+  <h3 class="cathead">Math</h3>
+  <div class="intro"><p>Angles are in radians. Apart from <code>Abs</code> and <code>Sqr</code>, these work on <a href="#reals">reals</a>.</p></div>
+<article class="fn" id="fn-abs" data-name="abs">
+  <h4><a href="#fn-abs">Abs</a></h4>
+  <pre class="sig">function Abs(n: integer): integer;</pre>
+  <p>The absolute value of an integer.</p>
+  <p class="see">See also <a href="#fn-rabs">Rabs</a></p>
+</article>
+<article class="fn" id="fn-acos" data-name="acos">
+  <h4><a href="#fn-acos">Acos</a></h4>
+  <pre class="sig">function Acos(x: real): real;</pre>
+  <p>The arc cosine of <code>x</code>, in radians, 0 to π.</p>
+  <p class="needs">Adds <code>F.class</code> to the JAR, or <code>Real.class</code> with <code>-m2</code>.</p>
+</article>
+<article class="fn" id="fn-asin" data-name="asin">
+  <h4><a href="#fn-asin">Asin</a></h4>
+  <pre class="sig">function Asin(x: real): real;</pre>
+  <p>The arc sine of <code>x</code>, in radians, −π/2 to π/2.</p>
+  <p class="needs">Adds <code>F.class</code> to the JAR, or <code>Real.class</code> with <code>-m2</code>.</p>
+</article>
+<article class="fn" id="fn-atan" data-name="atan">
+  <h4><a href="#fn-atan">Atan</a></h4>
+  <pre class="sig">function Atan(x: real): real;</pre>
+  <p>The arc tangent of <code>x</code>, in radians, −π/2 to π/2.</p>
+  <p class="needs">Adds <code>F.class</code> to the JAR, or <code>Real.class</code> with <code>-m2</code>.</p>
+  <p class="see">See also <a href="#fn-atan2">Atan2</a></p>
+</article>
+<article class="fn" id="fn-atan2" data-name="atan2">
+  <h4><a href="#fn-atan2">Atan2</a></h4>
+  <pre class="sig">function Atan2(y, x: real): real;</pre>
+  <p>The angle of the point <code>x</code>, <code>y</code> seen from the origin, in radians, −π to π. Unlike <code>Atan(y / x)</code> it knows which quarter the point is in and accepts <code>x = 0</code>.</p>
+  <p class="needs">Adds <code>F.class</code> to the JAR, or <code>Real.class</code> with <code>-m2</code>.</p>
+  <p class="see">See also <a href="#fn-atan">Atan</a></p>
+</article>
+<article class="fn" id="fn-cos" data-name="cos">
+  <h4><a href="#fn-cos">Cos</a></h4>
+  <pre class="sig">function Cos(x: real): real;</pre>
+  <p>The cosine of an angle in radians.</p>
+  <p class="needs">Adds <code>F.class</code> to the JAR, or <code>Real.class</code> with <code>-m2</code>.</p>
+  <p class="see">See also <a href="#fn-toradians">ToRadians</a></p>
+</article>
+<article class="fn" id="fn-exp" data-name="exp">
+  <h4><a href="#fn-exp">Exp</a></h4>
+  <pre class="sig">function Exp(x: real): real;</pre>
+  <p><i>e</i> raised to the power <code>x</code>.</p>
+  <p class="needs">Adds <code>F.class</code> to the JAR, or <code>Real.class</code> with <code>-m2</code>.</p>
+  <p class="see">See also <a href="#fn-log">Log</a></p>
+</article>
+<article class="fn" id="fn-frac" data-name="frac">
+  <h4><a href="#fn-frac">Frac</a></h4>
+  <pre class="sig">function Frac(x: real): real;</pre>
+  <p>The fractional part of <code>x</code>: <code>Frac(1.25)</code> is 0.25.</p>
+  <p class="needs">Adds <code>F.class</code> to the JAR, or <code>Real.class</code> with <code>-m2</code>.</p>
+  <p class="see">See also <a href="#fn-trunc">Trunc</a></p>
+</article>
+<article class="fn" id="fn-log" data-name="log">
+  <h4><a href="#fn-log">Log</a></h4>
+  <pre class="sig">function Log(x: real): real;</pre>
+  <p>The natural logarithm of <code>x</code>.</p>
+  <p class="needs">Adds <code>F.class</code> to the JAR, or <code>Real.class</code> with <code>-m2</code>.</p>
+  <p class="see">See also <a href="#fn-log10">Log10</a>, <a href="#fn-exp">Exp</a></p>
+</article>
+<article class="fn" id="fn-log10" data-name="log10">
+  <h4><a href="#fn-log10">Log10</a></h4>
+  <pre class="sig">function Log10(x: real): real;</pre>
+  <p>The base 10 logarithm of <code>x</code>.</p>
+  <p class="needs">Adds <code>F.class</code> to the JAR, or <code>Real.class</code> with <code>-m2</code>.</p>
+  <p class="see">See also <a href="#fn-log">Log</a></p>
+</article>
+<article class="fn" id="fn-pow" data-name="pow">
+  <h4><a href="#fn-pow">Pow</a></h4>
+  <pre class="sig">function Pow(a, b: real): real;</pre>
+  <p><code>a</code> raised to the power <code>b</code>.</p>
+  <p class="needs">Adds <code>F.class</code> to the JAR, or <code>Real.class</code> with <code>-m2</code>.</p>
+</article>
+<article class="fn" id="fn-rabs" data-name="rabs">
+  <h4><a href="#fn-rabs">Rabs</a></h4>
+  <pre class="sig">function Rabs(x: real): real;</pre>
+  <p>The absolute value of a real.</p>
+  <p class="needs">Adds <code>F.class</code> to the JAR, or <code>Real.class</code> with <code>-m2</code>.</p>
+  <p class="see">See also <a href="#fn-abs">Abs</a></p>
+</article>
+<article class="fn" id="fn-sin" data-name="sin">
+  <h4><a href="#fn-sin">Sin</a></h4>
+  <pre class="sig">function Sin(x: real): real;</pre>
+  <p>The sine of an angle in radians.</p>
+  <p class="needs">Adds <code>F.class</code> to the JAR, or <code>Real.class</code> with <code>-m2</code>.</p>
+  <p class="see">See also <a href="#fn-toradians">ToRadians</a></p>
+</article>
+<article class="fn" id="fn-sqr" data-name="sqr">
+  <h4><a href="#fn-sqr">Sqr</a></h4>
+  <pre class="sig">function Sqr(n: integer): integer;</pre>
+  <p>The square of an integer, <code>n * n</code>.</p>
+  <p class="see">See also <a href="#fn-sqrt">Sqrt</a></p>
+</article>
+<article class="fn" id="fn-sqrt" data-name="sqrt">
+  <h4><a href="#fn-sqrt">Sqrt</a></h4>
+  <pre class="sig">function Sqrt(x: real): real;</pre>
+  <p>The square root of <code>x</code>.</p>
+  <p class="needs">Adds <code>F.class</code> to the JAR, or <code>Real.class</code> with <code>-m2</code>.</p>
+  <p class="see">See also <a href="#fn-sqr">Sqr</a></p>
+</article>
+<article class="fn" id="fn-tan" data-name="tan">
+  <h4><a href="#fn-tan">Tan</a></h4>
+  <pre class="sig">function Tan(x: real): real;</pre>
+  <p>The tangent of an angle in radians.</p>
+  <p class="needs">Adds <code>F.class</code> to the JAR, or <code>Real.class</code> with <code>-m2</code>.</p>
+</article>
+<article class="fn" id="fn-todegrees" data-name="todegrees">
+  <h4><a href="#fn-todegrees">ToDegrees</a></h4>
+  <pre class="sig">function ToDegrees(x: real): real;</pre>
+  <p>Converts an angle from radians to degrees.</p>
+  <p class="needs">Adds <code>F.class</code> to the JAR, or <code>Real.class</code> with <code>-m2</code>.</p>
+  <p class="see">See also <a href="#fn-toradians">ToRadians</a></p>
+</article>
+<article class="fn" id="fn-toradians" data-name="toradians">
+  <h4><a href="#fn-toradians">ToRadians</a></h4>
+  <pre class="sig">function ToRadians(x: real): real;</pre>
+  <p>Converts an angle from degrees to radians.</p>
+  <p class="needs">Adds <code>F.class</code> to the JAR, or <code>Real.class</code> with <code>-m2</code>.</p>
+  <p class="see">See also <a href="#fn-todegrees">ToDegrees</a></p>
+</article>
+<article class="fn" id="fn-trunc" data-name="trunc">
+  <h4><a href="#fn-trunc">Trunc</a></h4>
+  <pre class="sig">function Trunc(x: real): integer;</pre>
+  <p>The integer part of <code>x</code>, with the fraction dropped. There is no <code>Round</code>; <code>Trunc(x + 0.5)</code> rounds a positive number.</p>
+  <p class="needs">Adds <code>F.class</code> to the JAR, or <code>Real.class</code> with <code>-m2</code>.</p>
+  <p class="see">See also <a href="#fn-frac">Frac</a></p>
+</article>
+</section>
+<section class="cat" id="cat-string">
+  <h3 class="cathead">Strings</h3>
+  <div class="intro"><p>Strings are indexed from 0.</p></div>
+<article class="fn" id="fn-copy" data-name="copy">
+  <h4><a href="#fn-copy">Copy</a></h4>
+  <pre class="sig">function Copy(s: string; first, last: integer): string;</pre>
+  <p>The part of <code>s</code> from index <code>first</code> up to, but not including, <code>last</code>. Indexes start at 0, so <code>Copy('MIDletPascal', 2, 5)</code> is <code>'Dle'</code>. This is not the <code>Copy(s, index, count)</code> of other Pascals.</p>
+  <p class="see">See also <a href="#fn-pos">Pos</a>, <a href="#fn-length">Length</a></p>
+</article>
+<article class="fn" id="fn-getchar" data-name="getchar">
+  <h4><a href="#fn-getchar">GetChar</a></h4>
+  <pre class="sig">function GetChar(s: string; index: integer): char;</pre>
+  <p>The character at <code>index</code>, counting from 0. Past the end of the string it returns <code>#0</code>.</p>
+  <p class="needs">Adds <code>S.class</code> to the JAR.</p>
+  <p class="see">See also <a href="#fn-setchar">SetChar</a></p>
+</article>
+<article class="fn" id="fn-integertostring" data-name="integertostring">
+  <h4><a href="#fn-integertostring">IntegerToString</a></h4>
+  <pre class="sig">function IntegerToString(n: integer): string;</pre>
+  <p>The decimal text of <code>n</code>. Adding an integer to a string does the same.</p>
+  <details><summary>Example</summary>
+<pre class="code">var s: string;
+begin
+  s := IntegerToString(15);
+  s := &#x27;&#x27; + 15;      { the same }
+end.</pre></details>
+  <p class="see">See also <a href="#fn-stringtointeger">StringToInteger</a></p>
+</article>
+<article class="fn" id="fn-length" data-name="length">
+  <h4><a href="#fn-length">Length</a></h4>
+  <pre class="sig">function Length(s: string): integer;</pre>
+  <p>The number of characters in <code>s</code>. The last one is at index <code>Length(s) - 1</code>.</p>
+</article>
+<article class="fn" id="fn-locase" data-name="locase">
+  <h4><a href="#fn-locase">Locase</a></h4>
+  <pre class="sig">function Locase(s: string): string;</pre>
+  <p><code>s</code> with every letter in lowercase.</p>
+  <p class="see">See also <a href="#fn-upcase">Upcase</a></p>
+</article>
+<article class="fn" id="fn-pos" data-name="pos">
+  <h4><a href="#fn-pos">Pos</a></h4>
+  <pre class="sig">function Pos(s, part: string): integer;</pre>
+  <p>The index of the first <code>part</code> inside <code>s</code>, or −1 if it is not there. Case matters.</p>
+  <p class="see">See also <a href="#fn-copy">Copy</a></p>
+</article>
+<article class="fn" id="fn-setchar" data-name="setchar">
+  <h4><a href="#fn-setchar">SetChar</a></h4>
+  <pre class="sig">function SetChar(s: string; c: char; index: integer): string;</pre>
+  <p>A copy of <code>s</code> with the character at <code>index</code> replaced by <code>c</code>. Past the end of the string it returns <code>s</code> unchanged. Strings cannot be changed in place, so assign the result: <code>s := SetChar(s, 'x', 0)</code>.</p>
+  <p class="needs">Adds <code>S.class</code> to the JAR.</p>
+  <p class="see">See also <a href="#fn-getchar">GetChar</a></p>
+</article>
+<article class="fn" id="fn-stringtointeger" data-name="stringtointeger">
+  <h4><a href="#fn-stringtointeger">StringToInteger</a></h4>
+  <pre class="sig">function StringToInteger(s: string): integer;</pre>
+  <p>Reads a decimal integer: digits, with an optional <code>+</code> or <code>-</code> in front. Anything else gives 0.</p>
+  <p class="needs">Adds <code>S.class</code> to the JAR.</p>
+  <p class="see">See also <a href="#fn-integertostring">IntegerToString</a></p>
+</article>
+<article class="fn" id="fn-stringtoreal" data-name="stringtoreal">
+  <h4><a href="#fn-stringtoreal">StringToReal</a></h4>
+  <pre class="sig">function StringToReal(s: string; base: integer): real;</pre>
+  <p>Reads a real number written in the given base, usually 10.</p>
+  <p class="needs">Adds <code>F.class</code> to the JAR, or <code>Real.class</code> with <code>-m2</code>.</p>
+</article>
+<article class="fn" id="fn-upcase" data-name="upcase">
+  <h4><a href="#fn-upcase">Upcase</a></h4>
+  <pre class="sig">function Upcase(s: string): string;</pre>
+  <p><code>s</code> with every letter in uppercase.</p>
+  <p class="see">See also <a href="#fn-locase">Locase</a></p>
+</article>
+</section>
+<section class="cat" id="cat-forms">
+  <h3 class="cathead">Forms and commands</h3>
+  <div class="intro"><p>The screen shows one thing at a time: the canvas, the form, a menu, a text box or an alert. A MIDlet starts on the canvas. The form is a list of items, such as text, fields, gauges and choices, that the <code>FormAdd</code> functions fill and that are referred to by the id they return. Commands sit on the soft keys of any of these screens.</p></div>
+<article class="fn" id="fn-addcommand" data-name="addcommand">
+  <h4><a href="#fn-addcommand">AddCommand</a></h4>
+  <pre class="sig">procedure AddCommand(cmd: command);</pre>
+  <p>Puts a command on the soft keys or in the phone's menu, on the canvas or on a form. Some phones, Motorola among them, only show it after the next <code>Repaint</code>.</p>
+  <p class="see">See also <a href="#fn-createcommand">CreateCommand</a>, <a href="#fn-removecommand">RemoveCommand</a>, <a href="#fn-getclickedcommand">GetClickedCommand</a></p>
+</article>
+<article class="fn" id="fn-choiceappendstring" data-name="choiceappendstring">
+  <h4><a href="#fn-choiceappendstring">ChoiceAppendString</a></h4>
+  <pre class="sig">function ChoiceAppendString(choice: integer; text: string): integer;</pre>
+  <p>Adds an item to a choice group and returns the item's index within the group.</p>
+  <details><summary>Example</summary>
+<pre class="code">var city, newYork, losAngeles: integer;
+begin
+  ShowForm;
+  city := FormAddChoice(&#x27;Where do you live?&#x27;, CH_EXCLUSIVE);
+  newYork := ChoiceAppendString(city, &#x27;New York&#x27;);
+  losAngeles := ChoiceAppendString(city, &#x27;Los Angeles&#x27;);
+  Delay(5000);
+end.</pre></details>
+  <p class="see">See also <a href="#fn-formaddchoice">FormAddChoice</a>, <a href="#fn-choiceisselected">ChoiceIsSelected</a></p>
+</article>
+<article class="fn" id="fn-choiceappendstringimage" data-name="choiceappendstringimage">
+  <h4><a href="#fn-choiceappendstringimage">ChoiceAppendStringImage</a></h4>
+  <pre class="sig">function ChoiceAppendStringImage(choice: integer; text: string; img: image): integer;</pre>
+  <p>Adds an item with an image next to its text to a choice group and returns its index.</p>
+  <p class="see">See also <a href="#fn-choiceappendstring">ChoiceAppendString</a></p>
+</article>
+<article class="fn" id="fn-choicegetselectedindex" data-name="choicegetselectedindex">
+  <h4><a href="#fn-choicegetselectedindex">ChoiceGetSelectedIndex</a></h4>
+  <pre class="sig">function ChoiceGetSelectedIndex(choice: integer): integer;</pre>
+  <p>The index of the selected item, or −1 if none is. A <code>CH_MULTIPLE</code> group always answers −1; ask it item by item with <code>ChoiceIsSelected</code>.</p>
+  <p class="see">See also <a href="#fn-choiceisselected">ChoiceIsSelected</a></p>
+</article>
+<article class="fn" id="fn-choiceisselected" data-name="choiceisselected">
+  <h4><a href="#fn-choiceisselected">ChoiceIsSelected</a></h4>
+  <pre class="sig">function ChoiceIsSelected(choice, item: integer): boolean;</pre>
+  <p><code>true</code> if item <code>item</code> of the group is selected.</p>
+  <details><summary>Example</summary>
+<pre class="code">var city, newYork, losAngeles, shown: integer;
+begin
+  ShowForm;
+  city := FormAddChoice(&#x27;Where do you live?&#x27;, CH_EXCLUSIVE);
+  newYork := ChoiceAppendString(city, &#x27;New York&#x27;);
+  losAngeles := ChoiceAppendString(city, &#x27;Los Angeles&#x27;);
+  Delay(5000);
+  if ChoiceIsSelected(city, newYork) then
+    shown := FormAddString(&#x27;New York&#x27;)
+  else
+    shown := FormAddString(&#x27;Los Angeles&#x27;);
+  Delay(2000);
+end.</pre></details>
+  <p class="see">See also <a href="#fn-choicegetselectedindex">ChoiceGetSelectedIndex</a></p>
+</article>
+<article class="fn" id="fn-clearform" data-name="clearform">
+  <h4><a href="#fn-clearform">ClearForm</a></h4>
+  <pre class="sig">procedure ClearForm;</pre>
+  <p>Removes every item and every command from the form.</p>
+  <p class="needs">Adds <code>FS.class</code> to the JAR.</p>
+  <details><summary>Example</summary>
+<pre class="code">var greeting, name: integer;
+begin
+  greeting := FormAddString(&#x27;Hello world&#x27;);
+  name := FormAddTextField(&#x27;Enter your name&#x27;, &#x27;Mr. Smith&#x27;, 20, TF_ANY);
+  ShowForm;
+  Delay(2000);
+  ClearForm;
+  Delay(2000);
+end.</pre></details>
+  <p class="see">See also <a href="#fn-formremove">FormRemove</a></p>
+</article>
+<article class="fn" id="fn-createcommand" data-name="createcommand">
+  <h4><a href="#fn-createcommand">CreateCommand</a></h4>
+  <pre class="sig">function CreateCommand(label: string; commandType, priority: integer): command;</pre>
+  <p>Creates a command to put on the screen with <code>AddCommand</code>. Keep the label short. <code>commandType</code> tells the phone what the command means, so that it can put, say, a <code>CM_BACK</code> on the key where the phone keeps “back”: <code>CM_SCREEN</code>, <code>CM_BACK</code>, <code>CM_CANCEL</code>, <code>CM_OK</code>, <code>CM_HELP</code>, <code>CM_STOP</code>, <code>CM_EXIT</code> or <code>CM_ITEM</code>. A lower <code>priority</code> is more important.</p>
+  <details><summary>Example</summary>
+<pre class="code">var exitCmd, pauseCmd: command;
+begin
+  exitCmd := CreateCommand(&#x27;Exit&#x27;, CM_EXIT, 1);
+  pauseCmd := CreateCommand(&#x27;Pause&#x27;, CM_SCREEN, 1);
+  AddCommand(exitCmd);
+  AddCommand(pauseCmd);
+  repeat
+    Delay(100);
+  until GetClickedCommand = exitCmd;
+end.</pre></details>
+  <p class="see">See also <a href="#fn-addcommand">AddCommand</a>, <a href="#fn-getclickedcommand">GetClickedCommand</a></p>
+</article>
+<article class="fn" id="fn-emptycommand" data-name="emptycommand">
+  <h4><a href="#fn-emptycommand">EmptyCommand</a></h4>
+  <pre class="sig">function EmptyCommand: command;</pre>
+  <p>The value <code>GetClickedCommand</code> returns when nothing was chosen. It is only for comparing: a MIDlet that adds it to the screen crashes.</p>
+  <details><summary>Example</summary>
+<pre class="code">var ok, clicked: command;
+begin
+  ok := CreateCommand(&#x27;OK&#x27;, CM_OK, 1);
+  AddCommand(ok);
+  repeat
+    clicked := GetClickedCommand;
+    Delay(100);
+  until clicked &lt;&gt; EmptyCommand;
+end.</pre></details>
+  <p class="see">See also <a href="#fn-getclickedcommand">GetClickedCommand</a></p>
+</article>
+<article class="fn" id="fn-formaddchoice" data-name="formaddchoice">
+  <h4><a href="#fn-formaddchoice">FormAddChoice</a></h4>
+  <pre class="sig">function FormAddChoice(label: string; choiceType: integer): integer;</pre>
+  <p>Adds an empty choice group to the form and returns its id; fill it with <code>ChoiceAppendString</code>. With <code>CH_EXCLUSIVE</code> exactly one item is selected, with <code>CH_MULTIPLE</code> any number.</p>
+  <p class="needs">Adds <code>FS.class</code> to the JAR.</p>
+  <p class="see">See also <a href="#fn-choiceappendstring">ChoiceAppendString</a>, <a href="#fn-choiceisselected">ChoiceIsSelected</a></p>
+</article>
+<article class="fn" id="fn-formadddatefield" data-name="formadddatefield">
+  <h4><a href="#fn-formadddatefield">FormAddDateField</a></h4>
+  <pre class="sig">function FormAddDateField(label: string; fieldType: integer): integer;</pre>
+  <p>Adds a date field to the form and returns its id. <code>fieldType</code> is <code>DF_DATE</code>, <code>DF_TIME</code> or <code>DF_DATE_TIME</code>.</p>
+  <p class="needs">Adds <code>FS.class</code> to the JAR.</p>
+  <p class="see">See also <a href="#fn-formgetdate">FormGetDate</a>, <a href="#fn-formsetdate">FormSetDate</a></p>
+</article>
+<article class="fn" id="fn-formaddgauge" data-name="formaddgauge">
+  <h4><a href="#fn-formaddgauge">FormAddGauge</a></h4>
+  <pre class="sig">function FormAddGauge(label: string; interactive: boolean; maxValue, value: integer): integer;</pre>
+  <p>Adds a gauge, a bar from 0 to <code>maxValue</code>, and returns its id. If <code>interactive</code> is <code>false</code> it only shows progress and the user cannot move it.</p>
+  <p class="needs">Adds <code>FS.class</code> to the JAR.</p>
+  <details><summary>Example</summary>
+<pre class="code">var age: integer;
+begin
+  age := FormAddGauge(&#x27;Choose your age&#x27;, true, 100, 18);
+  ShowForm;
+  Delay(2000);
+end.</pre></details>
+  <p class="see">See also <a href="#fn-formgetvalue">FormGetValue</a>, <a href="#fn-formsetvalue">FormSetValue</a></p>
+</article>
+<article class="fn" id="fn-formaddimage" data-name="formaddimage">
+  <h4><a href="#fn-formaddimage">FormAddImage</a></h4>
+  <pre class="sig">function FormAddImage(img: image): integer;</pre>
+  <p>Adds an image to the form and returns its id.</p>
+  <details><summary>Example</summary>
+<pre class="code">var logo: integer;
+begin
+  logo := FormAddImage(LoadImage(&#x27;/logo.png&#x27;));
+  ShowForm;
+  Delay(2000);
+end.</pre></details>
+</article>
+<article class="fn" id="fn-formaddspace" data-name="formaddspace">
+  <h4><a href="#fn-formaddspace">FormAddSpace</a></h4>
+  <pre class="sig">function FormAddSpace: integer;</pre>
+  <p>Adds an empty gap that separates groups of items, and returns its id.</p>
+</article>
+<article class="fn" id="fn-formaddstring" data-name="formaddstring">
+  <h4><a href="#fn-formaddstring">FormAddString</a></h4>
+  <pre class="sig">function FormAddString(text: string): integer;</pre>
+  <p>Adds a line of text the user cannot edit, and returns its id.</p>
+  <details><summary>Example</summary>
+<pre class="code">var greeting: integer;
+begin
+  greeting := FormAddString(&#x27;Hello world&#x27;);
+  ShowForm;
+  Delay(2000);
+end.</pre></details>
+  <p class="see">See also <a href="#fn-formremove">FormRemove</a></p>
+</article>
+<article class="fn" id="fn-formaddtextfield" data-name="formaddtextfield">
+  <h4><a href="#fn-formaddtextfield">FormAddTextField</a></h4>
+  <pre class="sig">function FormAddTextField(prompt, text: string; maxSize, constraints: integer): integer;</pre>
+  <p>Adds a text field with <code>text</code> already in it and returns its id. <code>maxSize</code> is the most characters it takes. <code>constraints</code> limits what can be typed: <code>TF_ANY</code>, <code>TF_EMAIL</code>, <code>TF_NUMERIC</code>, <code>TF_PHONENUMBER</code> or <code>TF_URL</code>. Adding <code>TF_PASSWORD</code> to any of them hides the text as it is typed.</p>
+  <p class="needs">Adds <code>FS.class</code> to the JAR.</p>
+  <details><summary>Example</summary>
+<pre class="code">var name: integer;
+begin
+  name := FormAddTextField(&#x27;Enter your name&#x27;, &#x27;Mr. Smith&#x27;, 20, TF_ANY);
+  ShowForm;
+  Delay(5000);
+  ShowAlert(&#x27;Hello&#x27;, FormGetText(name), LoadImage(&#x27;/icon.png&#x27;), ALERT_INFO);
+  Delay(2000);
+end.</pre></details>
+  <p class="see">See also <a href="#fn-formgettext">FormGetText</a>, <a href="#fn-formsettext">FormSetText</a></p>
+</article>
+<article class="fn" id="fn-formgetdate" data-name="formgetdate">
+  <h4><a href="#fn-formgetdate">FormGetDate</a></h4>
+  <pre class="sig">function FormGetDate(field: integer): integer;</pre>
+  <p>The date and time in a date field, as seconds since 1 January 1970, the same number the date functions take.</p>
+  <p class="needs">Adds <code>FS.class</code> to the JAR.</p>
+  <p class="see">See also <a href="#fn-formadddatefield">FormAddDateField</a>, <a href="#fn-getcurrenttime">GetCurrentTime</a></p>
+</article>
+<article class="fn" id="fn-formgettext" data-name="formgettext">
+  <h4><a href="#fn-formgettext">FormGetText</a></h4>
+  <pre class="sig">function FormGetText(field: integer): string;</pre>
+  <p>The text in a text field, or an empty string if <code>field</code> is not a text field.</p>
+  <p class="needs">Adds <code>FS.class</code> to the JAR.</p>
+  <p class="see">See also <a href="#fn-formaddtextfield">FormAddTextField</a></p>
+</article>
+<article class="fn" id="fn-formgetvalue" data-name="formgetvalue">
+  <h4><a href="#fn-formgetvalue">FormGetValue</a></h4>
+  <pre class="sig">function FormGetValue(gauge: integer): integer;</pre>
+  <p>The value of a gauge, or −1 if <code>gauge</code> is not a gauge.</p>
+  <p class="needs">Adds <code>FS.class</code> to the JAR.</p>
+  <p class="see">See also <a href="#fn-formaddgauge">FormAddGauge</a></p>
+</article>
+<article class="fn" id="fn-formremove" data-name="formremove">
+  <h4><a href="#fn-formremove">FormRemove</a></h4>
+  <pre class="sig">procedure FormRemove(item: integer);</pre>
+  <p>Removes one item from the form.</p>
+  <details><summary>Example</summary>
+<pre class="code">var name: integer;
+begin
+  ShowForm;
+  name := FormAddTextField(&#x27;Name&#x27;, &#x27;&#x27;, 20, TF_ANY);
+  Delay(1000);
+  FormRemove(name);
+  Delay(1000);
+end.</pre></details>
+  <p class="see">See also <a href="#fn-clearform">ClearForm</a></p>
+</article>
+<article class="fn" id="fn-formsetdate" data-name="formsetdate">
+  <h4><a href="#fn-formsetdate">FormSetDate</a></h4>
+  <pre class="sig">procedure FormSetDate(field, time: integer);</pre>
+  <p>Puts a date and time into a date field. For a <code>DF_TIME</code> field, give a time on 1 January 1970, that is, seconds since midnight.</p>
+  <p class="needs">Adds <code>FS.class</code> to the JAR.</p>
+  <p class="see">See also <a href="#fn-formgetdate">FormGetDate</a></p>
+</article>
+<article class="fn" id="fn-formsettext" data-name="formsettext">
+  <h4><a href="#fn-formsettext">FormSetText</a></h4>
+  <pre class="sig">procedure FormSetText(field: integer; text: string);</pre>
+  <p>Replaces the text in a text field.</p>
+  <p class="needs">Adds <code>FS.class</code> to the JAR.</p>
+  <p class="see">See also <a href="#fn-formgettext">FormGetText</a></p>
+</article>
+<article class="fn" id="fn-formsetvalue" data-name="formsetvalue">
+  <h4><a href="#fn-formsetvalue">FormSetValue</a></h4>
+  <pre class="sig">procedure FormSetValue(gauge, value: integer);</pre>
+  <p>Sets the value of a gauge.</p>
+  <p class="needs">Adds <code>FS.class</code> to the JAR.</p>
+  <p class="see">See also <a href="#fn-formgetvalue">FormGetValue</a></p>
+</article>
+<article class="fn" id="fn-getclickedcommand" data-name="getclickedcommand">
+  <h4><a href="#fn-getclickedcommand">GetClickedCommand</a></h4>
+  <pre class="sig">function GetClickedCommand: command;</pre>
+  <p>The command chosen since the previous call, or <code>EmptyCommand</code> if there was none. Reading it clears it.</p>
+  <details><summary>Example</summary>
+<pre class="code">var exitCmd: command;
+begin
+  exitCmd := CreateCommand(&#x27;Exit&#x27;, CM_EXIT, 1);
+  AddCommand(exitCmd);
+  repeat
+    Delay(100);
+  until GetClickedCommand = exitCmd;
+end.</pre></details>
+  <p class="see">See also <a href="#fn-createcommand">CreateCommand</a>, <a href="#fn-emptycommand">EmptyCommand</a></p>
+</article>
+<article class="fn" id="fn-getformtitle" data-name="getformtitle">
+  <h4><a href="#fn-getformtitle">GetFormTitle</a></h4>
+  <pre class="sig">function GetFormTitle: string;</pre>
+  <p>The title of the form, or an empty string if it has none.</p>
+  <p class="needs">Adds <code>FS.class</code> to the JAR.</p>
+  <p class="see">See also <a href="#fn-setformtitle">SetFormTitle</a></p>
+</article>
+<article class="fn" id="fn-gettextboxstring" data-name="gettextboxstring">
+  <h4><a href="#fn-gettextboxstring">GetTextBoxString</a></h4>
+  <pre class="sig">function GetTextBoxString: string;</pre>
+  <p>The text in the text box opened by <code>ShowTextBox</code>.</p>
+  <details><summary>Example</summary>
+<pre class="code">var done: command;
+    quote: string;
+begin
+  ShowTextBox(&#x27;Your favorite quote&#x27;, &#x27;To be or not to be&#x27;, 200, TF_ANY);
+  done := CreateCommand(&#x27;Done&#x27;, CM_OK, 1);
+  AddCommand(done);
+  repeat
+    Delay(100);
+  until GetClickedCommand = done;
+  quote := GetTextBoxString;
+  ShowCanvas;
+  DrawText(quote, 0, 0);
+  Repaint;
+  Delay(2000);
+end.</pre></details>
+  <p class="see">See also <a href="#fn-showtextbox">ShowTextBox</a></p>
+</article>
+<article class="fn" id="fn-menuappendstring" data-name="menuappendstring">
+  <h4><a href="#fn-menuappendstring">MenuAppendString</a></h4>
+  <pre class="sig">function MenuAppendString(text: string): integer;</pre>
+  <p>Adds an entry to the menu opened by <code>ShowMenu</code> and returns its index.</p>
+  <details><summary>Example</summary>
+<pre class="code">var tetris, snake: integer;
+    play: command;
+begin
+  ShowMenu(&#x27;Select a game&#x27;, CH_IMPLICIT);
+  tetris := MenuAppendString(&#x27;Tetris&#x27;);
+  snake := MenuAppendString(&#x27;Snake&#x27;);
+  play := CreateCommand(&#x27;Play&#x27;, CM_SCREEN, 1);
+  AddCommand(play);
+  repeat
+    Delay(100);
+  until GetClickedCommand = play;
+  ShowCanvas;
+  if MenuGetSelectedIndex = tetris then DrawText(&#x27;Tetris&#x27;, 0, 0)
+  else DrawText(&#x27;Snake&#x27;, 0, 0);
+  Repaint;
+  Delay(2000);
+end.</pre></details>
+  <p class="see">See also <a href="#fn-showmenu">ShowMenu</a>, <a href="#fn-menugetselectedindex">MenuGetSelectedIndex</a></p>
+</article>
+<article class="fn" id="fn-menuappendstringimage" data-name="menuappendstringimage">
+  <h4><a href="#fn-menuappendstringimage">MenuAppendStringImage</a></h4>
+  <pre class="sig">function MenuAppendStringImage(text: string; img: image): integer;</pre>
+  <p>Adds an entry with an image next to its text to the menu and returns its index.</p>
+  <p class="see">See also <a href="#fn-menuappendstring">MenuAppendString</a></p>
+</article>
+<article class="fn" id="fn-menugetselectedindex" data-name="menugetselectedindex">
+  <h4><a href="#fn-menugetselectedindex">MenuGetSelectedIndex</a></h4>
+  <pre class="sig">function MenuGetSelectedIndex: integer;</pre>
+  <p>The index of the selected menu entry, or −1 if none is.</p>
+  <p class="see">See also <a href="#fn-menuappendstring">MenuAppendString</a>, <a href="#fn-menuisselected">MenuIsSelected</a></p>
+</article>
+<article class="fn" id="fn-menuisselected" data-name="menuisselected">
+  <h4><a href="#fn-menuisselected">MenuIsSelected</a></h4>
+  <pre class="sig">function MenuIsSelected(index: integer): boolean;</pre>
+  <p><code>true</code> if the menu entry at <code>index</code> is selected. For a <code>CH_MULTIPLE</code> menu this is the only way to ask.</p>
+  <p class="see">See also <a href="#fn-menugetselectedindex">MenuGetSelectedIndex</a></p>
+</article>
+<article class="fn" id="fn-playalertsound" data-name="playalertsound">
+  <h4><a href="#fn-playalertsound">PlayAlertSound</a></h4>
+  <pre class="sig">procedure PlayAlertSound;</pre>
+  <p>Plays the sound the phone has for the type of the alert on screen.</p>
+  <p class="see">See also <a href="#fn-showalert">ShowAlert</a></p>
+</article>
+<article class="fn" id="fn-removecommand" data-name="removecommand">
+  <h4><a href="#fn-removecommand">RemoveCommand</a></h4>
+  <pre class="sig">procedure RemoveCommand(cmd: command);</pre>
+  <p>Takes a command off the screen.</p>
+  <p class="see">See also <a href="#fn-addcommand">AddCommand</a></p>
+</article>
+<article class="fn" id="fn-removeformtitle" data-name="removeformtitle">
+  <h4><a href="#fn-removeformtitle">RemoveFormTitle</a></h4>
+  <pre class="sig">procedure RemoveFormTitle;</pre>
+  <p>Removes the title of the form.</p>
+  <p class="see">See also <a href="#fn-setformtitle">SetFormTitle</a></p>
+</article>
+<article class="fn" id="fn-setformtitle" data-name="setformtitle">
+  <h4><a href="#fn-setformtitle">SetFormTitle</a></h4>
+  <pre class="sig">procedure SetFormTitle(title: string);</pre>
+  <p>Sets the title of the form.</p>
+  <p class="see">See also <a href="#fn-getformtitle">GetFormTitle</a>, <a href="#fn-removeformtitle">RemoveFormTitle</a></p>
+</article>
+<article class="fn" id="fn-setticker" data-name="setticker">
+  <h4><a href="#fn-setticker">SetTicker</a></h4>
+  <pre class="sig">procedure SetTicker(text: string);</pre>
+  <p>Scrolls <code>text</code> along the top of the form, like a news ticker.</p>
+  <details><summary>Example</summary>
+<pre class="code">begin
+  ShowForm;
+  SetTicker(&#x27;Made with MIDletPascal&#x27;);
+  Delay(5000);
+end.</pre></details>
+</article>
+<article class="fn" id="fn-showalert" data-name="showalert">
+  <h4><a href="#fn-showalert">ShowAlert</a></h4>
+  <pre class="sig">procedure ShowAlert(title, message: string; img: image; alertType: alert);</pre>
+  <p>Fills the screen with a message. Only commands can share the screen with an alert; <code>ShowForm</code> or <code>ShowCanvas</code> takes it away. <code>alertType</code> is <code>ALERT_INFO</code>, <code>ALERT_WARNING</code>, <code>ALERT_ERROR</code>, <code>ALERT_ALARM</code> or <code>ALERT_CONFIRMATION</code>.</p>
+  <details><summary>Example</summary>
+<pre class="code">var read: command;
+begin
+  ShowAlert(&#x27;New message&#x27;, &#x27;Mr. Smith has written to you&#x27;, LoadImage(&#x27;/icon.png&#x27;), ALERT_INFO);
+  PlayAlertSound;
+  read := CreateCommand(&#x27;Read&#x27;, CM_OK, 1);
+  AddCommand(read);
+  repeat
+    Delay(100);
+  until GetClickedCommand = read;
+  ShowForm;
+end.</pre></details>
+  <p class="see">See also <a href="#fn-playalertsound">PlayAlertSound</a></p>
+</article>
+<article class="fn" id="fn-showcanvas" data-name="showcanvas">
+  <h4><a href="#fn-showcanvas">ShowCanvas</a></h4>
+  <pre class="sig">procedure ShowCanvas;</pre>
+  <p>Brings back the canvas, the screen the program draws on. A MIDlet starts on the canvas; <code>ShowForm</code>, <code>ShowMenu</code>, <code>ShowTextBox</code> and <code>ShowAlert</code> replace it until this is called.</p>
+  <details><summary>Example</summary>
+<pre class="code">var greeting: integer;
+begin
+  greeting := FormAddString(&#x27;Hello from the form&#x27;);
+  ShowForm;
+  Delay(2000);
+  ShowCanvas;
+  DrawText(&#x27;Hello from the canvas&#x27;, 0, 0);
+  Repaint;
+  Delay(2000);
+end.</pre></details>
+  <p class="see">See also <a href="#fn-showform">ShowForm</a></p>
+</article>
+<article class="fn" id="fn-showform" data-name="showform">
+  <h4><a href="#fn-showform">ShowForm</a></h4>
+  <pre class="sig">procedure ShowForm;</pre>
+  <p>Shows the form: the screen of text, fields, choices and images that the <code>FormAdd</code> functions fill. There is one form; it keeps its items while the canvas is shown.</p>
+  <details><summary>Example</summary>
+<pre class="code">var greeting, name: integer;
+begin
+  greeting := FormAddString(&#x27;Hello world&#x27;);
+  name := FormAddTextField(&#x27;Enter your name&#x27;, &#x27;Mr. Smith&#x27;, 20, TF_ANY);
+  ShowForm;
+  Delay(2000);
+end.</pre></details>
+  <p class="see">See also <a href="#fn-showcanvas">ShowCanvas</a>, <a href="#fn-clearform">ClearForm</a></p>
+</article>
+<article class="fn" id="fn-showmenu" data-name="showmenu">
+  <h4><a href="#fn-showmenu">ShowMenu</a></h4>
+  <pre class="sig">procedure ShowMenu(title: string; menuType: integer);</pre>
+  <p>Fills the screen with an empty menu, to be filled with <code>MenuAppendString</code>. Only commands can share the screen with it. <code>CH_IMPLICIT</code> is an ordinary list to pick from; <code>CH_EXCLUSIVE</code> shows a radio button next to each entry and <code>CH_MULTIPLE</code> a check box.</p>
+  <p class="see">See also <a href="#fn-menuappendstring">MenuAppendString</a>, <a href="#fn-menugetselectedindex">MenuGetSelectedIndex</a></p>
+</article>
+<article class="fn" id="fn-showtextbox" data-name="showtextbox">
+  <h4><a href="#fn-showtextbox">ShowTextBox</a></h4>
+  <pre class="sig">procedure ShowTextBox(title, text: string; maxSize, constraints: integer);</pre>
+  <p>Fills the screen with a text editor holding <code>text</code>. Only commands can share the screen with it. <code>constraints</code> takes the same <code>TF_</code> constants as <code>FormAddTextField</code>.</p>
+  <p class="see">See also <a href="#fn-gettextboxstring">GetTextBoxString</a></p>
+</article>
+</section>
+<section class="cat" id="cat-recordstore">
+  <h3 class="cathead">Record stores</h3>
+  <div class="intro"><p>A record store is a named list of strings that the phone keeps after the MIDlet exits: saved games, settings, high scores. Each record has an index starting at 1.</p></div>
+<article class="fn" id="fn-addrecordstoreentry" data-name="addrecordstoreentry">
+  <h4><a href="#fn-addrecordstoreentry">AddRecordStoreEntry</a></h4>
+  <pre class="sig">function AddRecordStoreEntry(rs: recordStore; data: string): integer;</pre>
+  <p>Adds a record and returns its index, or −1 if it could not be stored. The first record of a store is 1.</p>
+  <p class="needs">Adds <code>RS.class</code> to the JAR.</p>
+  <details><summary>Example</summary>
+<pre class="code">var rs: recordStore;
+    index: integer;
+begin
+  rs := OpenRecordStore(&#x27;scores&#x27;);
+  index := AddRecordStoreEntry(rs, &#x27;Alice 1200&#x27;);
+  CloseRecordStore(rs);
+end.</pre></details>
+  <p class="see">See also <a href="#fn-readrecordstoreentry">ReadRecordStoreEntry</a>, <a href="#fn-modifyrecordstoreentry">ModifyRecordStoreEntry</a></p>
+</article>
+<article class="fn" id="fn-closerecordstore" data-name="closerecordstore">
+  <h4><a href="#fn-closerecordstore">CloseRecordStore</a></h4>
+  <pre class="sig">procedure CloseRecordStore(rs: recordStore);</pre>
+  <p>Closes a record store.</p>
+  <p class="needs">Adds <code>RS.class</code> to the JAR.</p>
+  <p class="see">See also <a href="#fn-openrecordstore">OpenRecordStore</a></p>
+</article>
+<article class="fn off" id="fn-closersenumeration" data-name="closersenumeration">
+  <h4><a href="#fn-closersenumeration">CloseRSEnumeration</a> <span class="gone">not in mp3cc</span></h4>
+  <pre class="sig">procedure CloseRSEnumeration(enum: integer);</pre>
+  <p><b>mp3cc does not accept it.</b> The original manual lists the enumeration routines, but MIDletPascal 3.5, and so mp3cc, does not have them. Go through the records by index from 1 to <code>GetRecordStoreNextId</code> − 1 and skip the empty ones.</p>
+</article>
+<article class="fn" id="fn-deleterecordstore" data-name="deleterecordstore">
+  <h4><a href="#fn-deleterecordstore">DeleteRecordStore</a></h4>
+  <pre class="sig">procedure DeleteRecordStore(name: string);</pre>
+  <p>Deletes a whole record store with everything in it. Nothing happens if there is no store of that name.</p>
+  <p class="needs">Adds <code>RS.class</code> to the JAR.</p>
+</article>
+<article class="fn" id="fn-deleterecordstoreentry" data-name="deleterecordstoreentry">
+  <h4><a href="#fn-deleterecordstoreentry">DeleteRecordStoreEntry</a></h4>
+  <pre class="sig">procedure DeleteRecordStoreEntry(rs: recordStore; index: integer);</pre>
+  <p>Deletes one record. Its index is not reused, so the indexes of the other records do not change.</p>
+  <p class="needs">Adds <code>RS.class</code> to the JAR.</p>
+  <p class="see">See also <a href="#fn-addrecordstoreentry">AddRecordStoreEntry</a></p>
+</article>
+<article class="fn off" id="fn-enumeraterecords" data-name="enumeraterecords">
+  <h4><a href="#fn-enumeraterecords">EnumerateRecords</a> <span class="gone">not in mp3cc</span></h4>
+  <pre class="sig">function EnumerateRecords(rs: recordStore): integer;</pre>
+  <p><b>mp3cc does not accept it.</b> The original manual lists the enumeration routines, but MIDletPascal 3.5, and so mp3cc, does not have them. Go through the records by index from 1 to <code>GetRecordStoreNextId</code> − 1 and skip the empty ones.</p>
+</article>
+<article class="fn" id="fn-getrecordstorenextid" data-name="getrecordstorenextid">
+  <h4><a href="#fn-getrecordstorenextid">GetRecordStoreNextId</a></h4>
+  <pre class="sig">function GetRecordStoreNextId(rs: recordStore): integer;</pre>
+  <p>The index the next <code>AddRecordStoreEntry</code> will give. Every index below it has been used, though some may have been deleted since.</p>
+  <p class="needs">Adds <code>RS.class</code> to the JAR.</p>
+  <details><summary>Example</summary>
+<pre class="code">var rs: recordStore;
+    i: integer;
+    data: string;
+begin
+  rs := OpenRecordStore(&#x27;scores&#x27;);
+  for i := 1 to GetRecordStoreNextId(rs) - 1 do
+  begin
+    data := ReadRecordStoreEntry(rs, i);
+    if data &lt;&gt; &#x27;&#x27; then Debug(data);
+  end;
+  CloseRecordStore(rs);
+end.</pre></details>
+  <p class="see">See also <a href="#fn-getrecordstoresize">GetRecordStoreSize</a></p>
+</article>
+<article class="fn" id="fn-getrecordstoresize" data-name="getrecordstoresize">
+  <h4><a href="#fn-getrecordstoresize">GetRecordStoreSize</a></h4>
+  <pre class="sig">function GetRecordStoreSize(rs: recordStore): integer;</pre>
+  <p>The number of records in the store. After a delete this is less than the highest index, so loop up to <code>GetRecordStoreNextId</code> instead.</p>
+  <p class="needs">Adds <code>RS.class</code> to the JAR.</p>
+  <p class="see">See also <a href="#fn-getrecordstorenextid">GetRecordStoreNextId</a></p>
+</article>
+<article class="fn" id="fn-modifyrecordstoreentry" data-name="modifyrecordstoreentry">
+  <h4><a href="#fn-modifyrecordstoreentry">ModifyRecordStoreEntry</a></h4>
+  <pre class="sig">procedure ModifyRecordStoreEntry(rs: recordStore; data: string; index: integer);</pre>
+  <p>Replaces the record at <code>index</code> with <code>data</code>.</p>
+  <p class="needs">Adds <code>RS.class</code> to the JAR.</p>
+  <p class="see">See also <a href="#fn-readrecordstoreentry">ReadRecordStoreEntry</a></p>
+</article>
+<article class="fn off" id="fn-nextrecord" data-name="nextrecord">
+  <h4><a href="#fn-nextrecord">NextRecord</a> <span class="gone">not in mp3cc</span></h4>
+  <pre class="sig">function NextRecord(enum: integer): string;</pre>
+  <p><b>mp3cc does not accept it.</b> The original manual lists the enumeration routines, but MIDletPascal 3.5, and so mp3cc, does not have them. Go through the records by index from 1 to <code>GetRecordStoreNextId</code> − 1 and skip the empty ones.</p>
+</article>
+<article class="fn" id="fn-openrecordstore" data-name="openrecordstore">
+  <h4><a href="#fn-openrecordstore">OpenRecordStore</a></h4>
+  <pre class="sig">function OpenRecordStore(name: string): recordStore;</pre>
+  <p>Opens the record store called <code>name</code>, creating an empty one the first time. A record store is the phone's storage for a MIDlet: it keeps its records after the MIDlet exits, until it is deleted with <code>DeleteRecordStore</code> or the MIDlet is uninstalled.</p>
+  <p class="needs">Adds <code>RS.class</code> to the JAR.</p>
+  <p class="see">See also <a href="#fn-closerecordstore">CloseRecordStore</a>, <a href="#fn-addrecordstoreentry">AddRecordStoreEntry</a></p>
+</article>
+<article class="fn" id="fn-readrecordstoreentry" data-name="readrecordstoreentry">
+  <h4><a href="#fn-readrecordstoreentry">ReadRecordStoreEntry</a></h4>
+  <pre class="sig">function ReadRecordStoreEntry(rs: recordStore; index: integer): string;</pre>
+  <p>The record at <code>index</code>, or an empty string if there is none.</p>
+  <p class="needs">Adds <code>RS.class</code> to the JAR.</p>
+  <p class="see">See also <a href="#fn-getrecordstorenextid">GetRecordStoreNextId</a></p>
+</article>
+<article class="fn off" id="fn-updaterseumeration" data-name="updatersenumeration">
+  <h4><a href="#fn-updaterseumeration">UpdateRSEnumeration</a> <span class="gone">not in mp3cc</span></h4>
+  <pre class="sig">procedure UpdateRSEnumeration(enum: integer);</pre>
+  <p><b>mp3cc does not accept it.</b> The original manual lists the enumeration routines, but MIDletPascal 3.5, and so mp3cc, does not have them. Go through the records by index from 1 to <code>GetRecordStoreNextId</code> − 1 and skip the empty ones.</p>
+</article>
+</section>
+<section class="cat" id="cat-httpconnectivity">
+  <h3 class="cathead">HTTP</h3>
+  <div class="intro"><p>A request is built up on an <code>http</code> variable: open it, set the method and the headers, send it, read the answer, close it.</p></div>
+<article class="fn" id="fn-addhttpbody" data-name="addhttpbody">
+  <h4><a href="#fn-addhttpbody">AddHttpBody</a></h4>
+  <pre class="sig">procedure AddHttpBody(conn: http; data: string);</pre>
+  <p>Adds <code>data</code> to the body of the request. Only a <code>POST</code> carries a body.</p>
+  <p class="needs">Adds <code>H.class</code> to the JAR.</p>
+  <p class="see">See also <a href="#fn-sethttpmethod">SetHttpMethod</a></p>
+</article>
+<article class="fn" id="fn-addhttpheader" data-name="addhttpheader">
+  <h4><a href="#fn-addhttpheader">AddHttpHeader</a></h4>
+  <pre class="sig">procedure AddHttpHeader(conn: http; name, value: string);</pre>
+  <p>Adds a header to the request, for example <code>AddHttpHeader(conn, 'Accept', 'text/plain')</code>.</p>
+  <p class="needs">Adds <code>H.class</code> to the JAR.</p>
+</article>
+<article class="fn" id="fn-closehttp" data-name="closehttp">
+  <h4><a href="#fn-closehttp">CloseHttp</a></h4>
+  <pre class="sig">procedure CloseHttp(conn: http);</pre>
+  <p>Closes the connection.</p>
+  <p class="needs">Adds <code>H.class</code> to the JAR.</p>
+  <p class="see">See also <a href="#fn-openhttp">OpenHttp</a></p>
+</article>
+<article class="fn" id="fn-gethttpheader" data-name="gethttpheader">
+  <h4><a href="#fn-gethttpheader">GetHttpHeader</a></h4>
+  <pre class="sig">function GetHttpHeader(conn: http; name: string): string;</pre>
+  <p>The value of a header of the response: <code>GetHttpHeader(conn, 'Content-Type')</code> might return <code>'text/plain'</code>.</p>
+  <p class="needs">Adds <code>H.class</code> to the JAR.</p>
+</article>
+<article class="fn" id="fn-gethttpresponse" data-name="gethttpresponse">
+  <h4><a href="#fn-gethttpresponse">GetHttpResponse</a></h4>
+  <pre class="sig">function GetHttpResponse(conn: http): string;</pre>
+  <p>The body of the response.</p>
+  <p class="needs">Adds <code>H.class</code> to the JAR.</p>
+  <p class="see">See also <a href="#fn-sendhttpmessage">SendHttpMessage</a></p>
+</article>
+<article class="fn" id="fn-ishttpopen" data-name="ishttpopen">
+  <h4><a href="#fn-ishttpopen">IsHttpOpen</a></h4>
+  <pre class="sig">function IsHttpOpen(conn: http): boolean;</pre>
+  <p><code>true</code> if the connection is open.</p>
+</article>
+<article class="fn" id="fn-openhttp" data-name="openhttp">
+  <h4><a href="#fn-openhttp">OpenHttp</a></h4>
+  <pre class="sig">function OpenHttp(conn: http; url: string): boolean;</pre>
+  <p>Opens a connection to <code>url</code>, written as <code>http://host[:port][/path]</code>. Returns <code>false</code> if it fails. A phone usually asks the user before a MIDlet goes online.</p>
+  <p class="needs">Adds <code>H.class</code> to the JAR.</p>
+  <details><summary>Example</summary>
+<pre class="code">var conn: http;
+    page: string;
+begin
+  if OpenHttp(conn, &#x27;http://example.com/&#x27;) then
+  begin
+    SetHttpMethod(conn, GET);
+    if SendHttpMessage(conn) = 200 then
+      page := GetHttpResponse(conn);
+    CloseHttp(conn);
+  end;
+end.</pre></details>
+  <p class="see">See also <a href="#fn-sendhttpmessage">SendHttpMessage</a>, <a href="#fn-closehttp">CloseHttp</a></p>
+</article>
+<article class="fn" id="fn-sendhttpmessage" data-name="sendhttpmessage">
+  <h4><a href="#fn-sendhttpmessage">SendHttpMessage</a></h4>
+  <pre class="sig">function SendHttpMessage(conn: http): integer;</pre>
+  <p>Sends the request, waits for the answer and returns the HTTP status code, such as 200 for success or 404 for a missing page, or −1 if the request could not be made.</p>
+  <p class="needs">Adds <code>H.class</code> to the JAR.</p>
+  <p class="see">See also <a href="#fn-gethttpresponse">GetHttpResponse</a></p>
+</article>
+<article class="fn" id="fn-sethttpmethod" data-name="sethttpmethod">
+  <h4><a href="#fn-sethttpmethod">SetHttpMethod</a></h4>
+  <pre class="sig">procedure SetHttpMethod(conn: http; method: string);</pre>
+  <p>Sets the request method: <code>GET</code>, <code>POST</code> or <code>HEAD</code>, which are predefined string constants.</p>
+  <p class="needs">Adds <code>H.class</code> to the JAR.</p>
+</article>
+</section>
+<section class="cat" id="cat-smsmessaging">
+  <h3 class="cathead">SMS</h3>
+<article class="fn" id="fn-smsissending" data-name="smsissending">
+  <h4><a href="#fn-smsissending">SmsIsSending</a></h4>
+  <pre class="sig">function SmsIsSending: boolean;</pre>
+  <p><code>true</code> while a message started with <code>SmsStartSend</code> is still being sent.</p>
+  <p class="needs">Adds <code>SM.class</code> to the JAR.</p>
+  <p class="see">See also <a href="#fn-smsstartsend">SmsStartSend</a></p>
+</article>
+<article class="fn" id="fn-smsstartsend" data-name="smsstartsend">
+  <h4><a href="#fn-smsstartsend">SmsStartSend</a></h4>
+  <pre class="sig">function SmsStartSend(destination, message: string): boolean;</pre>
+  <p>Starts sending a text message and returns at once. <code>destination</code> is written <code>sms://+number</code>. Returns <code>false</code> if the message could not be handed over, for example because another one is still on its way. MIDletPascal sends through the Wireless Messaging API or the Siemens API; a phone with neither cannot send at all.</p>
+  <p class="needs">Adds <code>SM.class</code> to the JAR.</p>
+  <details><summary>Example</summary>
+<pre class="code">begin
+  if not SmsStartSend(&#x27;sms://+5550000&#x27;, &#x27;Hello!&#x27;) then Halt;
+  while SmsIsSending do
+    Delay(100);
+  if not SmsWasSuccessfull then Halt;
+end.</pre></details>
+  <p class="see">See also <a href="#fn-smsissending">SmsIsSending</a>, <a href="#fn-smswassuccessfull">SmsWasSuccessfull</a></p>
+</article>
+<article class="fn" id="fn-smswassuccessfull" data-name="smswassuccessfull">
+  <h4><a href="#fn-smswassuccessfull">SmsWasSuccessfull</a></h4>
+  <pre class="sig">function SmsWasSuccessfull: boolean;</pre>
+  <p><code>true</code> if the last message was sent. <code>false</code> means the phone cannot send messages from a MIDlet, the number is wrong, or the network refused it. The name is spelled with two l's.</p>
+  <p class="needs">Adds <code>SM.class</code> to the JAR.</p>
+  <p class="see">See also <a href="#fn-smsstartsend">SmsStartSend</a></p>
+</article>
+</section>
+<section class="cat" id="cat-soundandmusic">
+  <h3 class="cathead">Sound</h3>
+  <div class="intro"><p>These need a MIDP 2.0 phone, or one with MMAPI. On an older phone a MIDlet that uses them crashes.</p></div>
+<article class="fn" id="fn-getplayerduration" data-name="getplayerduration">
+  <h4><a href="#fn-getplayerduration">GetPlayerDuration</a></h4>
+  <pre class="sig">function GetPlayerDuration: integer;</pre>
+  <p>The length of the loaded sound in milliseconds.</p>
+  <p class="needs">Adds <code>P.class</code> to the JAR.</p>
+  <p class="see">See also <a href="#fn-openplayer">OpenPlayer</a></p>
+</article>
+<article class="fn" id="fn-openplayer" data-name="openplayer">
+  <h4><a href="#fn-openplayer">OpenPlayer</a></h4>
+  <pre class="sig">function OpenPlayer(name, mimeType: string): boolean;</pre>
+  <p>Loads a sound from the JAR; <code>StartPlayer</code> plays it. Returns <code>false</code> if it fails. There is a single player, and opening a sound closes the one before it, so music stops for every effect. For several sounds at once, use the <a href="#cat-sound">Sound</a> library.</p><ul><li>MIDI: <code>audio/midi</code></li><li>WAV: <code>audio/x-wav</code></li><li>MP3: <code>audio/mpeg</code></li><li>AU: <code>audio/basic</code></li></ul><p>Phones rarely play all of them.</p>
+  <p class="needs">Adds <code>P.class</code> to the JAR.</p>
+  <details><summary>Example</summary>
+<pre class="code">begin
+  if not OpenPlayer(&#x27;/explosion.mid&#x27;, &#x27;audio/midi&#x27;) then Halt;
+  if not SetPlayerCount(-1) then Halt;
+  if not StartPlayer then Halt;
+  Delay(5000);
+end.</pre></details>
+  <p class="see">See also <a href="#fn-startplayer">StartPlayer</a>, <a href="#fn-stopplayer">StopPlayer</a></p>
+</article>
+<article class="fn" id="fn-playtone" data-name="playtone">
+  <h4><a href="#fn-playtone">PlayTone</a></h4>
+  <pre class="sig">procedure PlayTone(note, duration, volume: integer);</pre>
+  <p>Plays one tone. <code>note</code> is a MIDI note number from 0 to 127, where 69 is the A at 440 Hz; <code>duration</code> is in milliseconds and <code>volume</code> 0 to 100. The original manual does not mention it.</p>
+</article>
+<article class="fn" id="fn-setplayercount" data-name="setplayercount">
+  <h4><a href="#fn-setplayercount">SetPlayerCount</a></h4>
+  <pre class="sig">function SetPlayerCount(count: integer): boolean;</pre>
+  <p>How many times the loaded sound plays, −1 for endlessly. Call it between <code>OpenPlayer</code> and <code>StartPlayer</code>.</p>
+  <p class="needs">Adds <code>P.class</code> to the JAR.</p>
+  <p class="see">See also <a href="#fn-openplayer">OpenPlayer</a></p>
+</article>
+<article class="fn" id="fn-startplayer" data-name="startplayer">
+  <h4><a href="#fn-startplayer">StartPlayer</a></h4>
+  <pre class="sig">function StartPlayer: boolean;</pre>
+  <p>Plays the sound loaded with <code>OpenPlayer</code>. Returns <code>false</code> if it cannot.</p>
+  <p class="needs">Adds <code>P.class</code> to the JAR.</p>
+  <p class="see">See also <a href="#fn-openplayer">OpenPlayer</a>, <a href="#fn-stopplayer">StopPlayer</a></p>
+</article>
+<article class="fn" id="fn-stopplayer" data-name="stopplayer">
+  <h4><a href="#fn-stopplayer">StopPlayer</a></h4>
+  <pre class="sig">procedure StopPlayer;</pre>
+  <p>Stops the sound that is playing.</p>
+  <p class="needs">Adds <code>P.class</code> to the JAR.</p>
+  <p class="see">See also <a href="#fn-startplayer">StartPlayer</a></p>
+</article>
+</section>
+<section class="cat" id="cat-resourcefiles">
+  <h3 class="cathead">Resource files</h3>
+  <div class="intro"><p>Resources are files packed into the JAR, read one byte or one line at a time.</p></div>
+<article class="fn" id="fn-closeresource" data-name="closeresource">
+  <h4><a href="#fn-closeresource">CloseResource</a></h4>
+  <pre class="sig">procedure CloseResource(res: resource);</pre>
+  <p>Closes the file.</p>
+  <p class="needs">Adds <code>S.class</code> to the JAR.</p>
+  <p class="see">See also <a href="#fn-openresource">OpenResource</a></p>
+</article>
+<article class="fn" id="fn-openresource" data-name="openresource">
+  <h4><a href="#fn-openresource">OpenResource</a></h4>
+  <pre class="sig">function OpenResource(name: string): resource;</pre>
+  <p>Opens a file from the JAR for reading. As with <code>LoadImage</code>, the name starts with <code>/</code>; in ANPASIDE the files of a project's <code>res/</code> folder go into the JAR. Check <code>ResourceAvailable</code> before reading.</p>
+  <p class="needs">Adds <code>S.class</code> to the JAR.</p>
+  <details><summary>Example</summary>
+<pre class="code">var res: resource;
+    line: string;
+    shown: integer;
+begin
+  res := OpenResource(&#x27;/data.txt&#x27;);
+  if ResourceAvailable(res) then
+  begin
+    line := ReadLine(res);
+    CloseResource(res);
+  end;
+  ShowForm;
+  shown := FormAddString(&#x27;First line: &#x27; + line);
+  Delay(2000);
+end.</pre></details>
+  <p class="see">See also <a href="#fn-readline">ReadLine</a>, <a href="#fn-readbyte">ReadByte</a></p>
+</article>
+<article class="fn" id="fn-readbyte" data-name="readbyte">
+  <h4><a href="#fn-readbyte">ReadByte</a></h4>
+  <pre class="sig">function ReadByte(res: resource): integer;</pre>
+  <p>The next byte, 0 to 255, or <code>EOF</code> at the end of the file or on an error.</p>
+  <p class="see">See also <a href="#fn-readline">ReadLine</a></p>
+</article>
+<article class="fn" id="fn-readline" data-name="readline">
+  <h4><a href="#fn-readline">ReadLine</a></h4>
+  <pre class="sig">function ReadLine(res: resource): string;</pre>
+  <p>The next line of text. At the end of the file, or on an error, it returns an empty string. Empty lines are skipped, so an empty result always means the end.</p>
+  <p class="see">See also <a href="#fn-readbyte">ReadByte</a></p>
+</article>
+<article class="fn" id="fn-resourceavailable" data-name="resourceavailable">
+  <h4><a href="#fn-resourceavailable">ResourceAvailable</a></h4>
+  <pre class="sig">function ResourceAvailable(res: resource): boolean;</pre>
+  <p><code>true</code> if <code>OpenResource</code> found and opened the file.</p>
+  <p class="see">See also <a href="#fn-openresource">OpenResource</a></p>
+</article>
+</section>
+<section class="cat" id="cat-misc">
+  <h3 class="cathead">Other</h3>
+<article class="fn" id="fn-assert" data-name="assert">
+  <h4><a href="#fn-assert">Assert</a></h4>
+  <pre class="sig">procedure Assert(condition: boolean);</pre>
+  <p>If <code>condition</code> is false, writes a line such as <code>Assertion failed at: game.pas:162</code> to the debug output.</p>
+  <p class="see">See also <a href="#fn-debug">Debug</a></p>
+</article>
+<article class="fn" id="fn-chr" data-name="chr">
+  <h4><a href="#fn-chr">Chr</a></h4>
+  <pre class="sig">function Chr(code: integer): char;</pre>
+  <p>The character with the given ASCII code, 0 to 127.</p>
+  <p class="see">See also <a href="#fn-ord">Ord</a></p>
+</article>
+<article class="fn" id="fn-debug" data-name="debug">
+  <h4><a href="#fn-debug">Debug</a></h4>
+  <pre class="sig">procedure Debug(text: string);</pre>
+  <p>Writes <code>text</code> to the emulator's standard output. A phone ignores it.</p>
+</article>
+<article class="fn" id="fn-getproperty" data-name="getproperty">
+  <h4><a href="#fn-getproperty">GetProperty</a></h4>
+  <pre class="sig">function GetProperty(name: string): string;</pre>
+  <p>A Java system property of the phone, for example <code>microedition.locale</code> or <code>microedition.platform</code>; an empty string if the phone does not have it.</p>
+  <details><summary>Example</summary>
+<pre class="code">begin
+  Debug(GetProperty(&#x27;microedition.locale&#x27;));
+end.</pre></details>
+</article>
+<article class="fn" id="fn-halt" data-name="halt">
+  <h4><a href="#fn-halt">Halt</a></h4>
+  <pre class="sig">procedure Halt;</pre>
+  <p>Ends the MIDlet.</p>
+</article>
+<article class="fn" id="fn-ismidletpaused" data-name="ismidletpaused">
+  <h4><a href="#fn-ismidletpaused">IsMidletPaused</a></h4>
+  <pre class="sig">function IsMidletPaused: boolean;</pre>
+  <p><code>true</code> while the phone has paused the MIDlet, for example during a call. A game checks it to stop its clock until the MIDlet comes back.</p>
+  <details><summary>Example</summary>
+<pre class="code">  repeat
+    { ... keys, timers, drawing ... }
+    while IsMidletPaused do
+      Delay(100);
+  until gameOver;</pre></details>
+</article>
+<article class="fn" id="fn-odd" data-name="odd">
+  <h4><a href="#fn-odd">Odd</a></h4>
+  <pre class="sig">function Odd(n: integer): boolean;</pre>
+  <p><code>true</code> if <code>n</code> is odd.</p>
+</article>
+<article class="fn" id="fn-ord" data-name="ord">
+  <h4><a href="#fn-ord">Ord</a></h4>
+  <pre class="sig">function Ord(c: char): integer;</pre>
+  <p>The ASCII code of a character.</p>
+  <p class="see">See also <a href="#fn-chr">Chr</a></p>
+</article>
+<article class="fn" id="fn-random" data-name="random">
+  <h4><a href="#fn-random">Random</a></h4>
+  <pre class="sig">function Random(n: integer): integer;</pre>
+  <p>A random integer from 0 to <code>n</code> − 1.</p>
+  <details><summary>Example</summary>
+<pre class="code">{ true three times out of four }
+function likely: boolean;
+begin
+  likely := Random(4) &lt;&gt; 3;
+end;</pre></details>
+  <p class="see">See also <a href="#fn-randomize">Randomize</a></p>
+</article>
+<article class="fn" id="fn-randomize" data-name="randomize">
+  <h4><a href="#fn-randomize">Randomize</a></h4>
+  <pre class="sig">procedure Randomize;</pre>
+  <p>Seeds the random number generator again. A MIDlet already does it once at start.</p>
+  <p class="see">See also <a href="#fn-random">Random</a></p>
+</article>
+</section>
+  </section>
+
+  <section class="part" id="libraries">
+    <h2>Libraries</h2>
+    <p>The routines of the libraries ANPASIDE ships. Each one is reached with <code>uses</code>, as
+    described in <a href="#bundled">Libraries in ANPASIDE</a>.</p>
+<dl class="index">
+  <dt><a href="#cat-touch">Touch</a></dt>
+  <dd><a href="#fn-touch-init">Init</a> <a href="#fn-touch-touch-count">touch_count</a> <a href="#fn-touch-touch-down">touch_down</a> <a href="#fn-touch-touch-x">touch_x</a> <a href="#fn-touch-touch-y">touch_y</a> <a href="#fn-touch-touch-pressed">touch_pressed</a> <a href="#fn-touch-touch-released">touch_released</a> <a href="#fn-touch-touch-area">touch_area</a> <a href="#fn-touch-sensor">pointer_*</a></dd>
+  <dt><a href="#cat-sound">Sound</a></dt>
+  <dd><a href="#fn-sound-sound-open">sound_open</a> <a href="#fn-sound-sound-play">sound_play</a> <a href="#fn-sound-sound-pause">sound_pause</a> <a href="#fn-sound-sound-resume">sound_resume</a> <a href="#fn-sound-sound-stop">sound_stop</a> <a href="#fn-sound-sound-loop">sound_loop</a> <a href="#fn-sound-sound-volume">sound_volume</a> <a href="#fn-sound-sound-playing">sound_playing</a> <a href="#fn-sound-sound-duration">sound_duration</a> <a href="#fn-sound-sound-close">sound_close</a></dd>
+  <dt><a href="#cat-screen">Screen</a></dt>
+  <dd><a href="#fn-screen-inset">screen_inset_*</a></dd>
+</dl>
+<section class="cat" id="cat-touch">
+  <h3 class="cathead">Touch</h3>
+  <div class="intro"><p>Reached with <code>uses Touch;</code>. See <a href="#bundled-touch">Touch</a> for what the library needs from the runtime.</p></div>
+<article class="fn" id="fn-touch-init" data-name="init">
+  <h4><a href="#fn-touch-init">Init</a></h4>
+  <pre class="sig">procedure Init;</pre>
+  <p>Makes the library's canvas the current screen, as <code>Sensor.Init</code> does, and forgets every finger. Call it once, as <code>Touch.Init</code>, before drawing anything.</p>
+</article>
+<article class="fn" id="fn-touch-touch-count" data-name="touch_count">
+  <h4><a href="#fn-touch-touch-count">touch_count</a></h4>
+  <pre class="sig">function touch_count: integer;</pre>
+  <p>The number of fingers on the screen right now.</p>
+  <p class="see">See also <a href="#fn-touch-touch-down">touch_down</a></p>
+</article>
+<article class="fn" id="fn-touch-touch-down" data-name="touch_down">
+  <h4><a href="#fn-touch-touch-down">touch_down</a></h4>
+  <pre class="sig">function touch_down(n: integer): integer;</pre>
+  <p>1 while finger <code>n</code> is on the screen, otherwise 0. Fingers are numbered 0 to 9; any other <code>n</code> gives 0.</p>
+  <details><summary>Example</summary>
+<pre class="code">for i := 0 to 9 do
+  if touch_down(i) = 1 then
+    FillRect(touch_x(i) - 10, touch_y(i) - 10, 20, 20);</pre></details>
+  <p class="see">See also <a href="#fn-touch-touch-x">touch_x</a></p>
+</article>
+<article class="fn" id="fn-touch-touch-x" data-name="touch_x">
+  <h4><a href="#fn-touch-touch-x">touch_x</a></h4>
+  <pre class="sig">function touch_x(n: integer): integer;</pre>
+  <p>The last x of finger <code>n</code>. It stays where the finger was lifted, so check <code>touch_down</code> first.</p>
+  <p class="see">See also <a href="#fn-touch-touch-y">touch_y</a></p>
+</article>
+<article class="fn" id="fn-touch-touch-y" data-name="touch_y">
+  <h4><a href="#fn-touch-touch-y">touch_y</a></h4>
+  <pre class="sig">function touch_y(n: integer): integer;</pre>
+  <p>The last y of finger <code>n</code>. It stays where the finger was lifted, so check <code>touch_down</code> first.</p>
+  <p class="see">See also <a href="#fn-touch-touch-x">touch_x</a></p>
+</article>
+<article class="fn" id="fn-touch-touch-pressed" data-name="touch_pressed">
+  <h4><a href="#fn-touch-touch-pressed">touch_pressed</a></h4>
+  <pre class="sig">function touch_pressed(n: integer): integer;</pre>
+  <p>1 if finger <code>n</code> has touched the screen since the previous call for that finger, otherwise 0. Unlike <code>touch_down</code>, it does not miss a tap shorter than a frame. Reading it clears it, so read each finger once per frame and keep the result.</p>
+  <details><summary>Example</summary>
+<pre class="code">uses Touch;
+var i, taps: integer;
+begin
+  Touch.Init;
+  taps := 0;
+  repeat
+    for i := 0 to 9 do
+      if touch_pressed(i) = 1 then taps := taps + 1;
+    { ... draw, Repaint, Delay ... }
+  until false;
+end.</pre></details>
+  <p class="see">See also <a href="#fn-touch-touch-released">touch_released</a></p>
+</article>
+<article class="fn" id="fn-touch-touch-released" data-name="touch_released">
+  <h4><a href="#fn-touch-touch-released">touch_released</a></h4>
+  <pre class="sig">function touch_released(n: integer): integer;</pre>
+  <p>1 if finger <code>n</code> has been lifted since the previous call for that finger, otherwise 0. Reading it clears it, as with <code>touch_pressed</code>.</p>
+  <p class="see">See also <a href="#fn-touch-touch-pressed">touch_pressed</a></p>
+</article>
+<article class="fn" id="fn-touch-touch-area" data-name="touch_area">
+  <h4><a href="#fn-touch-touch-area">touch_area</a></h4>
+  <pre class="sig">function touch_area(x, y, w, h: integer): integer;</pre>
+  <p>The number of fingers inside the rectangle at <code>x</code>, <code>y</code> of size <code>w</code> × <code>h</code>. An on-screen button is held while this is above 0, whichever finger holds it, so several buttons can be held at once.</p>
+  <details><summary>Example</summary>
+<pre class="code">{ a jump button in the lower right corner }
+if touch_area(GetWidth - 80, GetHeight - 80, 80, 80) &gt; 0 then
+  Jump;</pre></details>
+</article>
+<article class="fn" id="fn-touch-sensor" data-name="pointer_*">
+  <h4><a href="#fn-touch-sensor">pointer_*</a></h4>
+  <pre class="sig">function has_pointer_events: integer;
+function has_pointer_motion_events: integer;
+function pointer_state: integer;
+function pointer_pressed_x: integer;
+function pointer_pressed_y: integer;
+function pointer_dragged_x: integer;
+function pointer_dragged_y: integer;
+function pointer_released_x: integer;
+function pointer_released_y: integer;</pre>
+  <p>The functions of <code>Lib_sensor</code>, under the same names and with the same meaning, for finger 0 only. <code>pointer_state</code> is 1 while finger 0 is down, and a second finger does not change any of them, so do not mix them with <code>touch_area</code>, which counts every finger.</p>
+</article>
+</section>
+<section class="cat" id="cat-sound">
+  <h3 class="cathead">Sound</h3>
+  <div class="intro"><p>Reached with <code>uses Sound;</code>. Channels are numbered 0 to 7. A call with any other number does nothing and reports failure: 0, or −1 from <code>sound_duration</code>.</p></div>
+<article class="fn" id="fn-sound-sound-open" data-name="sound_open">
+  <h4><a href="#fn-sound-sound-open">sound_open</a></h4>
+  <pre class="sig">function sound_open(ch: integer; name, mimeType: string): integer;</pre>
+  <p>Loads the sound <code>name</code> from the JAR into channel <code>ch</code>, 0 to 7, and closes what the channel held before. Returns 1 on success, 0 if the channel, the file or the type is wrong. The types are <code>audio/midi</code>, <code>audio/x-wav</code>, <code>audio/mpeg</code>, <code>audio/aac</code>, <code>audio/mp4</code> and <code>audio/amr</code>.</p>
+  <details><summary>Example</summary>
+<pre class="code">ok := sound_open(0, &#x27;/music.mid&#x27;, &#x27;audio/midi&#x27;);
+ok := sound_open(1, &#x27;/coin.wav&#x27;, &#x27;audio/x-wav&#x27;);</pre></details>
+  <p class="see">See also <a href="#fn-sound-sound-play">sound_play</a></p>
+</article>
+<article class="fn" id="fn-sound-sound-play" data-name="sound_play">
+  <h4><a href="#fn-sound-sound-play">sound_play</a></h4>
+  <pre class="sig">function sound_play(ch: integer): integer;</pre>
+  <p>Plays channel <code>ch</code> from the start. If it is already playing it starts over, so an effect fired twice cuts its first run short. Returns 1 on success, otherwise 0.</p>
+  <p class="see">See also <a href="#fn-sound-sound-stop">sound_stop</a></p>
+</article>
+<article class="fn" id="fn-sound-sound-pause" data-name="sound_pause">
+  <h4><a href="#fn-sound-sound-pause">sound_pause</a></h4>
+  <pre class="sig">procedure sound_pause(ch: integer);</pre>
+  <p>Pauses channel <code>ch</code>; <code>sound_resume</code> continues from the same place. The other channels keep playing.</p>
+  <p class="see">See also <a href="#fn-sound-sound-resume">sound_resume</a></p>
+</article>
+<article class="fn" id="fn-sound-sound-resume" data-name="sound_resume">
+  <h4><a href="#fn-sound-sound-resume">sound_resume</a></h4>
+  <pre class="sig">function sound_resume(ch: integer): integer;</pre>
+  <p>Continues channel <code>ch</code> where <code>sound_pause</code> stopped it. Returns 1 on success, otherwise 0.</p>
+  <p class="see">See also <a href="#fn-sound-sound-pause">sound_pause</a></p>
+</article>
+<article class="fn" id="fn-sound-sound-stop" data-name="sound_stop">
+  <h4><a href="#fn-sound-sound-stop">sound_stop</a></h4>
+  <pre class="sig">procedure sound_stop(ch: integer);</pre>
+  <p>Stops channel <code>ch</code> and rewinds it.</p>
+  <p class="see">See also <a href="#fn-sound-sound-play">sound_play</a></p>
+</article>
+<article class="fn" id="fn-sound-sound-loop" data-name="sound_loop">
+  <h4><a href="#fn-sound-sound-loop">sound_loop</a></h4>
+  <pre class="sig">procedure sound_loop(ch, count: integer);</pre>
+  <p>How many times channel <code>ch</code> plays in a row, −1 for endlessly; 1 at first. It takes effect at the next <code>sound_play</code> and stays with the channel through <code>sound_open</code>.</p>
+</article>
+<article class="fn" id="fn-sound-sound-volume" data-name="sound_volume">
+  <h4><a href="#fn-sound-sound-volume">sound_volume</a></h4>
+  <pre class="sig">procedure sound_volume(ch, level: integer);</pre>
+  <p>The volume of channel <code>ch</code>, 0 to 100; 100 at first. It takes effect at once and stays with the channel through <code>sound_open</code>.</p>
+  <details><summary>Example</summary>
+<pre class="code">sound_volume(0, 40);  { the music quieter than the effects }</pre></details>
+</article>
+<article class="fn" id="fn-sound-sound-playing" data-name="sound_playing">
+  <h4><a href="#fn-sound-sound-playing">sound_playing</a></h4>
+  <pre class="sig">function sound_playing(ch: integer): integer;</pre>
+  <p>1 while channel <code>ch</code> is playing, otherwise 0.</p>
+</article>
+<article class="fn" id="fn-sound-sound-duration" data-name="sound_duration">
+  <h4><a href="#fn-sound-sound-duration">sound_duration</a></h4>
+  <pre class="sig">function sound_duration(ch: integer): integer;</pre>
+  <p>The length of the sound on channel <code>ch</code> in milliseconds, or −1 if it is not known. ANPASIDE's emulator only knows it while the sound plays, and answers 0 before that.</p>
+</article>
+<article class="fn" id="fn-sound-sound-close" data-name="sound_close">
+  <h4><a href="#fn-sound-sound-close">sound_close</a></h4>
+  <pre class="sig">procedure sound_close(ch: integer);</pre>
+  <p>Stops channel <code>ch</code> and frees its sound. The channel can be opened again.</p>
+  <p class="see">See also <a href="#fn-sound-sound-open">sound_open</a></p>
+</article>
+</section>
+<section class="cat" id="cat-screen">
+  <h3 class="cathead">Screen</h3>
+  <div class="intro"><p>Reached with <code>uses Screen;</code>.</p></div>
+<article class="fn" id="fn-screen-inset" data-name="screen_inset_*">
+  <h4><a href="#fn-screen-inset">screen_inset_*</a></h4>
+  <pre class="sig">function screen_inset_left: integer;
+function screen_inset_top: integer;
+function screen_inset_right: integer;
+function screen_inset_bottom: integer;</pre>
+  <p>How far the camera cutout or a rounded corner reaches into that edge of the canvas, in canvas pixels, or 0. A control kept at least that far from every edge is seen whole. The values follow the screen when it turns. Outside ANPASIDE's emulator and the APKs it exports they are always 0.</p>
+  <details><summary>Example</summary>
+<pre class="code">{ a menu button the top right corner does not cut off }
+DrawImage(menu, GetWidth - screen_inset_right - GetImageWidth(menu), screen_inset_top);</pre></details>
+</article>
+</section>
+  </section>
+
+  <section class="part" id="constants">
+    <h2><span class="no">A</span>Predefined constants</h2>
+    <p>Every program has these without declaring them.</p>
+    <div class="tables">
+      <table class="consts"><caption>Game actions, from <a href="#fn-keytoaction">KeyToAction</a></caption><tbody><tr><td><code>GA_NONE</code></td><td>0</td></tr><tr><td><code>GA_UP</code></td><td>1</td></tr><tr><td><code>GA_LEFT</code></td><td>2</td></tr><tr><td><code>GA_RIGHT</code></td><td>5</td></tr><tr><td><code>GA_DOWN</code></td><td>6</td></tr><tr><td><code>GA_FIRE</code></td><td>8</td></tr><tr><td><code>GA_GAMEA</code></td><td>9</td></tr><tr><td><code>GA_GAMEB</code></td><td>10</td></tr><tr><td><code>GA_GAMEC</code></td><td>11</td></tr><tr><td><code>GA_GAMED</code></td><td>12</td></tr></tbody></table>
+      <table class="consts"><caption>Keys, from <a href="#fn-getkeyclicked">GetKeyClicked</a></caption><tbody><tr><td><code>KE_NONE</code></td><td>0</td></tr><tr><td><code>KE_KEY0 … KE_KEY9</code></td><td>48 … 57</td></tr><tr><td><code>KE_STAR</code></td><td>42</td></tr><tr><td><code>KE_POUND</code></td><td>35</td></tr></tbody></table>
+      <table class="consts"><caption>Font faces, for <a href="#fn-setfont">SetFont</a></caption><tbody><tr><td><code>FONT_FACE_SYSTEM</code></td><td>0</td></tr><tr><td><code>FONT_FACE_MONOSPACE</code></td><td>32</td></tr><tr><td><code>FONT_FACE_PROPORTIONAL</code></td><td>64</td></tr></tbody></table>
+      <table class="consts"><caption>Font styles, joined with <code>or</code></caption><tbody><tr><td><code>FONT_STYLE_PLAIN</code></td><td>0</td></tr><tr><td><code>FONT_STYLE_BOLD</code></td><td>1</td></tr><tr><td><code>FONT_STYLE_ITALIC</code></td><td>2</td></tr><tr><td><code>FONT_STYLE_UNDERLINED</code></td><td>4</td></tr></tbody></table>
+      <table class="consts"><caption>Font sizes</caption><tbody><tr><td><code>FONT_SIZE_MEDIUM</code></td><td>0</td></tr><tr><td><code>FONT_SIZE_SMALL</code></td><td>8</td></tr><tr><td><code>FONT_SIZE_LARGE</code></td><td>16</td></tr></tbody></table>
+      <table class="consts"><caption>Command types, for <a href="#fn-createcommand">CreateCommand</a></caption><tbody><tr><td><code>CM_SCREEN</code></td><td>1</td></tr><tr><td><code>CM_BACK</code></td><td>2</td></tr><tr><td><code>CM_CANCEL</code></td><td>3</td></tr><tr><td><code>CM_OK</code></td><td>4</td></tr><tr><td><code>CM_HELP</code></td><td>5</td></tr><tr><td><code>CM_STOP</code></td><td>6</td></tr><tr><td><code>CM_EXIT</code></td><td>7</td></tr><tr><td><code>CM_ITEM</code></td><td>8</td></tr></tbody></table>
+      <table class="consts"><caption>Text constraints, for <a href="#fn-formaddtextfield">FormAddTextField</a></caption><tbody><tr><td><code>TF_ANY</code></td><td>0</td></tr><tr><td><code>TF_EMAIL</code></td><td>1</td></tr><tr><td><code>TF_NUMERIC</code></td><td>2</td></tr><tr><td><code>TF_PHONENUMBER</code></td><td>3</td></tr><tr><td><code>TF_URL</code></td><td>4</td></tr><tr><td><code>TF_PASSWORD</code></td><td>$10000</td></tr></tbody></table>
+      <table class="consts"><caption>Choice types, for <a href="#fn-formaddchoice">FormAddChoice</a> and <a href="#fn-showmenu">ShowMenu</a></caption><tbody><tr><td><code>CH_EXCLUSIVE</code></td><td>1</td></tr><tr><td><code>CH_MULTIPLE</code></td><td>2</td></tr><tr><td><code>CH_IMPLICIT</code></td><td>3</td></tr></tbody></table>
+      <table class="consts"><caption>Date fields, for <a href="#fn-formadddatefield">FormAddDateField</a></caption><tbody><tr><td><code>DF_DATE</code></td><td>1</td></tr><tr><td><code>DF_TIME</code></td><td>2</td></tr><tr><td><code>DF_DATE_TIME</code></td><td>3</td></tr></tbody></table>
+      <table class="consts"><caption>Alert types, for <a href="#fn-showalert">ShowAlert</a></caption><tbody><tr><td><code>ALERT_INFO</code></td><td></td></tr><tr><td><code>ALERT_WARNING</code></td><td></td></tr><tr><td><code>ALERT_ERROR</code></td><td></td></tr><tr><td><code>ALERT_ALARM</code></td><td></td></tr><tr><td><code>ALERT_CONFIRMATION</code></td><td></td></tr></tbody></table>
+      <table class="consts"><caption>Other</caption><tbody><tr><td><code>pi</code></td><td>3.14159…</td></tr><tr><td><code>EOF</code></td><td>1000</td></tr><tr><td><code>GET</code></td><td>'GET'</td></tr><tr><td><code>POST</code></td><td>'POST'</td></tr><tr><td><code>HEAD</code></td><td>'HEAD'</td></tr></tbody></table>
+    </div>
+  </section>
+
+  <section class="part" id="keycodes">
+    <h2><span class="no">B</span>Key scan codes</h2>
+    <p>The codes <code>GetKeyPressed</code> and <code>GetKeyClicked</code> return. The number keys,
+    <code>*</code> and <code>#</code> are the same everywhere; the others depend on the maker, which
+    is why there is <a href="#fn-keytoaction">KeyToAction</a>.</p>
+    <table class="keys">
+      <thead><tr><th>Key</th><th>Siemens</th><th>Sony Ericsson</th><th>Nokia</th><th>Motorola</th></tr></thead>
+      <tbody>
+        <tr><td>0 to 9</td><td>48–57</td><td>48–57</td><td>48–57</td><td>48–57</td></tr>
+        <tr><td>* and #</td><td>42, 35</td><td>42, 35</td><td>42, 35</td><td>42, 35</td></tr>
+        <tr><td>Up</td><td>−59</td><td>−1</td><td>−1</td><td>1 (−1)</td></tr>
+        <tr><td>Down</td><td>−60</td><td>−2</td><td>−2</td><td>6 (−2)</td></tr>
+        <tr><td>Left</td><td>−61</td><td>−3</td><td>−3</td><td>2 (−3)</td></tr>
+        <tr><td>Right</td><td>−62</td><td>−4</td><td>−4</td><td>5 (−4)</td></tr>
+        <tr><td>Fire</td><td>−26</td><td>−5</td><td>−5</td><td>20 (−5)</td></tr>
+        <tr><td>Left soft key</td><td>−1</td><td>−6</td><td></td><td>21</td></tr>
+        <tr><td>Right soft key</td><td>−4</td><td>−7</td><td></td><td>22</td></tr>
+        <tr><td>Clear</td><td></td><td>−8</td><td>−8</td><td>0</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <footer>
+    <p>MIDletPascal is the work of Niksa Orlic, Artem and Javier Santo Domingo. The compiler described here is <a href="https://github.com/Helltar/mp3cc">mp3cc</a>; it ships with
+    <a href="https://github.com/Helltar/ANPASIDE">ANPASIDE</a> on Android and
+    <a href="https://github.com/Helltar/AMPASIDE">AMPASIDE</a> on the desktop.</p>
+    <p>© 2026 <a href="/">Helltar</a></p>
+  </footer>
+</main>
+</div>
+
+<script>
+(function(){
+  // pascal highlighting: keywords bold, as the language is printed; the built-ins tinted
+  var KW={"begin":1,"end":1,"program":1,"unit":1,"uses":1,"interface":1,"implementation":1,
+    "initialization":1,"finalization":1,"procedure":1,"function":1,"forward":1,"var":1,"const":1,
+    "type":1,"array":1,"record":1,"of":1,"if":1,"then":1,"else":1,"for":1,"to":1,"downto":1,"do":1,
+    "while":1,"repeat":1,"until":1,"forever":1,"break":1,"exit":1,"result":1,"and":1,"or":1,"xor":1,
+    "not":1,"div":1,"mod":1,"shl":1,"shr":1,"ushr":1,"case":1,"bytecode":1,"inline":1,"true":1,"false":1};
+  var FN={ "drawarc":1,"drawellipse":1,"drawimage":1,"drawline":1,"drawrect":1,"drawroundrect":1,"drawtext":1,"fillellipse":1,"fillrect":1,"fillroundrect":1,"getcolorblue":1,"getcolorgreen":1,"getcolorred":1,"getcolorsnum":1,"getheight":1,"getimageheight":1,"getimagewidth":1,"getstringheight":1,"getstringwidth":1,"getwidth":1,"imagefrombuffer":1,"imagefromcanvas":1,"imagefromimage":1,"iscolordisplay":1,"loadimage":1,"plot":1,"repaint":1,"setclip":1,"setcolor":1,"setdefaultfont":1,"setfont":1,"getkeyclicked":1,"getkeypressed":1,"keytoaction":1,"delay":1,"getcurrenttime":1,"getday":1,"gethour":1,"getminute":1,"getmonth":1,"getrelativetimems":1,"getsecond":1,"getweekday":1,"getyear":1,"getyearday":1,"abs":1,"acos":1,"asin":1,"atan":1,"atan2":1,"cos":1,"exp":1,"frac":1,"log":1,"log10":1,"pow":1,"rabs":1,"sin":1,"sqr":1,"sqrt":1,"tan":1,"todegrees":1,"toradians":1,"trunc":1,"copy":1,"getchar":1,"integertostring":1,"length":1,"locase":1,"pos":1,"setchar":1,"stringtointeger":1,"stringtoreal":1,"upcase":1,"addcommand":1,"choiceappendstring":1,"choiceappendstringimage":1,"choicegetselectedindex":1,"choiceisselected":1,"clearform":1,"createcommand":1,"emptycommand":1,"formaddchoice":1,"formadddatefield":1,"formaddgauge":1,"formaddimage":1,"formaddspace":1,"formaddstring":1,"formaddtextfield":1,"formgetdate":1,"formgettext":1,"formgetvalue":1,"formremove":1,"formsetdate":1,"formsettext":1,"formsetvalue":1,"getclickedcommand":1,"getformtitle":1,"gettextboxstring":1,"menuappendstring":1,"menuappendstringimage":1,"menugetselectedindex":1,"menuisselected":1,"playalertsound":1,"removecommand":1,"removeformtitle":1,"setformtitle":1,"setticker":1,"showalert":1,"showcanvas":1,"showform":1,"showmenu":1,"showtextbox":1,"addrecordstoreentry":1,"closerecordstore":1,"closersenumeration":1,"deleterecordstore":1,"deleterecordstoreentry":1,"enumeraterecords":1,"getrecordstorenextid":1,"getrecordstoresize":1,"modifyrecordstoreentry":1,"nextrecord":1,"openrecordstore":1,"readrecordstoreentry":1,"updatersenumeration":1,"addhttpbody":1,"addhttpheader":1,"closehttp":1,"gethttpheader":1,"gethttpresponse":1,"ishttpopen":1,"openhttp":1,"sendhttpmessage":1,"sethttpmethod":1,"smsissending":1,"smsstartsend":1,"smswassuccessfull":1,"getplayerduration":1,"openplayer":1,"playtone":1,"setplayercount":1,"startplayer":1,"stopplayer":1,"closeresource":1,"openresource":1,"readbyte":1,"readline":1,"resourceavailable":1,"assert":1,"chr":1,"debug":1,"getproperty":1,"halt":1,"ismidletpaused":1,"odd":1,"ord":1,"random":1,"randomize":1 };
+  function he(s){return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
+  var RE=/(\{[^}]*\}|\(\*[\s\S]*?\*\)|\/\/[^\n]*|\/\*[\s\S]*?\*\/)|('(?:[^']|'')*'|"[^"\n]*")|(\$[0-9A-Fa-f]+|#\$?[0-9A-Fa-f]+|\b\d+(?:\.\d+)?)|([A-Za-z_]\w*)/g;
+  function hl(src){
+    var out="",last=0,m;RE.lastIndex=0;
+    while((m=RE.exec(src))){
+      out+=he(src.slice(last,m.index));last=RE.lastIndex;
+      if(m[1])out+='<span class="t-com">'+he(m[1])+'</span>';
+      else if(m[2])out+='<span class="t-str">'+he(m[2])+'</span>';
+      else if(m[3])out+='<span class="t-num">'+he(m[3])+'</span>';
+      else{var w=m[4],lw=w.toLowerCase();
+        out+=KW[lw]?'<span class="t-kw">'+he(w)+'</span>':FN[lw]?'<span class="t-fn">'+he(w)+'</span>':he(w);}
+    }
+    return out+he(src.slice(last));
+  }
+  document.querySelectorAll("pre.code:not(.plain),pre.sig").forEach(function(pre){pre.innerHTML=hl(pre.textContent);});
+
+  var rail=document.getElementById("rail"),scrim=document.getElementById("scrim"),menuBtn=document.getElementById("menuBtn");
+  function setRail(open){rail.classList.toggle("open",open);scrim.classList.toggle("show",open);menuBtn.setAttribute("aria-expanded",open);
+    document.documentElement.classList.toggle("drawer",open);}
+  menuBtn.addEventListener("click",function(){setRail(!rail.classList.contains("open"));});
+  scrim.addEventListener("click",function(){setRail(false);});
+
+  // search: keeps the routines whose name or text matches and hides the rest of the page
+  var main=document.getElementById("main"),search=document.getElementById("search"),
+      noRes=document.getElementById("noresults"),nrq=document.getElementById("nrq"),
+      reference=document.getElementById("reference");
+  var cards=[].slice.call(document.querySelectorAll("article.fn")),
+      cats=[].slice.call(document.querySelectorAll("section.cat")),
+      parts=[reference,document.getElementById("libraries")];
+  cards.forEach(function(c){c._t=c.textContent.toLowerCase();});
+  function filter(){
+    var raw=search.value.trim(),q=raw.toLowerCase(),any=false;
+    cards.forEach(function(c){var hit=!q||c._t.indexOf(q)>=0;c.classList.toggle("miss",!hit);any=any||hit;});
+    cats.forEach(function(s){s.classList.toggle("miss",!!q&&!s.querySelector("article.fn:not(.miss)"));});
+    parts.forEach(function(p){p.classList.toggle("miss",!!q&&p!==reference&&!p.querySelector("article.fn:not(.miss)"));});
+    noRes.hidden=!(q&&!any);nrq.textContent=raw;
+    var was=main.classList.contains("searching");
+    main.classList.toggle("searching",!!q);
+    if(q&&!was)window.scrollTo(0,0);
+  }
+  search.addEventListener("input",filter);
+  document.addEventListener("keydown",function(e){
+    if(e.key==="/"&&document.activeElement!==search){e.preventDefault();search.focus();}
+    else if(e.key==="Escape"&&document.activeElement===search){search.value="";filter();search.blur();}
+  });
+  // following a link drops the search, so that what it points to is visible
+  document.addEventListener("click",function(e){
+    var a=e.target.closest('a[href^="#"]');if(!a)return;
+    if(rail.contains(a))setRail(false);
+    if(search.value){search.value="";filter();var t=document.getElementById(a.getAttribute("href").slice(1));
+      if(t){e.preventDefault();t.scrollIntoView();history.pushState(null,"",a.getAttribute("href"));}}
+  });
+
+  // the contents entry of what is on screen
+  var links=[].slice.call(rail.querySelectorAll('li a[href^="#"]')),byId={};
+  links.forEach(function(a){byId[a.getAttribute("href").slice(1)]=a;});
+  var io=new IntersectionObserver(function(es){
+    es.forEach(function(en){
+      if(!en.isIntersecting)return;var a=byId[en.target.id];if(!a)return;
+      links.forEach(function(x){x.classList.toggle("active",x===a);});
+      var r=a.getBoundingClientRect(),rr=rail.getBoundingClientRect();
+      if(r.top<rr.top||r.bottom>rr.bottom)a.scrollIntoView({block:"nearest"});
+    });
+  },{rootMargin:"-60px 0px -70% 0px"});
+  Object.keys(byId).forEach(function(id){var t=document.getElementById(id);if(t)io.observe(t);});
+})();
+</script>
+</body>
+</html>
