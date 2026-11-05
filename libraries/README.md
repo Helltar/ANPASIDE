@@ -10,6 +10,7 @@ it.
 | `Lib_touch` | `Touch` | multi-touch input, a drop-in replacement for `Lib_sensor` |
 | `Lib_sound` | `Sound` | several sounds at once: music that effects do not cut off |
 | `Lib_screen` | `Screen` | the safe area: how far the camera cutout and the rounded corners cover the canvas |
+| `Lib_fps` | `Fps` | the frame rate of the game loop: counting it and capping it |
 
 ## Touch
 
@@ -177,6 +178,39 @@ Nothing needs initializing, and the values follow the screen when it turns, so a
 rotates reads them again. They come from the runtime through the `anpaside.screen.inset.<side>`
 system properties, which only the IDE's emulator and exported apks answer; anywhere else every
 function returns 0.
+
+## Fps
+
+```pascal
+program game;
+uses Fps;
+begin
+  repeat
+    fps_count;
+    { ... }
+    DrawText('fps ' + IntegerToString(fps_get), 0, 0);
+    Repaint;
+    fps_limit(30);
+  until false;
+end.
+```
+
+| Function | Does |
+|---|---|
+| `fps_count` | counts one frame; called once per pass of the loop |
+| `fps_get` | the frames `fps_count` saw in the last full second, 0 until one has passed; it changes once a second |
+| `fps_limit(n)` | waits until the next frame is due at `n` frames per second; 0 or less does nothing |
+
+`fps_limit` replaces the `Delay` at the end of the loop. It waits for whatever the frame has left
+rather than for a fixed time, so a loop runs at the same speed whatever it draws, and it counts
+from when the previous frame was due, not from when it ended: 1000 / 60 is 16 ms, and a loop that
+slept 16 ms per frame would run at 62, so the remainders are carried over and 60 frames take
+exactly a second. A loop that is slower than `n` is not held up, and one that falls more than a
+frame behind, after a pause for instance, starts over from the current time instead of racing to
+catch up. It counts nothing itself, so a loop that shows the rate calls both.
+
+The library is integer arithmetic only: phones with CLDC 1.0 have no floating point. It follows a
+library GOAR posted on annimon.com.
 
 ## Building
 
