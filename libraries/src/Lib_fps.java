@@ -1,5 +1,5 @@
 /**
- * The frame rate of a game loop for MIDletPascal: {@code uses Fps;}.
+ * The frame rate of a game loop for MIDletPascal: {@code uses FPS;}.
  *
  * <p>{@code fps_count} is called once per frame and {@code fps_get} answers how many frames the
  * last full second had; {@code fps_limit} keeps the loop from running faster than a given rate.

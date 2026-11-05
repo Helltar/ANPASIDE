@@ -10,7 +10,7 @@ it.
 | `Lib_touch` | `Touch` | multi-touch input, a drop-in replacement for `Lib_sensor` |
 | `Lib_sound` | `Sound` | several sounds at once: music that effects do not cut off |
 | `Lib_screen` | `Screen` | the safe area: how far the camera cutout and the rounded corners cover the canvas |
-| `Lib_fps` | `Fps` | the frame rate of the game loop: counting it and capping it |
+| `Lib_fps` | `FPS` | the frame rate of the game loop: counting it and capping it |
 
 ## Touch
 
@@ -179,11 +179,11 @@ rotates reads them again. They come from the runtime through the `anpaside.scree
 system properties, which only the IDE's emulator and exported apks answer; anywhere else every
 function returns 0.
 
-## Fps
+## FPS
 
 ```pascal
 program game;
-uses Fps;
+uses FPS;
 begin
   repeat
     fps_count;
