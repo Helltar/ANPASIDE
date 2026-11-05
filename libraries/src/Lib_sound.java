@@ -22,6 +22,13 @@ class Lib_sound {
     static final int[] loops = new int[CHANNELS];
     static final int[] levels = new int[CHANNELS];
 
+    // set by sound_pause, so that sound_play_free leaves a paused channel alone
+    static final boolean[] paused = new boolean[CHANNELS];
+
+    // when each channel was last started, as a running count of sound_play calls
+    static final int[] started = new int[CHANNELS];
+    static int plays = 0;
+
     static {
         for (int i = 0; i < CHANNELS; i++) {
             loops[i] = 1;
@@ -74,6 +81,9 @@ class Lib_sound {
             return 0;
         }
 
+        paused[ch] = false;
+        started[ch] = ++plays;
+
         try {
             player.stop();
             player.setLoopCount(loops[ch]);
@@ -85,6 +95,38 @@ class Lib_sound {
         }
     }
 
+    /**
+     * Plays the first channel from {@code first} to {@code last} that holds a sound and is not
+     * playing, so an effect opened on several channels can overlap itself. When all of them are
+     * playing, the one started longest ago starts over. A paused channel is left alone. Returns
+     * the channel it played, or -1 if none of them could be played.
+     */
+    public static int sound_play_free(int first, int last) {
+        int from = first < 0 ? 0 : first;
+        int to = last >= CHANNELS ? CHANNELS - 1 : last;
+        int oldest = -1;
+
+        for (int ch = from; ch <= to; ch++) {
+            if (players[ch] == null || paused[ch]) {
+                continue;
+            }
+
+            if (sound_playing(ch) == 0) {
+                return sound_play(ch) == 1 ? ch : -1;
+            }
+
+            if (oldest < 0 || started[ch] - started[oldest] < 0) {
+                oldest = ch;
+            }
+        }
+
+        if (oldest < 0) {
+            return -1;
+        }
+
+        return sound_play(oldest) == 1 ? oldest : -1;
+    }
+
     /** Stops channel {@code ch} where it is; {@code sound_resume} continues from there. */
     public static void sound_pause(int ch) {
         Player player = player(ch);
@@ -92,6 +134,8 @@ class Lib_sound {
         if (player == null) {
             return;
         }
+
+        paused[ch] = true;
 
         try {
             player.stop();
@@ -106,6 +150,8 @@ class Lib_sound {
         if (player == null) {
             return 0;
         }
+
+        paused[ch] = false;
 
         try {
             player.start();
@@ -122,6 +168,8 @@ class Lib_sound {
         if (player == null) {
             return;
         }
+
+        paused[ch] = false;
 
         try {
             player.stop();
@@ -150,7 +198,7 @@ class Lib_sound {
             return;
         }
 
-        levels[ch] = level < 0 ? 0 : level > 100 ? 100 : level;
+        levels[ch] = clampLevel(level);
         applyLevel(ch);
     }
 
@@ -190,6 +238,7 @@ class Lib_sound {
         }
 
         players[ch] = null;
+        paused[ch] = false;
 
         try {
             player.close();
@@ -197,9 +246,24 @@ class Lib_sound {
         }
     }
 
-    static void applyLevel(int ch) {
-        Player player = players[ch];
+    /**
+     * The volume of the sound the built-in {@code OpenPlayer} opened, from 0 to 100.
+     * {@code OpenPlayer} makes a new player for every sound, at full volume, so call this again
+     * after each one. It does nothing in a program that never calls {@code OpenPlayer}.
+     */
+    public static void sound_player_volume(int level) {
+        try {
+            // P is only in the jar when the program calls OpenPlayer, hence Throwable
+            setLevel(P.p, clampLevel(level));
+        } catch (Throwable e) {
+        }
+    }
 
+    static void applyLevel(int ch) {
+        setLevel(players[ch], levels[ch]);
+    }
+
+    static void setLevel(Player player, int level) {
         if (player == null) {
             return;
         }
@@ -208,10 +272,14 @@ class Lib_sound {
             VolumeControl volume = (VolumeControl) player.getControl("VolumeControl");
 
             if (volume != null) {
-                volume.setLevel(levels[ch]);
+                volume.setLevel(level);
             }
         } catch (Exception e) {
         }
+    }
+
+    static int clampLevel(int level) {
+        return level < 0 ? 0 : level > 100 ? 100 : level;
     }
 
     static Player player(int ch) {

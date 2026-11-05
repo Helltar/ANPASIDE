@@ -12,7 +12,7 @@ CLASSES_DIR := $(BUILD_DIR)/classes
 
 JME_BOOTCLASSPATH := $(WTK_HOME)/lib/cldcapi10.jar:$(WTK_HOME)/lib/midpapi10.jar:$(WTK_HOME)/lib/mmapi.jar
 LIBRARIES := $(sort $(wildcard src/Lib_*.java))
-STUBS := build-support/M.java build-support/FW.java
+STUBS := build-support/M.java build-support/FW.java build-support/P.java
 
 .PHONY: all install clean
 
@@ -27,7 +27,7 @@ install: $(LIBRARIES) $(STUBS)
 	"$(PREVERIFY)" -cldc1.0 -nofp -nofinalize -nonative \
 		-classpath "$(JME_BOOTCLASSPATH):$(RAW_DIR)" \
 		-d "$(CLASSES_DIR)" "$(RAW_DIR)"
-	rm -f "$(CLASSES_DIR)/M.class" "$(CLASSES_DIR)/FW.class"
+	rm -f "$(CLASSES_DIR)/M.class" "$(CLASSES_DIR)/FW.class" "$(CLASSES_DIR)/P.class"
 	@for class_file in "$(CLASSES_DIR)"/Lib_*.class; do \
 		"$(JAVAP)" -verbose "$$class_file" | grep -q 'major version: 45' \
 			|| { echo "$$class_file is not a java 1.1 class" >&2; exit 1; }; \

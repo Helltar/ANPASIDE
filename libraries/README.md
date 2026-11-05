@@ -85,12 +85,13 @@ The built-in `OpenPlayer` keeps one player, and opening a sound closes the one b
 background music stops for every effect. Here a sound is opened on a channel, a number from 0
 to 7, and a channel only replaces its own sound. Nothing has to be initialized. A program can
 still use `OpenPlayer` next to it; the built-in player is one more sound of its own and does not
-stop the channels.
+stop the channels, and `sound_player_volume` sets its volume.
 
 | Function | Does |
 |---|---|
 | `sound_open(ch, name, type)` | loads the resource `name` of MIME type `type` (`audio/midi`, `audio/x-wav`, `audio/mpeg`, ...) into channel `ch`, closing what the channel held; 1 on success, 0 otherwise |
 | `sound_play(ch)` | plays from the beginning, and starts over if the channel is already playing, so an effect fired again cuts off its previous run; 1 on success |
+| `sound_play_free(first, last)` | plays the first channel from `first` to `last` that holds a sound and is not playing; when all of them are playing, the one started longest ago starts over, and a paused one is left alone; returns the channel, or -1 |
 | `sound_pause(ch)`, `sound_resume(ch)` | stops where it is, and continues from there; `sound_resume` returns 1 on success |
 | `sound_stop(ch)` | stops and rewinds |
 | `sound_loop(ch, count)` | how many times the channel plays in a row, -1 for endlessly; 1 by default, applied at the next `sound_play` |
@@ -98,6 +99,7 @@ stop the channels.
 | `sound_playing(ch)` | 1 while the channel is playing |
 | `sound_duration(ch)` | the length in milliseconds, -1 if unknown; the IDE's emulator only knows it while the sound is playing and answers 0 otherwise |
 | `sound_close(ch)` | stops the channel and frees its sound |
+| `sound_player_volume(level)` | 0 to 100, the volume of the sound the built-in `OpenPlayer` opened |
 
 The type has to be one the runtime lists, written exactly; every sound is then played by
 Android's `MediaPlayer`, which decides what actually works:
@@ -115,6 +117,23 @@ Android's `MediaPlayer`, which decides what actually works:
 Any other type, `audio/ogg` or a typo, gets an empty player from the runtime instead of an
 error, which plays nothing; `sound_open` notices that and answers 0. The built-in `OpenPlayer`
 does not, and returns true for it.
+
+An effect that has to overlap itself, shots fired faster than the sound is long, goes on several
+channels, and `sound_play_free` picks one that is free:
+
+```pascal
+for i := 1 to 3 do ok := sound_open(i, '/shot.wav', 'audio/x-wav');
+{ ... }
+if KeyToAction(GetKeyPressed) = GA_FIRE then ok := sound_play_free(1, 3);
+```
+
+It never opens a sound itself: loading one takes long enough to be heard as a delay, so the
+channels are filled beforehand, and a channel of the range that holds something else is just
+another sound it may play.
+
+`OpenPlayer` makes a new player for every sound, at full volume, so `sound_player_volume` is
+called again after each `OpenPlayer`. In a program that never calls `OpenPlayer` it does nothing:
+the class behind it only goes into the jar of a program that does.
 
 `sound_loop` and `sound_volume` belong to the channel, not to the sound, so they survive the next
 `sound_open` on it: a music channel keeps its volume across tracks. Whether two sounds really
@@ -161,8 +180,8 @@ function returns 0.
 
 ## Building
 
-`make` compiles every `src/Lib_*.java` against the stand-ins in `build-support/` (`M` and `FW`,
-the classes a library links against, never shipped), preverifies the result for CLDC 1.0 and
+`make` compiles every `src/Lib_*.java` against the stand-ins in `build-support/` (`M`, `FW` and
+`P`, the classes a library links against, never shipped), preverifies the result for CLDC 1.0 and
 copies it into `app/src/main/assets/libs/` as `Lib_<name>.bin`, which `AssetInstaller` installs
 under its `.class` name again: bundletool silently drops every `.class` entry of an app bundle,
 so a `.class` asset is missing from the Google Play build, and the bundle fails validation with
