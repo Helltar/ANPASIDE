@@ -648,7 +648,7 @@ end.</pre>
     MIDlet crashes on a MIDP 1.0 phone.</p>
 
     <h3 id="bundled">Libraries in ANPASIDE</h3>
-    <p>ANPASIDE ships three libraries that a program reaches with <code>uses</code> and nothing to
+    <p>ANPASIDE ships four libraries that a program reaches with <code>uses</code> and nothing to
     copy. A <code>Lib_</code> class of the same name in the project's <code>libs/</code> takes their
     place.</p>
     <table class="plain">
@@ -656,6 +656,7 @@ end.</pre>
         <tr><td><a href="#bundled-touch">Touch</a></td><td>several fingers at once</td><td>since 2.5.2</td></tr>
         <tr><td><a href="#bundled-sound">Sound</a></td><td>music and sound effects together</td><td>since 2.6.0</td></tr>
         <tr><td><a href="#bundled-screen">Screen</a></td><td>the parts of the screen the camera and the corners cover</td><td>since 2.6.0</td></tr>
+        <tr><td><a href="#bundled-fps">Fps</a></td><td>counting and capping the frame rate</td><td>since 2.7.0</td></tr>
       </tbody>
     </table>
 
@@ -737,8 +738,18 @@ begin
   until false;
 end.</pre>
     <p>The loop count and the volume belong to the channel, not to the sound, so a music channel
-    keeps its volume from one track to the next. <code>OpenPlayer</code> still works alongside, as
-    one more sound.</p>
+    keeps its volume from one track to the next.</p>
+    <p>A sound that has to overlap itself, such as shots fired faster than the sound lasts, goes
+    on several channels, and <code>sound_play_free</code> plays whichever of them is free. It never
+    loads a sound itself, since loading takes long enough to be heard, so the channels are filled
+    beforehand:</p>
+<pre class="code" data-frag>for i := 1 to 3 do ok := sound_open(i, '/shot.wav', 'audio/x-wav');
+{ ... }
+if KeyToAction(GetKeyPressed) = GA_FIRE then ok := sound_play_free(1, 3);</pre>
+    <p><code>OpenPlayer</code> still works alongside, as one more sound, and
+    <code>sound_player_volume</code> sets its volume. <code>OpenPlayer</code> starts every sound at
+    full volume, so the call comes after each <code>OpenPlayer</code>. Both functions are there
+    since 2.7.0.</p>
     <p>In ANPASIDE's emulator and in exported APKs, Android plays every sound and mixes them, two
     MIDI files included. It takes MIDI, WAV, MP3, AAC and AMR. A type it does not know, such as
     <code>audio/ogg</code>, makes <code>sound_open</code> return 0. Whether an old phone mixes
@@ -781,6 +792,36 @@ end.</pre>
     <code>.bottom</code>. Only ANPASIDE answers them; in J2ME Loader and on an old phone every
     function returns 0, which is also correct there.</p>
     <p>All functions: <a href="#cat-screen">Screen reference</a>.</p>
+
+    <h4 id="bundled-fps">Fps</h4>
+    <p>For a game loop that shows its frame rate and runs at the same speed whatever it draws.
+    <code>fps_limit</code> takes the place of the <code>Delay</code> at the end of the loop:</p>
+<pre class="code">program dot;
+uses Fps;
+var x: integer;
+begin
+  x := 0;
+  repeat
+    fps_count;
+    x := (x + 2) mod GetWidth;
+
+    SetColor(0, 0, 0);
+    FillRect(0, 0, GetWidth, GetHeight);
+    SetColor(255, 255, 255);
+    FillRect(x, GetHeight div 2, 10, 10);
+    DrawText('fps ' + IntegerToString(fps_get), 0, 0);
+    Repaint;
+    fps_limit(30);
+  until false;
+end.</pre>
+    <p><code>fps_limit</code> waits for whatever time the frame has left, not for a fixed time,
+    and counts from when the previous frame was due. A frame at 60 is 16⅔ ms, and the library
+    carries the fractions over, so 60 frames take exactly a second. A loop slower than the limit
+    is not held up, and one that falls behind, after a pause for instance, carries on from the
+    current time instead of rushing to catch up. <code>fps_get</code> counts the frames of the last
+    full second, so the number it shows changes once a second and does not flicker. Everything is
+    integer arithmetic, since phones with CLDC 1.0 have no floating point.</p>
+    <p>All functions: <a href="#cat-fps">Fps reference</a>.</p>
   </section>
 
   <section class="chapter" id="operators">
@@ -2325,9 +2366,11 @@ end;</pre></details>
   <dt><a href="#cat-touch">Touch</a></dt>
   <dd><a href="#fn-touch-init">Init</a> <a href="#fn-touch-touch-count">touch_count</a> <a href="#fn-touch-touch-down">touch_down</a> <a href="#fn-touch-touch-x">touch_x</a> <a href="#fn-touch-touch-y">touch_y</a> <a href="#fn-touch-touch-pressed">touch_pressed</a> <a href="#fn-touch-touch-released">touch_released</a> <a href="#fn-touch-touch-area">touch_area</a> <a href="#fn-touch-sensor">pointer_*</a></dd>
   <dt><a href="#cat-sound">Sound</a></dt>
-  <dd><a href="#fn-sound-sound-open">sound_open</a> <a href="#fn-sound-sound-play">sound_play</a> <a href="#fn-sound-sound-pause">sound_pause</a> <a href="#fn-sound-sound-resume">sound_resume</a> <a href="#fn-sound-sound-stop">sound_stop</a> <a href="#fn-sound-sound-loop">sound_loop</a> <a href="#fn-sound-sound-volume">sound_volume</a> <a href="#fn-sound-sound-playing">sound_playing</a> <a href="#fn-sound-sound-duration">sound_duration</a> <a href="#fn-sound-sound-close">sound_close</a></dd>
+  <dd><a href="#fn-sound-sound-open">sound_open</a> <a href="#fn-sound-sound-play">sound_play</a> <a href="#fn-sound-sound-play-free">sound_play_free</a> <a href="#fn-sound-sound-pause">sound_pause</a> <a href="#fn-sound-sound-resume">sound_resume</a> <a href="#fn-sound-sound-stop">sound_stop</a> <a href="#fn-sound-sound-loop">sound_loop</a> <a href="#fn-sound-sound-volume">sound_volume</a> <a href="#fn-sound-sound-playing">sound_playing</a> <a href="#fn-sound-sound-duration">sound_duration</a> <a href="#fn-sound-sound-close">sound_close</a> <a href="#fn-sound-sound-player-volume">sound_player_volume</a></dd>
   <dt><a href="#cat-screen">Screen</a></dt>
   <dd><a href="#fn-screen-inset">screen_inset_*</a></dd>
+  <dt><a href="#cat-fps">Fps</a></dt>
+  <dd><a href="#fn-fps-fps-count">fps_count</a> <a href="#fn-fps-fps-get">fps_get</a> <a href="#fn-fps-fps-limit">fps_limit</a></dd>
 </dl>
 <section class="cat" id="cat-touch">
   <h3 class="cathead">Touch</h3>
@@ -2428,7 +2471,18 @@ ok := sound_open(1, &#x27;/coin.wav&#x27;, &#x27;audio/x-wav&#x27;);</pre></deta
   <h4><a href="#fn-sound-sound-play">sound_play</a></h4>
   <pre class="sig">function sound_play(ch: integer): integer;</pre>
   <p>Plays channel <code>ch</code> from the start. If it is already playing it starts over, so an effect fired twice cuts its first run short. Returns 1 on success, otherwise 0.</p>
-  <p class="see">See also <a href="#fn-sound-sound-stop">sound_stop</a></p>
+  <p class="see">See also <a href="#fn-sound-sound-play-free">sound_play_free</a></p>
+</article>
+<article class="fn" id="fn-sound-sound-play-free" data-name="sound_play_free">
+  <h4><a href="#fn-sound-sound-play-free">sound_play_free</a></h4>
+  <pre class="sig">function sound_play_free(first, last: integer): integer;</pre>
+  <p>Plays the first channel from <code>first</code> to <code>last</code> that holds a sound and is not playing. When all of them are playing, the one started longest ago starts over; a paused channel is left alone. Returns the channel it played, or −1 if none could be played. It plays only what <code>sound_open</code> put there, so a sound that has to overlap itself is opened on every channel of the range. Since 2.7.0.</p>
+  <details><summary>Example</summary>
+<pre class="code">{ up to three shots heard at once }
+for i := 1 to 3 do ok := sound_open(i, &#x27;/shot.wav&#x27;, &#x27;audio/x-wav&#x27;);
+{ ... }
+if KeyToAction(GetKeyPressed) = GA_FIRE then ok := sound_play_free(1, 3);</pre></details>
+  <p class="see">See also <a href="#fn-sound-sound-play">sound_play</a></p>
 </article>
 <article class="fn" id="fn-sound-sound-pause" data-name="sound_pause">
   <h4><a href="#fn-sound-sound-pause">sound_pause</a></h4>
@@ -2476,6 +2530,16 @@ ok := sound_open(1, &#x27;/coin.wav&#x27;, &#x27;audio/x-wav&#x27;);</pre></deta
   <p>Stops channel <code>ch</code> and frees its sound. The channel can be opened again.</p>
   <p class="see">See also <a href="#fn-sound-sound-open">sound_open</a></p>
 </article>
+<article class="fn" id="fn-sound-sound-player-volume" data-name="sound_player_volume">
+  <h4><a href="#fn-sound-sound-player-volume">sound_player_volume</a></h4>
+  <pre class="sig">procedure sound_player_volume(level: integer);</pre>
+  <p>The volume of the sound the built-in <code>OpenPlayer</code> opened, 0 to 100. <code>OpenPlayer</code> starts every sound at full volume, so call it after each <code>OpenPlayer</code>. In a program that never calls <code>OpenPlayer</code> it does nothing. Since 2.7.0.</p>
+  <details><summary>Example</summary>
+<pre class="code">ok := OpenPlayer(&#x27;/music.mid&#x27;, &#x27;audio/midi&#x27;);
+sound_player_volume(40);
+ok := StartPlayer;</pre></details>
+  <p class="see">See also <a href="#fn-openplayer">OpenPlayer</a></p>
+</article>
 </section>
 <section class="cat" id="cat-screen">
   <h3 class="cathead">Screen</h3>
@@ -2490,6 +2554,36 @@ function screen_inset_bottom: integer;</pre>
   <details><summary>Example</summary>
 <pre class="code">{ a menu button the top right corner does not cut off }
 DrawImage(menu, GetWidth - screen_inset_right - GetImageWidth(menu), screen_inset_top);</pre></details>
+</article>
+</section>
+<section class="cat" id="cat-fps">
+  <h3 class="cathead">Fps</h3>
+  <div class="intro"><p>Reached with <code>uses Fps;</code>. See <a href="#bundled-fps">Fps</a> for a whole loop.</p></div>
+<article class="fn" id="fn-fps-fps-count" data-name="fps_count">
+  <h4><a href="#fn-fps-fps-count">fps_count</a></h4>
+  <pre class="sig">procedure fps_count;</pre>
+  <p>Counts one frame. Call it once per pass of the game loop.</p>
+  <p class="see">See also <a href="#fn-fps-fps-get">fps_get</a></p>
+</article>
+<article class="fn" id="fn-fps-fps-get" data-name="fps_get">
+  <h4><a href="#fn-fps-fps-get">fps_get</a></h4>
+  <pre class="sig">function fps_get: integer;</pre>
+  <p>The number of frames <code>fps_count</code> saw in the last full second, 0 until a second has passed. It changes once a second, so it can be drawn every frame.</p>
+  <details><summary>Example</summary>
+<pre class="code">DrawText(&#x27;fps &#x27; + IntegerToString(fps_get), 0, 0);</pre></details>
+  <p class="see">See also <a href="#fn-fps-fps-count">fps_count</a></p>
+</article>
+<article class="fn" id="fn-fps-fps-limit" data-name="fps_limit">
+  <h4><a href="#fn-fps-fps-limit">fps_limit</a></h4>
+  <pre class="sig">procedure fps_limit(n: integer);</pre>
+  <p>Waits until the next frame is due at <code>n</code> frames per second, in place of a <code>Delay</code> at the end of the loop. It waits only for what the frame has left, so the loop keeps the same speed whatever it draws. A loop slower than <code>n</code> is not held up, and one that falls behind does not rush to catch up. 0 or less does nothing. It does not count frames; <code>fps_count</code> does.</p>
+  <details><summary>Example</summary>
+<pre class="code">repeat
+  { ... move, draw ... }
+  Repaint;
+  fps_limit(30);
+until false;</pre></details>
+  <p class="see">See also <a href="#fn-delay">Delay</a></p>
 </article>
 </section>
   </section>
