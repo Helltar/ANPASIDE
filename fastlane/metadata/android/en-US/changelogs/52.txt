@@ -1,0 +1,3 @@
+- Added the FPS library: counts and caps the frame rate of a game loop
+- Sound library: sound_play_free plays an effect on a free channel, so it can overlap itself
+- Sound library: sound_player_volume sets the volume of the built-in OpenPlayer
