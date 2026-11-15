@@ -107,8 +107,8 @@ android {
         applicationId = "com.github.helltar.anpaside"
         minSdk = 28
         targetSdk = 36
-        versionCode = 52
-        versionName = "2.7.0"
+        versionCode = 53
+        versionName = "2.8.0"
     }
 
     // a release is signed only when the environment of the build names a keystore; without one it

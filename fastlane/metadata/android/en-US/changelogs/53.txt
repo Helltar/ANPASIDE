@@ -1,0 +1,2 @@
+- Added the Net library: a connection to a server that stays open, for a chat or an online game
+- The built-in HTTP functions now reach plain http:// addresses, in the emulator and in exported apps
