@@ -111,8 +111,27 @@ android {
         versionName = "2.7.0"
     }
 
+    // a release is signed only when the environment of the build names a keystore; without one it
+    // comes out unsigned, so anyone can build it. only the ide is signed here: the player stays an
+    // unsigned template, which bundlePlayerTemplate makes sure of anyway
+    val keystore: String? = System.getenv("ANDROID_KEYSTORE")
+
+    if (keystore != null) {
+        signingConfigs {
+            create("release") {
+                storeFile = file(keystore)
+                storePassword = System.getenv("ANDROID_KEYSTORE_PASSWORD")
+                keyAlias = System.getenv("ANDROID_KEY_ALIAS")
+                // a pkcs12 keystore has one password for the store and the key
+                keyPassword = System.getenv("ANDROID_KEYSTORE_PASSWORD")
+            }
+        }
+    }
+
     buildTypes {
         release {
+            signingConfig = signingConfigs.findByName("release")
+
             optimization {
                 // most of the dex is compose, material and the bundled dexer, none of it used in
                 // full. src/main/keepRules and the j2me consumer rules hold what r8 cannot see
