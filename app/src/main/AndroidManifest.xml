@@ -9,7 +9,8 @@
         android:localeConfig="@xml/locales_config"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.Anpaside">
+        android:theme="@style/Theme.Anpaside"
+        android:usesCleartextTraffic="true">
 
         <activity
             android:name=".MainActivity"

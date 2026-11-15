@@ -18,7 +18,8 @@
         android:icon="@mipmap/midlet_icon"
         android:label="ANPASIDE Midlet"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme.NoActionBar">
+        android:theme="@style/AppTheme.NoActionBar"
+        android:usesCleartextTraffic="true">
 
         <activity
             android:name="com.github.helltar.anpaside.player.PlayerActivity"
