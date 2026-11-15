@@ -275,6 +275,8 @@ main.searching #reference{padding-top:32px}
   <li><a href="#cat-touch">Touch</a></li>
   <li><a href="#cat-sound">Sound</a></li>
   <li><a href="#cat-screen">Screen</a></li>
+  <li><a href="#cat-fps">FPS</a></li>
+  <li><a href="#cat-net">Net</a></li>
 </ul><p class="navgroup">Tables</p><ol class="nav-ch">
   <li><a href="#constants"><span class="no">A</span>Predefined constants</a></li>
   <li><a href="#keycodes"><span class="no">B</span>Key scan codes</a></li>
@@ -648,7 +650,7 @@ end.</pre>
     MIDlet crashes on a MIDP 1.0 phone.</p>
 
     <h3 id="bundled">Libraries in ANPASIDE</h3>
-    <p>ANPASIDE ships four libraries that a program reaches with <code>uses</code> and nothing to
+    <p>ANPASIDE ships five libraries that a program reaches with <code>uses</code> and nothing to
     copy. A <code>Lib_</code> class of the same name in the project's <code>libs/</code> takes their
     place.</p>
     <table class="plain">
@@ -657,6 +659,7 @@ end.</pre>
         <tr><td><a href="#bundled-sound">Sound</a></td><td>music and sound effects together</td><td>since 2.6.0</td></tr>
         <tr><td><a href="#bundled-screen">Screen</a></td><td>the parts of the screen the camera and the corners cover</td><td>since 2.6.0</td></tr>
         <tr><td><a href="#bundled-fps">FPS</a></td><td>counting and capping the frame rate</td><td>since 2.7.0</td></tr>
+        <tr><td><a href="#bundled-net">Net</a></td><td>a connection to a server that stays open</td><td>since 2.8.0</td></tr>
       </tbody>
     </table>
 
@@ -822,6 +825,42 @@ end.</pre>
     full second, so the number it shows changes once a second and does not flicker. Everything is
     integer arithmetic, since phones with CLDC 1.0 have no floating point.</p>
     <p>All functions: <a href="#cat-fps">FPS reference</a>.</p>
+
+    <h4 id="bundled-net">Net</h4>
+    <p>For a chat, or a game that talks to its server. The built-in <a href="#cat-httpconnectivity">HTTP</a>
+    functions make one request and wait for its answer, so a program built on them can only ask the
+    server again and again whether something new has arrived. Net keeps one TCP connection open,
+    with text going both ways as lines in UTF-8:</p>
+<pre class="code">program chat;
+uses Net;
+var ok, y: integer;
+begin
+  ok := net_open(&#x27;chat.example.com:7777&#x27;);
+  ok := net_send(&#x27;hello&#x27;);
+  y := 20;
+  SetColor(0, 0, 0);
+  repeat
+    while net_lines &gt; 0 do begin
+      DrawText(net_read, 0, y);
+      y := y + GetStringHeight(&#x27;A&#x27;);
+    end;
+    if KeyToAction(GetKeyClicked) = GA_FIRE then ok := net_send(&#x27;ping&#x27;);
+    if net_status = -1 then DrawText(net_error, 0, 0);
+    Repaint;
+    Delay(50);
+  until net_status &lt;= 0;
+end.</pre>
+    <p>Connecting, receiving and sending happen in the background, so no function waits on the
+    network and the loop keeps drawing. Text sent while still connecting goes out once the
+    connection is up. A line ends at <code>chr(10)</code>, and a <code>chr(13)</code> before it is
+    dropped; for a protocol that wants <code>chr(13) + chr(10)</code>, <code>net_write</code> sends
+    text exactly as given. Lines received before the connection closed can still be read. There is
+    one connection at a time, and <code>net_open</code> closes the one before it.</p>
+    <p>The server is anything that speaks lines over TCP. From ANPASIDE&#x27;s emulator, a server
+    on the same computer is at <code>10.0.2.2</code>. Nothing is encrypted, so passwords do not
+    belong on such a connection. On an old phone it needs MIDP 2.0, and the phone may ask the user
+    before connecting.</p>
+    <p>All functions: <a href="#cat-net">Net reference</a>.</p>
   </section>
 
   <section class="chapter" id="operators">
@@ -2077,7 +2116,7 @@ end.</pre></details>
 </section>
 <section class="cat" id="cat-httpconnectivity">
   <h3 class="cathead">HTTP</h3>
-  <div class="intro"><p>A request is built up on an <code>http</code> variable: open it, set the method and the headers, send it, read the answer, close it.</p></div>
+  <div class="intro"><p>A request is built up on an <code>http</code> variable: open it, set the method and the headers, send it, read the answer, close it. For a connection that stays open, such as a chat, see the <a href="#cat-net">Net</a> library.</p></div>
 <article class="fn" id="fn-addhttpbody" data-name="addhttpbody">
   <h4><a href="#fn-addhttpbody">AddHttpBody</a></h4>
   <pre class="sig">procedure AddHttpBody(conn: http; data: string);</pre>
@@ -2371,6 +2410,8 @@ end;</pre></details>
   <dd><a href="#fn-screen-inset">screen_inset_*</a></dd>
   <dt><a href="#cat-fps">FPS</a></dt>
   <dd><a href="#fn-fps-fps-count">fps_count</a> <a href="#fn-fps-fps-get">fps_get</a> <a href="#fn-fps-fps-limit">fps_limit</a></dd>
+  <dt><a href="#cat-net">Net</a></dt>
+  <dd><a href="#fn-net-net-open">net_open</a> <a href="#fn-net-net-status">net_status</a> <a href="#fn-net-net-send">net_send</a> <a href="#fn-net-net-write">net_write</a> <a href="#fn-net-net-lines">net_lines</a> <a href="#fn-net-net-read">net_read</a> <a href="#fn-net-net-error">net_error</a> <a href="#fn-net-net-close">net_close</a></dd>
 </dl>
 <section class="cat" id="cat-touch">
   <h3 class="cathead">Touch</h3>
@@ -2584,6 +2625,70 @@ DrawImage(menu, GetWidth - screen_inset_right - GetImageWidth(menu), screen_inse
   fps_limit(30);
 until false;</pre></details>
   <p class="see">See also <a href="#fn-delay">Delay</a></p>
+</article>
+</section>
+<section class="cat" id="cat-net">
+  <h3 class="cathead">Net</h3>
+  <div class="intro"><p>Reached with <code>uses Net;</code>. See <a href="#bundled-net">Net</a> for a whole chat loop.</p></div>
+<article class="fn" id="fn-net-net-open" data-name="net_open">
+  <h4><a href="#fn-net-net-open">net_open</a></h4>
+  <pre class="sig">function net_open(address: string): integer;</pre>
+  <p>Starts connecting to <code>address</code>, written <code>host:port</code> or <code>socket://host:port</code>, and closes the connection opened before. Returns 1 if the address is well formed and 0 if not; whether the connection succeeds shows later in <code>net_status</code>.</p>
+  <details><summary>Example</summary>
+<pre class="code">ok := net_open(&#x27;chat.example.com:7777&#x27;);
+while net_status = 1 do Delay(50);</pre></details>
+  <p class="see">See also <a href="#fn-net-net-status">net_status</a> <a href="#fn-net-net-close">net_close</a></p>
+</article>
+<article class="fn" id="fn-net-net-status" data-name="net_status">
+  <h4><a href="#fn-net-net-status">net_status</a></h4>
+  <pre class="sig">function net_status: integer;</pre>
+  <p>1 while connecting, 2 when connected, 0 when closed (never opened, closed by <code>net_close</code>, or closed by the server), and −1 when connecting or the connection failed, with the reason in <code>net_error</code>. A host that refuses fails at once; one that does not answer at all stays at 1 until the system gives up, which can take minutes.</p>
+  <details><summary>Example</summary>
+<pre class="code">if net_status = -1 then DrawText(&#x27;offline: &#x27; + net_error, 0, 0);</pre></details>
+  <p class="see">See also <a href="#fn-net-net-error">net_error</a></p>
+</article>
+<article class="fn" id="fn-net-net-send" data-name="net_send">
+  <h4><a href="#fn-net-net-send">net_send</a></h4>
+  <pre class="sig">function net_send(text: string): integer;</pre>
+  <p>Sends <code>text</code> followed by <code>chr(10)</code>. It is queued and sent in the background, also while still connecting. Returns 1 when queued, 0 when there is no connection.</p>
+  <details><summary>Example</summary>
+<pre class="code">ok := net_send(&#x27;hello&#x27;);</pre></details>
+  <p class="see">See also <a href="#fn-net-net-write">net_write</a></p>
+</article>
+<article class="fn" id="fn-net-net-write" data-name="net_write">
+  <h4><a href="#fn-net-net-write">net_write</a></h4>
+  <pre class="sig">function net_write(text: string): integer;</pre>
+  <p>Sends <code>text</code> exactly as it is, without a line break, for a protocol that ends lines with <code>chr(13) + chr(10)</code> or answers a prompt on the same line. Returns as <code>net_send</code> does.</p>
+  <details><summary>Example</summary>
+<pre class="code">ok := net_write(&#x27;NICK goar&#x27; + chr(13) + chr(10));</pre></details>
+  <p class="see">See also <a href="#fn-net-net-send">net_send</a></p>
+</article>
+<article class="fn" id="fn-net-net-lines" data-name="net_lines">
+  <h4><a href="#fn-net-net-lines">net_lines</a></h4>
+  <pre class="sig">function net_lines: integer;</pre>
+  <p>The number of received lines waiting to be read. An empty line counts too, which is why this, and not an empty <code>net_read</code>, says whether one is waiting.</p>
+  <p class="see">See also <a href="#fn-net-net-read">net_read</a></p>
+</article>
+<article class="fn" id="fn-net-net-read" data-name="net_read">
+  <h4><a href="#fn-net-net-read">net_read</a></h4>
+  <pre class="sig">function net_read: string;</pre>
+  <p>The next received line, without its line break, or an empty string when none is waiting. Text arrives as UTF-8; bytes that are not valid UTF-8 read as �. A line longer than 64 KB arrives in pieces of 64 KB. Lines that arrived before the connection closed can still be read until the next <code>net_open</code>.</p>
+  <details><summary>Example</summary>
+<pre class="code">while net_lines &gt; 0 do
+  ok := FormAddString(net_read);</pre></details>
+  <p class="see">See also <a href="#fn-net-net-lines">net_lines</a></p>
+</article>
+<article class="fn" id="fn-net-net-error" data-name="net_error">
+  <h4><a href="#fn-net-net-error">net_error</a></h4>
+  <pre class="sig">function net_error: string;</pre>
+  <p>Why the connection failed, in the words of the runtime, or an empty string.</p>
+  <p class="see">See also <a href="#fn-net-net-status">net_status</a></p>
+</article>
+<article class="fn" id="fn-net-net-close" data-name="net_close">
+  <h4><a href="#fn-net-net-close">net_close</a></h4>
+  <pre class="sig">procedure net_close;</pre>
+  <p>Closes the connection. Text still waiting to be sent is dropped; received lines stay readable. Does nothing when there is no connection.</p>
+  <p class="see">See also <a href="#fn-net-net-open">net_open</a></p>
 </article>
 </section>
   </section>

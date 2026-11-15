@@ -11,6 +11,7 @@ it.
 | `Lib_sound` | `Sound` | several sounds at once: music that effects do not cut off |
 | `Lib_screen` | `Screen` | the safe area: how far the camera cutout and the rounded corners cover the canvas |
 | `Lib_fps` | `FPS` | the frame rate of the game loop: counting it and capping it |
+| `Lib_net` | `Net` | a connection to a server that stays open: a chat, a game that talks to its server |
 
 ## Touch
 
@@ -211,6 +212,70 @@ catch up. It counts nothing itself, so a loop that shows the rate calls both.
 
 The library is integer arithmetic only: phones with CLDC 1.0 have no floating point. It follows a
 library GOAR posted on annimon.com.
+
+## Net
+
+```pascal
+program chat;
+uses Net;
+var ok, y: integer;
+begin
+  ok := net_open('chat.example.com:7777');
+  ok := net_send('hello');
+  y := 20;
+  SetColor(0, 0, 0);
+  repeat
+    while net_lines > 0 do begin
+      DrawText(net_read, 0, y);
+      y := y + GetStringHeight('A');
+    end;
+    if KeyToAction(GetKeyClicked) = GA_FIRE then ok := net_send('ping');
+    if net_status = -1 then DrawText(net_error, 0, 0);
+    Repaint;
+    Delay(50);
+  until net_status <= 0;
+end.
+```
+
+The built-in HTTP functions make one request and wait for its answer, so a chat built on them can
+only ask the server again and again whether something new arrived. This is one TCP connection
+that stays open, with text going both ways as lines in UTF-8. Connecting, receiving and sending
+happen on threads of their own, so no function ever waits on the network: the loop keeps
+drawing, polls `net_lines` and reads what has arrived.
+
+| Function | Does |
+|---|---|
+| `net_open(address)` | starts connecting to `host:port` (or `socket://host:port`), closing the connection opened before; 1 if the address is well formed, 0 otherwise |
+| `net_status` | 1 while connecting, 2 when connected, 0 when closed (never opened, `net_close`, or closed by the server), -1 when connecting or the connection failed |
+| `net_send(text)` | sends `text` and a line break; 1 when queued, 0 when there is no connection |
+| `net_write(text)` | sends `text` as it is, without a line break; returns as `net_send` |
+| `net_lines` | the number of received lines waiting |
+| `net_read` | the next received line without its line break, an empty string when none is waiting |
+| `net_error` | why the connection failed, as the runtime put it, or an empty string |
+| `net_close` | closes the connection |
+
+One connection at a time: `net_open` closes the one before it. Text sent while still connecting
+is queued and goes out once the connection is up, so a program can open and send its greeting
+straight away; whether it got through shows in `net_status`, which ends up at 2, or at -1 with
+`net_error` saying why (*failed to connect to /10.0.2.2 (port 7778) ... ECONNREFUSED* on the
+IDE's emulator). A refused connection fails at once, but one to a host that does not answer
+at all lasts until the operating system gives up, which can take minutes, so a program that wants a shorter limit counts it
+itself and calls `net_close`.
+
+A line ends at `chr(10)`, and a `chr(13)` before it is dropped, so servers that end lines either
+way work. `net_send` ends lines with `chr(10)` alone; a protocol that wants `chr(13) + chr(10)`,
+or a prompt answered on the same line, uses `net_write`. A last line the server sends without a
+line break before it closes still arrives. Since an empty line is a line too, `net_lines` and not
+an empty `net_read` tells whether one is waiting. Received lines stay readable after the
+connection closes, until the next `net_open`; `net_close` drops text still waiting to be sent.
+A line longer than 64 KB arrives in 64 KB pieces, and bytes that are not valid UTF-8 become
+U+FFFD.
+
+The server is anything that speaks lines over TCP. Between the IDE's emulator on a development
+machine and a server on that machine, the address is `10.0.2.2`. The connection is plain TCP,
+not TLS, so nothing sent over it is private. The runtime opens it through the MIDP
+`socket://` connection, which the IDE's emulator, exported apks and J2ME Loader support; on an
+old phone it needs MIDP 2.0, and the phone may ask the user before connecting.
 
 ## Building
 
